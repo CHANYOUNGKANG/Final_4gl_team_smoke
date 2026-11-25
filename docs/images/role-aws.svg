@@ -1,1 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="460" height="98" viewBox="0 0 460 98" role="img" aria-label="이우빈 · AWS 클라우드 · 이관"><rect x=".7" y=".7" width="458.6" height="96.6" rx="13" fill="#181d31" stroke="#40485e"/><rect x="17" y="20" width="57" height="57" rx="14" fill="#ffc38d" opacity=".12"/><g transform="translate(28 31)" fill="none" stroke="#ffc38d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 28h17a8 8 0 0 0 1-16 11 11 0 0 0-21-1 9 9 0 0 0 3 17Z"/></g><g font-family="Noto Sans CJK KR,Malgun Gothic,Arial,sans-serif"><text x="90" y="44" font-size="25" font-weight="bold" fill="#f4f5ff">이우빈</text><text x="91" y="72" font-size="16" fill="#ffc38d">AWS 클라우드 · 이관</text></g><path d="M419 53l10-10m-9 0h9v9" stroke="#ffc38d" stroke-width="2" fill="none"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="458" height="112" viewBox="0 0 458 112" role="img" aria-labelledby="label">
+<title id="label">이우빈 · AWS 클라우드 · 이관</title>
+<defs><linearGradient id="back"><stop stop-color="#181e32"/><stop offset=".55" stop-color="#1a2239"/><stop offset="1" stop-color="#543754"/></linearGradient><clipPath id="card"><rect width="458" height="112" rx="15"/></clipPath></defs>
+<g clip-path="url(#card)"><rect width="458" height="112" fill="url(#back)"/>
+<g fill="none" stroke="#ffd0a2" opacity=".15"><path d="m339 110 97-97 47 47M358 110l88-88M378 110l64-64 31 31"/><path d="m274 -16 28 28h64l32-32"/></g>
+<path d="M0 25v62" stroke="#ffd0a2" stroke-width="6" stroke-linecap="round"/>
+<g transform="translate(19 29)"><rect width="54" height="54" rx="14" fill="#ffd0a2" opacity=".12"/><path d="M-3 29h21a7.8 7.8 0 0 0 0-15.6A11 11 0 0 0-3 13a8 8 0 0 0 0 16z" transform="translate(20 7)" stroke="#ffd0a2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g>
+<g font-family="Noto Sans CJK KR,Malgun Gothic,Arial,sans-serif"><text x="90" y="54" font-size="27" font-weight="bold" fill="#f4f5ff">이우빈</text><text x="90" y="82" font-size="16" fill="#ffd0a2">AWS 클라우드 · 이관</text></g>
+<g transform="translate(412 37)" stroke="#ffd0a2" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M0 10V3h9l3 3h9v16H0V10h21"/></g>
+</g><rect x=".65" y=".65" width="456.7" height="110.7" rx="15" fill="none" stroke="#ffd0a2" opacity=".27"/></svg>

@@ -1,6 +1,8 @@
 # Linux 서버·운영 메일
 
-**담당 이준호** · [프로젝트 홈](../README.md) · [요구사항](../docs/requirements/README.md)
+![이준호 · Linux 서버 · 운영 메일](../docs/images/role-server.svg)
+
+**담당자 메일**　[dlwnsgh7789@gmail.com](mailto:dlwnsgh7789@gmail.com)　·　[프로젝트 홈](../README.md)　·　[요구사항](../docs/requirements/README.md)
 
 기존 서버를 정비하고 AWS 이관의 비교 기준이 될 원본 목록과 운영 알림 수신 체계를 준비한다.
 

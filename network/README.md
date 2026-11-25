@@ -1,6 +1,8 @@
 # 네트워크·보안
 
-**담당 강민서 · PM** · [프로젝트 홈](../README.md) · [요구사항](../docs/requirements/README.md)
+![강민서 · PM · 네트워크 보안](../docs/images/role-network.svg)
+
+**담당자 메일**　[ehdanfqnd@naver.com](mailto:ehdanfqnd@naver.com)　·　[프로젝트 홈](../README.md)　·　[요구사항](../docs/requirements/README.md)
 
 본사와 지사 사이의 통신 경로, VLAN별 허용 정책과 장애 시 우회 동작을 관리한다.
 

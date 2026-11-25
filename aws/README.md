@@ -1,6 +1,8 @@
 # AWS 클라우드
 
-**담당 이우빈** · [프로젝트 홈](../README.md) · [요구사항](../docs/requirements/README.md)
+![이우빈 · AWS 클라우드 · 이관](../docs/images/role-aws.svg)
+
+**담당자 메일**　[woobin6318@gmail.com](mailto:woobin6318@gmail.com)　·　[프로젝트 홈](../README.md)　·　[요구사항](../docs/requirements/README.md)
 
 두 가용 영역의 서비스 운영 기반을 만들고 데이터 이관과 장애 복구를 검증한다.
 

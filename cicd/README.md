@@ -1,6 +1,8 @@
 # CI/CD · 블루그린 배포
 
-**담당 강찬영** · [프로젝트 홈](../README.md) · [요구사항](../docs/requirements/README.md)
+![강찬영 · CI/CD · 블루그린 배포](../docs/images/role-cicd.svg)
+
+**담당자 메일**　[chanyoungcplus@gmail.com](mailto:chanyoungcplus@gmail.com)　·　[프로젝트 홈](../README.md)　·　[요구사항](../docs/requirements/README.md)
 
 커밋 하나가 어떤 이미지로 배포됐는지 추적하고, 후보 기능 검사와 운영 전환·자동 복귀를 Jenkins로 연결한다.
 

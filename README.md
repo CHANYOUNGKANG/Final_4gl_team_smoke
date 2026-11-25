@@ -16,12 +16,12 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11–12　·　설
 
 ## 팀 워크스페이스
 
-담당자 카드를 누르면 해당 파트의 작업 폴더와 연동 안내가 열린다.
+담당자 카드는 작업 폴더로, 카드 아래 이메일은 해당 팀원에게 보내는 새 메일로 연결된다.
 
 | 온프레미스 | AWS · 배포 |
-| :--- | :--- |
-| [![강민서 · PM · 네트워크 보안](docs/images/role-network.svg)](network/) | [![이우빈 · AWS 클라우드 · 이관](docs/images/role-aws.svg)](aws/) |
-| [![이준호 · Linux 서버 · 운영 메일](docs/images/role-server.svg)](server/) | [![강찬영 · CI/CD · 블루그린 배포](docs/images/role-cicd.svg)](cicd/) |
+| :---: | :---: |
+| [![강민서 · PM · 네트워크 보안](docs/images/role-network.svg)](network/)<br>✉  [ehdanfqnd@naver.com](mailto:ehdanfqnd@naver.com) | [![이우빈 · AWS 클라우드 · 이관](docs/images/role-aws.svg)](aws/)<br>✉  [woobin6318@gmail.com](mailto:woobin6318@gmail.com) |
+| [![이준호 · Linux 서버 · 운영 메일](docs/images/role-server.svg)](server/)<br>✉  [dlwnsgh7789@gmail.com](mailto:dlwnsgh7789@gmail.com) | [![강찬영 · CI/CD · 블루그린 배포](docs/images/role-cicd.svg)](cicd/)<br>✉  [chanyoungcplus@gmail.com](mailto:chanyoungcplus@gmail.com) |
 
 ## 시스템 아키텍처
 
