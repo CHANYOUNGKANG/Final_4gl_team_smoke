@@ -28,15 +28,15 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11.21 – 12.09
 <!-- smoke-activity:start -->
 | 최근 커밋 | 작성자 | 시각 (KST) |
 | --- | --- | ---: |
+| [`51e1e53`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/51e1e53ceaeae4ef8d91597dcdeedc5c3e08fe10) docs: 시스템 아키텍처 구성도 최신화 (#6) | CHANYOUNGKANG | 11/25 22:00 |
 | [`2aabb74`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/2aabb7438a4c7843aa1516dec00d6178ad9f0b68) docs: IP 대역과 통신 허용표 반영 (#4) | CHANYOUNGKANG | 11/25 21:46 |
 | [`5756a52`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/5756a5291dfc280f878f539b2a7a5b842afd94fc) chore: 보안 자동 검사와 AI 작업 규칙 추가 (#2) | CHANYOUNGKANG | 11/25 21:44 |
-| [`d7852e5`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/d7852e5597d8909b5334e815f8bf57fd2897b47f) docs: add team security rules for public project materials | CHANYOUNGKANG | 11/25 21:12 |
 
 **열린 이슈·PR**　[#1 팀 구축 진행률 · 구현 근거와 시연 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)
 
-**작업 브랜치 8개**　[`aws/woobin-day1-jenkins-ec2`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/aws/woobin-day1-jenkins-ec2)　[`chore/security-automation`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/chore/security-automation)　[`cicd/chanyoung-day1-first-build`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/chanyoung-day1-first-build)　[`cicd/worklog-jenkins-bootstrap`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/worklog-jenkins-bootstrap)　[`dependabot/github_actions/actions/checkout-7`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/dependabot/github_actions/actions/checkout-7)　[`docs/ip-plan`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/docs/ip-plan)　[`network/minseo-day1-topology`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/network/minseo-day1-topology)　[`server/junho-day1-app-handoff`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/server/junho-day1-app-handoff)
+**작업 브랜치 9개**　[`aws/woobin-day1-jenkins-ec2`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/aws/woobin-day1-jenkins-ec2)　[`chore/security-automation`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/chore/security-automation)　[`cicd/chanyoung-day1-first-build`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/chanyoung-day1-first-build)　[`cicd/worklog-jenkins-bootstrap`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/worklog-jenkins-bootstrap)　[`dependabot/github_actions/actions/checkout-7`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/dependabot/github_actions/actions/checkout-7)　[`docs/architecture-update`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/docs/architecture-update)　[`docs/ip-plan`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/docs/ip-plan)　[`network/minseo-day1-topology`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/network/minseo-day1-topology)　[`server/junho-day1-app-handoff`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/server/junho-day1-app-handoff)
 
-<sub>11/25 21:47 KST 기준 · main push와 매일 00:05에 갱신</sub>
+<sub>11/25 22:00 KST 기준 · main push와 매일 00:05에 갱신</sub>
 <!-- smoke-activity:end -->
 
 <details>
