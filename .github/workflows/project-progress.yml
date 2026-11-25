@@ -3,7 +3,7 @@ on:
   push:
   workflow_dispatch:
   schedule:
-    - cron: '5 15 * * *' # 매일 00:05 KST · D-day와 오늘 선을 새 날짜로 옮긴다
+    - cron: '12 15 * * *' # 매일 00:12 KST · D-day와 오늘 선을 새 날짜로 옮긴다 (정시 혼잡 회피)
 permissions:
   contents: read
 jobs:

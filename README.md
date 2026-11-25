@@ -19,7 +19,7 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11.21 – 12.09
 
 ## 지금 우리 팀
 
-> 아래 두 패널과 활동 표는 **main에 push할 때마다, 그리고 매일 00:05(KST)** GitHub Actions가 다시 그린다. 손으로 고치지 않는다.
+> 아래 두 패널과 활동 표는 **main에 push할 때마다, 그리고 매일 00:12(KST) 무렵** GitHub Actions가 다시 그린다. 일정 막대는 [수행계획서 일정 표](docs/delivery/README.md#수행계획서-일정--2026년)를 그대로 읽으므로, 일정이 바뀌면 그 표만 고친다.
 
 [![파트별 구축 진행률](docs/images/live/progress.svg)](docs/progress/README.md)
 
