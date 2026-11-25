@@ -1,0 +1,24 @@
+# gitleaks 기본 규칙 + 팀 규칙
+[extend]
+useDefault = true
+
+[[rules]]
+id = "jenkins-api-token-assignment"
+description = "Jenkins API 토큰 직접 기재"
+regex = '''(?i)jenkins[_-]?(api[_-]?)?token\s*[:=]\s*['"]?[0-9a-f]{32,34}'''
+keywords = ["jenkins"]
+
+[[rules]]
+id = "ipsec-psk-literal"
+description = "IPsec·VPN 사전 공유 키 원문"
+regex = '''(?i)(pre-shared-key|ikev[12] pre-shared-key|psk)\s+[^\s<*]{6,}'''
+keywords = ["pre-shared-key", "psk"]
+
+[allowlist]
+description = "예시·양식과 바이너리 원본 자료"
+paths = [
+  '''docs/originals/''',
+  '''docs/images/''',
+  '''\.example$''',
+]
+regexes = ['''<[^>]+>''', '''example''', '''EXAMPLE''']
