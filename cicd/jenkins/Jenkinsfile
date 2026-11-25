@@ -1,0 +1,48 @@
+// CICD1 · GitHub push → Jenkins 테스트 → WAR 생성
+// 비밀값은 Jenkins Credentials, 주소·계정 값은 Jenkins 전역 환경 변수로 주입한다 (cicd/jenkins/README.md).
+// 이후 단계(Docker·ECR, Green 배포, 전환·롤백)는 CICD2~4 PR에서 이어 붙인다.
+pipeline {
+  agent any
+  options {
+    timestamps()
+    disableConcurrentBuilds()
+    buildDiscarder(logRotator(numToKeepStr: '20'))
+  }
+  triggers { githubPush() }
+  environment {
+    // pom.xml 위치. 이준호 앱 인계(app/README.md) 후 확정
+    APP_DIR = "${env.APP_DIR ?: 'app'}"
+  }
+  stages {
+    stage('Source') {
+      steps {
+        checkout scm
+        sh 'git log -1 --format="commit=%H%nsubject=%s"'
+      }
+    }
+    stage('Test + WAR') {
+      steps {
+        dir(env.APP_DIR) {
+          sh 'mvn -B -ntp clean package'
+        }
+      }
+      post {
+        always {
+          junit allowEmptyResults: true, testResults: "${env.APP_DIR}/target/surefire-reports/*.xml"
+        }
+      }
+    }
+    stage('Record') {
+      steps {
+        dir(env.APP_DIR) {
+          sh 'ls -l target/*.war && sha256sum target/*.war | tee target/war.sha256'
+          archiveArtifacts artifacts: 'target/*.war, target/war.sha256', fingerprint: true
+        }
+      }
+    }
+  }
+  post {
+    success { echo "CICD1 OK · build=${env.BUILD_NUMBER} commit=${env.GIT_COMMIT}" }
+    failure { echo "CICD1 FAIL · build=${env.BUILD_NUMBER} commit=${env.GIT_COMMIT}" }
+  }
+}

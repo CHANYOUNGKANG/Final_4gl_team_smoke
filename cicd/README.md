@@ -12,7 +12,11 @@
 | [docker/](docker/) | WAR 실행 이미지의 Dockerfile·빌드 컨텍스트 |
 | [kubernetes/](kubernetes/) | Blue·Green Deployment, Service, readiness probe |
 | [ansible/](ansible/) | 후보 배포·검증 및 트래픽 전환 호출 플레이북 |
-| [verification/](verification/) | 전환 전 차단·전환 후 자동 롤백 측정 결과 |
+| [verification/](verification/) | 빌드·배포 로그, 전환 전 차단·자동 롤백 측정 결과 |
+| [evidence/](evidence/) | 가린 캡처와 “무엇을 증명하는지” 색인 |
+| [config/](config/) | 환경 값 예시(`*.example`) — 실제 값은 Jenkins 전역 변수 |
+
+**작업일지** [WORKLOG.md](WORKLOG.md) · **Jenkins 설정** [jenkins/README.md](jenkins/README.md)
 
 ## 작업 체크리스트
 
