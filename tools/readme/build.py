@@ -172,13 +172,9 @@ def gh(path):
 
 
 def ago(ts, now):
-    t = datetime.fromisoformat(ts.replace("Z", "+00:00"))
-    s = (now - t).total_seconds()
-    if s < 3600:
-        return f"{max(1, int(s // 60))}분 전"
-    if s < 86400:
-        return f"{int(s // 3600)}시간 전"
-    return f"{int(s // 86400)}일 전"
+    # README는 다음 갱신까지 그대로 남으므로 상대 시각 대신 KST 시각을 적는다.
+    t = datetime.fromisoformat(ts.replace("Z", "+00:00")).astimezone(KST)
+    return f"{t.month}/{t.day} {t:%H:%M}"
 
 
 def cell(s):
@@ -192,7 +188,7 @@ def activity_md(now):
     branches = gh(f"repos/{REPO}/branches?per_page=50") or []
     if not (commits or issues or branches):
         return None
-    lines = ["| 최근 커밋 | 작성자 | 시각 |", "| --- | --- | ---: |"]
+    lines = ["| 최근 커밋 | 작성자 | 시각 (KST) |", "| --- | --- | ---: |"]
     for c in commits:
         m0 = c["commit"]["message"].split("\n")[0]
         msg = m0 if len(m0) <= 72 else m0[:70] + "…"
@@ -207,6 +203,7 @@ def activity_md(now):
         lines[-1] += "없음"
     work = [b["name"] for b in branches if b["name"] != "main"]
     lines += ["", f"**작업 브랜치 {len(work)}개**　" + ("　".join(f"[`{cell(n)}`]({base}/tree/{n})" for n in work[:12]) if work else "아직 없음 · 아래 ‘작업 시작하기’ 참고")]
+    lines += ["", f"<sub>{now.month}/{now.day} {now:%H:%M} KST 기준 · main push와 매일 00:05에 갱신</sub>"]
     return "\n".join(lines)
 
 
