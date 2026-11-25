@@ -1,0 +1,15 @@
+# 로컬 설정과 인증 파일
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# 빌드 산출물과 편집기 설정
+target/
+.idea/
+.vscode/
+.DS_Store
