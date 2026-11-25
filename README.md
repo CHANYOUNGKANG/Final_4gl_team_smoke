@@ -28,29 +28,29 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11.21 – 12.09
 <!-- smoke-activity:start -->
 | 최근 커밋 | 작성자 | 시각 (KST) |
 | --- | --- | ---: |
+| [`4486023`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/4486023e8d8e0f7f5b92812bc278facce208a5be) Merge pull request #3 from CHANYOUNGKANG/cicd/worklog-jenkins-bootstrap | CHANYOUNGKANG | 11/26 02:57 |
+| [`3746251`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/3746251e668bef6cba45dcace46882e13db05cca) cicd: 체크리스트를 Poll SCM 기준으로 정리하고 작업일지 갱신 | claude | 11/25 22:12 |
 | [`51e1e53`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/51e1e53ceaeae4ef8d91597dcdeedc5c3e08fe10) docs: 시스템 아키텍처 구성도 최신화 (#6) | CHANYOUNGKANG | 11/25 22:00 |
-| [`2aabb74`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/2aabb7438a4c7843aa1516dec00d6178ad9f0b68) docs: IP 대역과 통신 허용표 반영 (#4) | CHANYOUNGKANG | 11/25 21:46 |
-| [`5756a52`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/5756a5291dfc280f878f539b2a7a5b842afd94fc) chore: 보안 자동 검사와 AI 작업 규칙 추가 (#2) | CHANYOUNGKANG | 11/25 21:44 |
 
 **열린 이슈·PR**　[#1 팀 구축 진행률 · 구현 근거와 시연 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)
 
 **작업 브랜치 10개**　[`aws/woobin-day1-jenkins-ec2`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/aws/woobin-day1-jenkins-ec2)　[`chore/security-automation`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/chore/security-automation)　[`cicd/chanyoung-day1-first-build`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/chanyoung-day1-first-build)　[`cicd/worklog-jenkins-bootstrap`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/worklog-jenkins-bootstrap)　[`dependabot/github_actions/actions/checkout-7`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/dependabot/github_actions/actions/checkout-7)　[`docs/architecture-automation`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/docs/architecture-automation)　[`docs/architecture-update`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/docs/architecture-update)　[`docs/ip-plan`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/docs/ip-plan)　[`network/minseo-day1-topology`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/network/minseo-day1-topology)　[`server/junho-day1-app-handoff`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/server/junho-day1-app-handoff)
 
-<sub>11/26 00:10 KST 기준 · main push와 매일 00:05에 갱신</sub>
+<sub>11/26 02:58 KST 기준 · main push와 매일 00:05에 갱신</sub>
 <!-- smoke-activity:end -->
 
 <details>
 <summary><b>점수표 텍스트로 보기</b> · 산정 기준과 근거 파일</summary>
 
 <!-- smoke-progress:start -->
-**전체 구축 진행률 0.0%**　·　0/32점
+**전체 구축 진행률 3.1%**　·　1/32점
 
 | 파트 | 점수 | 진행률 |
 | --- | ---: | ---: |
 | 강민서 · 네트워크 | 0/8 | 0.0% |
 | 이준호 · 서버 | 0/8 | 0.0% |
 | 이우빈 · AWS | 0/8 | 0.0% |
-| 강찬영 · CI/CD | 0/8 | 0.0% |
+| 강찬영 · CI/CD | 1/8 | 12.5% |
 <!-- smoke-progress:end -->
 
 파트마다 이정표 4개, 이정표별로 **구현 근거 1점 + 실행 근거 1점**. 업무 브랜치를 push하면 Actions 실행 요약에 그 브랜치 점수가 나오고, main 점수는 위 패널과 [이슈 #1](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)에 모인다. [산정 기준](docs/progress/README.md) · [브랜치별 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/actions/workflows/project-progress.yml)
