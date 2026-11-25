@@ -151,16 +151,18 @@ git fetch origin && git switch network/minseo-day1-topology   # 내 브랜치 �
 
 ## 시스템 아키텍처
 
-[![본사·지사 네트워크, Linux 서버, AWS 이관 경로와 Jenkins 블루그린 배포 파이프라인](docs/images/architecture.png)](docs/architecture/README.md)
+[![㈜스모크 시스템 아키텍처: GNS3 본사·지사 네트워크, Linux 서버 VM 3대, AWS VPC 3계층 서브넷, CI/CD 블루그린 파이프라인](docs/images/architecture.svg)](docs/architecture/README.md)
 
-**주소 계획**　본사 `10.0.0.0/16` · 지사 `10.1.0.0/16` · AWS VPC `10.100.0.0/16` · GNS3 공인 역할 `198.51.100.0/24`　→ [IP 대역 · 통신 허용표](docs/architecture/ip-plan.md)
+**주소 계획**　본사 `10.0.0.0/16` · 지사 `10.1.0.0/16` · AWS VPC `10.100.0.0/16` · GNS3 공인 역할 `198.51.100.0/24`　→ [IP 대역 · 통신 허용표](docs/architecture/ip-plan.md) · [구성도 생성 스크립트](tools/readme/architecture.py) · [이전 설계 화면](docs/images/architecture.png)
 
-| 경로 | 서비스가 동작하는 방식 |
-| --- | --- |
-| **공지 조회** | HTTPS 요청은 ALB를 거쳐 운영 중인 EKS 버전으로 들어간다. 첨부파일은 CloudFront가 비공개 S3에서 가져와 제공한다. |
-| **데이터 이관** | MariaDB 게시글은 RDS로, 첨부파일은 S3로 옮긴다. 전후 게시글 건수·대표 본문·파일 해시를 원본과 대조한다. |
-| **배포와 복귀** | Jenkins가 테스트와 WAR 빌드를 실행한다. 커밋 태그를 붙인 Docker 이미지를 ECR에 올린 뒤 Ansible로 Green에 배포하고, 공지 작성·조회에 성공하면 ALB를 전환한다. |
-| **운영 알림** | Snort 탐지, 백업 결과, CloudWatch 장애 경보, Jenkins 배포 결과를 운영 메일함에서 확인한다. |
+| # | 흐름 | 서비스가 동작하는 방식 |
+| :---: | --- | --- |
+| 1 | **사용자 요청** | 외부 사용자 → Route 53 → ALB(HTTPS 443, 퍼블릭 `10.100.1·2.0/24`) → 운영 중인 EKS 버전의 Pod `:8080` → RDS·Redis. 첨부파일은 CloudFront가 비공개 S3에서 제공한다. |
+| 2 | **데이터 이관** | 데이터 서버 `10.0.40.10`의 MariaDB 덤프를 Bastion(실습 PC IP/32만 SSH) 경유로 RDS에 복원하고, 첨부는 `aws s3 sync`로 S3에 올린다. 전후 건수·대표 본문·SHA-256을 대조한 뒤 주소를 전환한다. |
+| 3 | **무중단 배포** | Jenkins(퍼블릭, Poll SCM)가 테스트·WAR 빌드 → 커밋 태그 이미지를 ECR에 push → Ansible EC2(프라이빗 앱)가 Green 배포 → 공지 작성·조회 성공 시 ALB 전환, 실패 시 Blue로 롤백. |
+| 4 | **지사 접근 통제** | 지사 PC `10.1.10.100` → pfSense → IPsec → ASA. 서비스망 VLAN 30만 허용하고 관리망 VLAN 20·서버팜 VLAN 40은 차단한다. |
+| 5 | **운영 알림** | Snort·백업은 메일 서버 `10.0.30.10:25`로 바로, CloudWatch·Jenkins는 SNS → SQS에 쌓이면 메일 서버가 HTTPS로 가져온다. 들어오는 포트는 열지 않는다. |
+| 6 | **모의해킹 점검** | Kali `203.0.113.50` → ISP → Edge → ASA(80·443만, NAT ② `.140 → 10.0.30.10`). Core SW-2가 VLAN 30을 SPAN으로 Snort에 복사해 탐지하고, ASA `shun`으로 차단 후 재공격 실패를 확인한다. |
 
 ## 기술 스택과 파트 간 인계
 
