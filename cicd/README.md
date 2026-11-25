@@ -12,13 +12,17 @@
 | [docker/](docker/) | WAR 실행 이미지의 Dockerfile·빌드 컨텍스트 |
 | [kubernetes/](kubernetes/) | Blue·Green Deployment, Service, readiness probe |
 | [ansible/](ansible/) | 후보 배포·검증 및 트래픽 전환 호출 플레이북 |
-| [verification/](verification/) | 전환 전 차단·전환 후 자동 롤백 측정 결과 |
+| [verification/](verification/) | 빌드·배포 로그, 전환 전 차단·자동 롤백 측정 결과 |
+| [evidence/](evidence/) | 가린 캡처와 “무엇을 증명하는지” 색인 |
+| [config/](config/) | 환경 값 예시(`*.example`) — 실제 값은 Jenkins 전역 변수 |
+
+**작업일지** [WORKLOG.md](WORKLOG.md) · **Jenkins 설정** [jenkins/README.md](jenkins/README.md)
 
 ## 작업 체크리스트
 
-- [ ] 이준호에게 [앱 빌드 정보](../app/README.md)를 받고 이우빈과 Jenkins EC2 접속·Webhook 경로를 확인한다.
+- [ ] 이준호에게 [앱 빌드 정보](../app/README.md)를 받고 이우빈과 Jenkins EC2(퍼블릭 서브넷)·SG(실습 PC IP/32)·IAM 역할을 확인한다.
 - [ ] EC2의 Jenkins에 팀 저장소를 연결하고 Maven 테스트와 WAR 빌드를 수동으로 성공시킨다.
-- [ ] Webhook 연결 후 테스트 커밋을 push한다. Jenkins 로그의 SHA, 테스트 실행 결과, WAR 경로를 남긴다.
+- [ ] Poll SCM 자동 빌드([ADR-0004](../docs/decisions/0004-jenkins-poll-scm.md)) 확인 후 테스트 커밋을 push한다. Jenkins 로그의 SHA, 테스트 실행 결과, WAR 경로를 남긴다.
 - [ ] WAR를 Docker 이미지로 만들어 실행·조회한 뒤 커밋 SHA 태그로 ECR에 올린다.
 - [ ] [Kubernetes](kubernetes/)에서 Blue·Green Deployment, Service, readiness probe와 Green 전용 검사 경로를 준비한다.
 - [ ] [Ansible](ansible/)로 Green을 배포하고 게시글 작성·조회를 검사한다. 실패하면 Blue가 운영 요청을 계속 받는지 확인한다.
