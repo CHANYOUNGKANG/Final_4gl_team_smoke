@@ -14,6 +14,19 @@
 | [ansible/](ansible/) | 후보 배포·검증 및 트래픽 전환 호출 플레이북 |
 | [verification/](verification/) | 전환 전 차단·전환 후 자동 롤백 측정 결과 |
 
+## 작업 체크리스트
+
+- [ ] 이준호에게 [앱 빌드 정보](../app/README.md)를 받고 이우빈과 Jenkins EC2 접속·Webhook 경로를 확인한다.
+- [ ] EC2의 Jenkins에 팀 저장소를 연결하고 Maven 테스트와 WAR 빌드를 수동으로 성공시킨다.
+- [ ] Webhook 연결 후 테스트 커밋을 push한다. Jenkins 로그의 SHA, 테스트 실행 결과, WAR 경로를 남긴다.
+- [ ] WAR를 Docker 이미지로 만들어 실행·조회한 뒤 커밋 SHA 태그로 ECR에 올린다.
+- [ ] [Kubernetes](kubernetes/)에서 Blue·Green Deployment, Service, readiness probe와 Green 전용 검사 경로를 준비한다.
+- [ ] [Ansible](ansible/)로 Green을 배포하고 게시글 작성·조회를 검사한다. 실패하면 Blue가 운영 요청을 계속 받는지 확인한다.
+- [ ] 검사 통과 시 이우빈의 ALB 전환 절차를 Jenkins에서 호출한다. 운영 주소 검사 실패 시 Blue 자동 복귀와 이전 버전 응답을 확인한다.
+- [ ] Jenkins 결과를 SNS로 보내고 운영 메일 수신을 이준호와 확인한다. [검증 기록](verification/)에 연속 조회 실패 수와 복귀 시간을 남긴다.
+
+[첫날 작업표와 파트 간 인계](../docs/delivery/README.md#첫날-작업표) · [시연 결과 기록](../docs/delivery/README.md#결과-기록표)
+
 ## 팀 연동
 
 첫 연동은 GitHub push → Jenkins → Maven 테스트·WAR 생성이다. 이후 ECR 푸시, Green 배포, 기능 검사, ALB 전환과 결과 알림을 연결한다.

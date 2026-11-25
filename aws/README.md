@@ -12,6 +12,15 @@
 | [migration/](migration/) | RDS·S3 이관 절차와 원본 대조 결과 |
 | [operations/](operations/) | 전환·복귀 스크립트, 복구 시간과 실제 비용 기록 |
 
+## 작업 체크리스트
+
+- [ ] 예산·가동 시간을 합의하고 Jenkins EC2 접근 경로와 Webhook 수신 경로를 강찬영에게 전달한다.
+- [ ] 두 AZ의 EKS와 HTTPS ALB를 준비하고 ECR 위치·대상 그룹·전환 및 복귀 절차를 강찬영과 대조한다.
+- [ ] 원본 게시글과 첨부파일을 RDS·S3로 이관하고 이준호와 [이관 결과](migration/)를 검증한다.
+- [ ] 워커 장애 영향·ASG 교체 시간, 백업 복원과 블루그린 중복 운영 비용을 [운영 기록](operations/)에 남긴다.
+
+[첫날 작업표와 파트 간 인계](../docs/delivery/README.md#첫날-작업표) · [시연 결과 기록](../docs/delivery/README.md#결과-기록표)
+
 ## 팀 연동
 
 이준호와 이관을 대조하고, 강찬영과 ECR 저장소·EKS 대상·ALB 전환 및 복귀 절차를 연결한다.

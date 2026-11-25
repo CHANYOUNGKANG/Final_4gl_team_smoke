@@ -6,6 +6,8 @@
 
 KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11–12　·　설계 및 구축 준비
 
+[![첫날 작업표](docs/images/nav-start.svg)](docs/delivery/README.md#첫날-작업표) [![작업 이슈 열기](docs/images/nav-task.svg)](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/new?template=team-task.md) [![시연 결과 기록](docs/images/nav-results.svg)](docs/delivery/README.md#결과-기록표)
+
 **프로젝트 문서**　 [아키텍처](docs/architecture/README.md)　/　[요구사항 명세서](docs/requirements/README.md)　/　[일정과 검증 계획](docs/delivery/README.md)　/　[수행계획서 원본](docs/originals/project-plan.docx)
 
 ## 프로젝트 소개
@@ -16,7 +18,7 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11–12　·　설
 
 ## 팀 워크스페이스
 
-담당자 카드는 작업 폴더로, 카드 아래 이메일은 해당 팀원에게 보내는 새 메일로 연결된다.
+담당자 카드를 누르면 파트별 체크리스트가 열린다. 공지 웹앱을 넘기거나 빌드할 때는 [공용 앱 폴더](app/)에서 소스와 실행 정보를 확인한다.
 
 | 온프레미스 | AWS · 배포 |
 | :---: | :---: |
