@@ -1,9 +1,15 @@
 name: Team progress
-on: [push, workflow_dispatch]
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: '5 15 * * *' # 매일 00:05 KST · D-day와 오늘 선을 새 날짜로 옮긴다
 permissions:
   contents: read
 jobs:
   score:
+    # 업무 브랜치 push마다 그 브랜치 점수를 실행 요약에 보여 준다.
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -12,20 +18,11 @@ jobs:
       - name: Measure repository evidence
         env:
           COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}
-        run: |
-          mkdir -p "$RUNNER_TEMP/progress"
-          python3 tools/progress/report.py --base-url "$COMMIT_URL" --update-readme > "$RUNNER_TEMP/progress/report.md"
-          cp README.md "$RUNNER_TEMP/progress/README.md"
-          cat "$RUNNER_TEMP/progress/report.md" >> "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/main'
-        with:
-          name: progress
-          path: ${{ runner.temp }}/progress/
-          retention-days: 1
+        run: python3 tools/progress/report.py --base-url "$COMMIT_URL" >> "$GITHUB_STEP_SUMMARY"
+
   publish:
+    # main의 최신 상태로 README 라이브 패널과 이슈 #1을 다시 그린다.
     if: github.ref == 'refs/heads/main'
-    needs: score
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -35,28 +32,34 @@ jobs:
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
         with:
-          name: progress
-          path: ${{ runner.temp }}/progress
-      - name: Publish the latest main result
+          ref: main
+      - name: Build progress report and live panels
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/blob/main
+        run: |
+          mkdir -p "$RUNNER_TEMP/progress"
+          python3 tools/progress/report.py --base-url "$COMMIT_URL" --update-readme > "$RUNNER_TEMP/progress/report.md"
+          python3 tools/readme/build.py
+          cat "$RUNNER_TEMP/progress/report.md" >> "$GITHUB_STEP_SUMMARY"
+      - name: Update shared progress issue
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          current=$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)
-          if [ "$current" != "$GITHUB_SHA" ]; then exit 0; fi
           cd "$RUNNER_TEMP/progress"
           echo >> report.md
           echo "[분석 커밋]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/commit/$GITHUB_SHA) · [실행 기록]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID) · [산정 기준]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/blob/main/docs/progress/README.md)" >> report.md
-          gh api --method PATCH "repos/$GITHUB_REPOSITORY/issues/1" -F body=@report.md --silent
-          cd "$GITHUB_WORKSPACE"
-          cp "$RUNNER_TEMP/progress/README.md" README.md
-          if git diff --quiet -- README.md; then exit 0; fi
+          gh api --method PATCH "repos/$GITHUB_REPOSITORY/issues/1" -F body=@report.md --silent || echo "이슈 #1 갱신 실패 (이슈가 없거나 권한 부족)"
+      - name: Commit README and panels
+        run: |
+          git add README.md docs/images/live
+          if git diff --cached --quiet; then echo "변경 없음"; exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add README.md
-          git commit -m 'docs: refresh team progress'
-          if ! git push origin HEAD:main; then
-            latest=$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)
-            if [ "$latest" = "$GITHUB_SHA" ]; then exit 1; fi
-          fi
+          git commit -m 'docs: refresh live README panels'
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            sleep 5
+          done
+          exit 1

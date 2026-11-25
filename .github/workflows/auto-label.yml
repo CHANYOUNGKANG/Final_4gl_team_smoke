@@ -1,0 +1,33 @@
+name: Auto label
+on:
+  issues:
+    types: [opened, edited]
+  pull_request_target:
+    types: [opened, synchronize]
+permissions:
+  issues: write
+  pull-requests: write
+jobs:
+  part:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Label by part
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUM: ${{ github.event.issue.number || github.event.pull_request.number }}
+          BODY: ${{ github.event.issue.body }}
+          IS_PR: ${{ github.event.pull_request.number != '' }}
+        run: |
+          add() { gh issue edit "$NUM" --repo "$GITHUB_REPOSITORY" --add-label "$1" >/dev/null 2>&1 || true; }
+          if [ "$IS_PR" = "true" ]; then
+            files=$(gh pr view "$NUM" --repo "$GITHUB_REPOSITORY" --json files --jq '.files[].path')
+            grep -q '^network/' <<<"$files" && add 네트워크
+            grep -qE '^(server|app)/' <<<"$files" && add 서버
+            grep -q '^aws/' <<<"$files" && add AWS
+            grep -q '^cicd/' <<<"$files" && add CI/CD
+          else
+            grep -q '네트워크' <<<"$BODY" && add 네트워크
+            grep -q '서버 · 이준호' <<<"$BODY" && add 서버
+            grep -q 'AWS · 이우빈' <<<"$BODY" && add AWS
+            grep -q 'CI/CD · 강찬영' <<<"$BODY" && add CI/CD
+          fi

@@ -1,0 +1,10 @@
+[
+  {"name": "네트워크", "color": "2b4fbf", "description": "강민서 · network/"},
+  {"name": "서버", "color": "0f7a5a", "description": "이준호 · server/ · app/"},
+  {"name": "AWS", "color": "c45a1c", "description": "이우빈 · aws/"},
+  {"name": "CI/CD", "color": "7b4a9e", "description": "강찬영 · cicd/"},
+  {"name": "작업", "color": "cfd8e3", "description": "파트별 작업 단위"},
+  {"name": "인계", "color": "80e4cb", "description": "다른 파트에 값·파일 전달"},
+  {"name": "막힘", "color": "b4231b", "description": "진행이 막혔거나 장애"},
+  {"name": "시연기록", "color": "d99a1c", "description": "결과 기록표 측정값"}
+]

@@ -1,0 +1,6 @@
+# 출발점 · cicd/docker/Dockerfile 로 복사한다.
+# Tomcat 버전은 app/README.md 인계표의 값과 맞춘다 (예: 9.0-jdk11).
+FROM tomcat:<버전>
+RUN rm -rf /usr/local/tomcat/webapps/*
+COPY app/target/*.war /usr/local/tomcat/webapps/ROOT.war
+EXPOSE 8080

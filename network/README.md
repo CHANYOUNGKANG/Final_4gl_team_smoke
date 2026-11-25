@@ -19,7 +19,7 @@
 - [ ] 회선·게이트웨이·방화벽 절체 전후 통신과 복구 시간을 [검증 기록](verification/)에 남긴다.
 - [ ] 격리망에서 수집한 IDS·방화벽 기록을 정책과 대조하고 운영 메일 수신을 이준호와 확인한다.
 
-[첫날 작업표와 파트 간 인계](../docs/delivery/README.md#첫날-작업표) · [시연 결과 기록](../docs/delivery/README.md#결과-기록표)
+[첫날 작업표와 파트 간 인계](../docs/delivery/README.md#첫날-작업표) · [시연 결과 기록](../docs/delivery/README.md#결과-기록표) · [작업 양식](../docs/templates/README.md) · [작업 이슈 열기](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/new?template=team-task.yml) · [인계 요청](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/new?template=handoff.yml)
 
 ## 팀 연동
 

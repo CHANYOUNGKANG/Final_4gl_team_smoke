@@ -1,0 +1,44 @@
+// 출발점 · cicd/jenkins/Jenkinsfile 로 복사해서 쓴다.
+// <...> 는 이우빈·이준호에게 받은 실제 값으로 바꾼다. 비밀 값은 Jenkins Credentials에 둔다.
+pipeline {
+  agent any
+  options { timestamps(); disableConcurrentBuilds() }
+  environment {
+    AWS_REGION = 'ap-northeast-2'
+    ECR_REPO   = '<계정ID>.dkr.ecr.ap-northeast-2.amazonaws.com/notice'
+    TAG        = "${env.GIT_COMMIT.take(7)}"
+  }
+  stages {
+    stage('Test · WAR') {
+      steps {
+        dir('app') { sh 'mvn -B verify' }   // 테스트 후 target/*.war 생성
+        archiveArtifacts artifacts: 'app/target/*.war', fingerprint: true
+      }
+    }
+    stage('Image → ECR') {
+      steps {
+        sh '''
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${ECR_REPO%/*}
+          docker build -t $ECR_REPO:$TAG -f cicd/docker/Dockerfile .
+          docker push $ECR_REPO:$TAG
+        '''
+      }
+    }
+    stage('Green 배포') {
+      steps { sh 'ansible-playbook cicd/ansible/deploy-green.yml -e image=$ECR_REPO:$TAG' }
+    }
+    stage('Green 검사') {
+      steps { sh 'ansible-playbook cicd/ansible/verify-green.yml' }   // 실패하면 여기서 멈추고 Blue 유지
+    }
+    stage('ALB 전환 · 관찰') {
+      steps {
+        sh 'aws/operations/switch-to.sh green'                        // 이우빈 전환 스크립트
+        sh 'ansible-playbook cicd/ansible/verify-prod.yml'            // 운영 주소 재검사
+      }
+      post { failure { sh 'aws/operations/switch-to.sh blue' } }      // 자동 롤백
+    }
+  }
+  post {
+    always { echo "commit=${env.GIT_COMMIT} image=${env.ECR_REPO}:${env.TAG}" }
+  }
+}

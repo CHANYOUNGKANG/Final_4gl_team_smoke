@@ -1,0 +1,37 @@
+name: 인계 요청
+description: 다른 파트에서 값·파일·접속 정보를 받아야 할 때
+title: "[인계] "
+labels: ["인계"]
+body:
+  - type: dropdown
+    id: from
+    attributes:
+      label: 주는 사람
+      options: ["강민서 · 네트워크", "이준호 · 서버", "이우빈 · AWS", "강찬영 · CI/CD"]
+    validations: {required: true}
+  - type: dropdown
+    id: to
+    attributes:
+      label: 받는 사람
+      options: ["강민서 · 네트워크", "이준호 · 서버", "이우빈 · AWS", "강찬영 · CI/CD"]
+    validations: {required: true}
+  - type: textarea
+    id: items
+    attributes:
+      label: 필요한 항목
+      description: 비밀번호·키 원문은 적지 마세요. 위치와 이름만 적고 값은 따로 전달합니다.
+      value: |
+        | 항목 | 값 또는 파일 위치 |
+        | --- | --- |
+        |  |  |
+    validations: {required: true}
+  - type: textarea
+    id: check
+    attributes:
+      label: 받은 뒤 함께 대조할 것
+      placeholder: 예) 같은 커밋 SHA가 Jenkins 로그에 보이는지, 게시글 건수가 같은지
+  - type: input
+    id: by
+    attributes:
+      label: 필요한 시점
+      placeholder: 예) 11/26 오후 첫 빌드 전

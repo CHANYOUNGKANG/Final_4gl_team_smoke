@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 팀 구축 진행률 (이슈 #1)
+    url: https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1
+    about: 파트별 점수와 근거 파일은 여기서 확인합니다.
+  - name: 첫날 작업표 · 파트 간 인계
+    url: https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/blob/main/docs/delivery/README.md
+    about: 누가 누구에게 무엇을 넘기는지 먼저 확인합니다.

@@ -22,7 +22,7 @@
 | 후보 배포 | 이우빈 ↔ 강찬영 | ECR 위치, EKS 네임스페이스, Blue·Green 대상 그룹, Green 검사 경로, 전환·복귀 스크립트 |
 | 알림 통합 | 강민서·이우빈·강찬영 → 이준호 | 같은 테스트 건의 발생 시각·식별자와 운영 메일함 수신 기록 |
 
-연동이 막히면 [작업 이슈](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/new?template=team-task.md)에 필요한 값과 완료 기준을 적고, 해결한 설정·로그 링크를 같은 이슈에 남긴다.
+연동이 막히면 [작업 이슈](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/new?template=team-task.yml)에 필요한 값과 완료 기준을 적고, 해결한 설정·로그 링크를 같은 이슈에 남긴다.
 
 ## 수행계획서 일정 · 2026년
 

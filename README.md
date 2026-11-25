@@ -1,16 +1,90 @@
 ![SMOKE. · KDT Final Project · 공지·자료실 인프라 전환](docs/images/team-smoke-cover.svg)
 
+<div align="center">
+
 # ㈜스모크 | 공지·자료실 인프라 전환
 
 **온프레미스 보안 인프라 재구축 및 AWS 마이그레이션을 통한 무중단 배포·장애 대응 체계 구축**
 
-KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11–12　·　프로젝트 설계·구축
+KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11.21 – 12.09
 
-[![첫날 작업표](docs/images/nav-start.svg)](docs/delivery/README.md#첫날-작업표) [![작업 이슈 열기](docs/images/nav-task.svg)](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/new?template=team-task.md) [![시연 결과 기록](docs/images/nav-results.svg)](docs/delivery/README.md#결과-기록표)
+[![Team progress](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/actions/workflows/project-progress.yml/badge.svg)](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/actions/workflows/project-progress.yml)
+[![last commit](https://img.shields.io/github/last-commit/CHANYOUNGKANG/Final_4gl_team_smoke?label=%EB%A7%88%EC%A7%80%EB%A7%89%20%EC%BB%A4%EB%B0%8B&color=6b50dc)](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commits/main)
+[![issues](https://img.shields.io/github/issues/CHANYOUNGKANG/Final_4gl_team_smoke?label=%EC%97%B4%EB%A6%B0%20%EC%9D%B4%EC%8A%88&color=80e4cb)](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues)
+[![PRs](https://img.shields.io/github/issues-pr/CHANYOUNGKANG/Final_4gl_team_smoke?label=%EC%97%B4%EB%A6%B0%20PR&color=a5b6ff)](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pulls)
 
-**팀 구축 진행률**　[최신 팀·파트별 %](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)　/　[브랜치별 분석 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/actions/workflows/project-progress.yml)　/　[산정 기준과 협업 방식](docs/progress/README.md)
+[![첫날 작업표](docs/images/nav-start.svg)](docs/delivery/README.md#첫날-작업표) [![작업 이슈 열기](docs/images/nav-task.svg)](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/new?template=team-task.yml) [![시연 결과 기록](docs/images/nav-results.svg)](docs/delivery/README.md#결과-기록표)
 
-**프로젝트 문서**　 [아키텍처](docs/architecture/README.md)　/　[요구사항 명세서](docs/requirements/README.md)　/　[일정과 검증 계획](docs/delivery/README.md)　/　[수행계획서 원본](docs/originals/project-plan.docx)
+</div>
+
+## 지금 우리 팀
+
+> 아래 두 패널과 활동 표는 **main에 push할 때마다, 그리고 매일 00:05(KST)** GitHub Actions가 다시 그린다. 손으로 고치지 않는다.
+
+[![파트별 구축 진행률](docs/images/live/progress.svg)](docs/progress/README.md)
+
+[![수행계획서 일정과 오늘 위치](docs/images/live/schedule.svg)](docs/delivery/README.md#수행계획서-일정--2026년)
+
+<!-- smoke-activity:start -->
+| 최근 커밋 | 작성자 | 시각 |
+| --- | --- | ---: |
+| [`390e4a3`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/390e4a3f416dce45e0901bc316b89dd3fe507ce2) docs: add interactive blue-green demo and evidence-based README scoreb… | CHANYOUNGKANG | 1시간 전 |
+| [`29e5f96`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/29e5f96813c736b520fed4e7f4b9172ddd5bca10) feat: push마다 팀 구축 진행률과 항목별 근거 집계 | CHANYOUNGKANG | 2시간 전 |
+| [`f8ef111`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/f8ef1119a1f7ea49124aec231c239fa85eef456b) docs: 팀 작업 바로가기, 파트별 실행 순서와 인계표 추가 | CHANYOUNGKANG | 2시간 전 |
+| [`25be020`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/25be020e4aef3c4057236f28b379b53ca74cdc44) design: 담당자별 연락처와 팀 워크스페이스 카드 정리 | CHANYOUNGKANG | 2시간 전 |
+| [`ce46e2a`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/ce46e2afe7e4240670950c24d6b8baaf3cbcc4bb) design: SMOKE 팀 배너와 담당자 카드로 프로젝트 홈 개편 | CHANYOUNGKANG | 2시간 전 |
+| [`9408fac`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/9408fac196ceeeb92de5271452e33a5b8a47815f) docs: 프로젝트 소개, 아키텍처·요구사항과 담당별 작업 공간 구성 | CHANYOUNGKANG | 2시간 전 |
+
+**열린 이슈·PR**　[#1 팀 구축 진행률 · 구현 근거와 시연 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)
+
+**작업 브랜치 0개**　아직 없음 · 아래 ‘작업 시작하기’ 참고
+<!-- smoke-activity:end -->
+
+<details>
+<summary><b>점수표 텍스트로 보기</b> · 산정 기준과 근거 파일</summary>
+
+<!-- smoke-progress:start -->
+**전체 구축 진행률 0.0%**　·　0/32점
+
+| 파트 | 점수 | 진행률 |
+| --- | ---: | ---: |
+| 강민서 · 네트워크 | 0/8 | 0.0% |
+| 이준호 · 서버 | 0/8 | 0.0% |
+| 이우빈 · AWS | 0/8 | 0.0% |
+| 강찬영 · CI/CD | 0/8 | 0.0% |
+<!-- smoke-progress:end -->
+
+파트마다 이정표 4개, 이정표별로 **구현 근거 1점 + 실행 근거 1점**. 업무 브랜치를 push하면 Actions 실행 요약에 그 브랜치 점수가 나오고, main 점수는 위 패널과 [이슈 #1](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)에 모인다. [산정 기준](docs/progress/README.md) · [브랜치별 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/actions/workflows/project-progress.yml)
+
+</details>
+
+## 작업 시작하기
+
+| 순서 | 할 일 | 바로가기 |
+| :---: | --- | --- |
+| 1 | 오늘 내 작업과 다음 파트에 넘길 결과 확인 | [첫날 작업표](docs/delivery/README.md#첫날-작업표) · [일일 기록](docs/daily/) |
+| 2 | 작업 이슈 열기 (파트·요구사항·이정표 선택) | [작업](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/new?template=team-task.yml) · [인계 요청](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/new?template=handoff.yml) · [막힘·장애](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/new?template=blocker.yml) |
+| 3 | 브랜치를 만들고 내 파트 폴더에서 작업 | 아래 명령 · [작업 양식](docs/templates/) |
+| 4 | PR에 이슈 번호와 확인 결과를 적고 main에 병합 | [PR 체크리스트](.github/PULL_REQUEST_TEMPLATE.md) |
+| 5 | 실행 결과를 `evidence.json`에 등록하면 점수 +1 | [등록 방법](docs/progress/README.md#실행-근거를-올리는-방법) · [측정 기록 이슈](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/new?template=demo-result.yml) |
+
+```bash
+git clone https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke.git && cd Final_4gl_team_smoke
+git switch -c cicd/first-war-build          # <파트>/<작업이름>: network·server·aws·cicd
+git add cicd/ && git commit -m "cicd: first WAR build"
+git push -u origin cicd/first-war-build     # push하면 Actions가 이 브랜치 점수를 계산
+```
+
+**일정**　11/26 첫 WAR 빌드 → 12/5 AWS·배포 연동 → 12/7 통합 검증 → 12/9 최종 보고서·발표. [전체 일정과 인계표](docs/delivery/README.md)
+
+## 팀 워크스페이스
+
+담당자 카드를 누르면 파트별 체크리스트가 열린다. 공지 웹앱을 넘기거나 빌드할 때는 [공용 앱 폴더](app/)의 인계표를 본다.
+
+| 온프레미스 | AWS · 배포 |
+| :---: | :---: |
+| [![강민서 · PM · 네트워크 보안](docs/images/role-network.svg)](network/)<br>✉  [ehdanfqnd@naver.com](mailto:ehdanfqnd@naver.com) | [![이우빈 · AWS 클라우드 · 이관](docs/images/role-aws.svg)](aws/)<br>✉  [woobin6318@gmail.com](mailto:woobin6318@gmail.com) |
+| [![이준호 · Linux 서버 · 운영 메일](docs/images/role-server.svg)](server/)<br>✉  [dlwnsgh7789@gmail.com](mailto:dlwnsgh7789@gmail.com) | [![강찬영 · CI/CD · 블루그린 배포](docs/images/role-cicd.svg)](cicd/)<br>✉  [chanyoungcplus@gmail.com](mailto:chanyoungcplus@gmail.com) |
 
 ## 프로젝트 소개
 
@@ -31,30 +105,6 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11–12　·　프
 | 정상 배포 | Green에서 공지 작성·조회 성공, 전환 후 운영 주소에서도 확인 | Blue → Green |
 | 전환 전 검증 실패 | Green 전용 경로에서 공지 조회 실패, Jenkins가 전환 차단 | 처음부터 끝까지 Blue |
 | 전환 후 자동 롤백 | 운영 주소에서 오류 감지, 이전 대상 그룹 복귀 후 재검사 | Blue → Green → Blue |
-
-## 구축 진행률
-
-<!-- smoke-progress:start -->
-**전체 구축 진행률 0.0%**　·　0/32점
-
-| 파트 | 점수 | 진행률 |
-| --- | ---: | ---: |
-| 강민서 · 네트워크 | 0/8 | 0.0% |
-| 이준호 · 서버 | 0/8 | 0.0% |
-| 이우빈 · AWS | 0/8 | 0.0% |
-| 강찬영 · CI/CD | 0/8 | 0.0% |
-<!-- smoke-progress:end -->
-
-파트마다 이정표 4개를 추적한다. 이정표별로 **구현 근거 1점**, **연결된 실행 결과 1점**을 합산한다. 업무 브랜치를 push하면 Actions 실행 요약에 그 브랜치 점수가 나온다. `main` 점수가 바뀌면 위 표도 자동으로 갱신한다. 이슈 #1에서 어떤 파일이 점수에 반영되었는지 확인할 수 있다.
-
-## 팀 워크스페이스
-
-담당자 카드를 누르면 파트별 체크리스트가 열린다. 공지 웹앱을 넘기거나 빌드할 때는 [공용 앱 폴더](app/)에서 소스와 실행 정보를 확인한다.
-
-| 온프레미스 | AWS · 배포 |
-| :---: | :---: |
-| [![강민서 · PM · 네트워크 보안](docs/images/role-network.svg)](network/)<br>✉  [ehdanfqnd@naver.com](mailto:ehdanfqnd@naver.com) | [![이우빈 · AWS 클라우드 · 이관](docs/images/role-aws.svg)](aws/)<br>✉  [woobin6318@gmail.com](mailto:woobin6318@gmail.com) |
-| [![이준호 · Linux 서버 · 운영 메일](docs/images/role-server.svg)](server/)<br>✉  [dlwnsgh7789@gmail.com](mailto:dlwnsgh7789@gmail.com) | [![강찬영 · CI/CD · 블루그린 배포](docs/images/role-cicd.svg)](cicd/)<br>✉  [chanyoungcplus@gmail.com](mailto:chanyoungcplus@gmail.com) |
 
 ## 시스템 아키텍처
 
@@ -78,8 +128,6 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11–12　·　프
 
 ## 요구사항과 인수 기준
 
-### 기능·보안 요구사항
-
 | ID | 요구사항 | 주 담당 / 협업 | 인수 기준 |
 | --- | --- | --- | --- |
 | SRS-REQ-01 | 본사·지사 VLAN, 라우팅·게이트웨이 이중화, 방화벽 ACL·NAT·IPsec VPN | 강민서 | 업무망의 관리 포트 접근 차단, 관리망 허용, 회선·장비 장애 후 경로 전환과 통신 복구를 기록한다. |
@@ -88,7 +136,8 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11–12　·　프
 | SRS-REQ-04 | 격리 실습망 보안 점검, 접근 통제와 보안 로그 검증 | 강민서 / 이준호 | 개선 전후 점검 결과와 비인가 접근 차단 기록을 방화벽·IDS 로그와 대조한다. |
 | SRS-REQ-05 | 계정·SSH·로그·백업 정비, 원본 목록과 운영 메일 수신 체계 | 이준호 / 강민서·이우빈·강찬영 | 원본 백업과 이관 대조표, Snort·백업·CloudWatch·Jenkins 알림의 메일 수신 기록을 확보한다. |
 
-### 비기능 요구사항
+<details>
+<summary><b>비기능 요구사항 NFR-01 – 07</b></summary>
 
 | ID | 항목 | 검증 기준 | 담당 |
 | --- | --- | --- | --- |
@@ -99,6 +148,8 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11–12　·　프
 | NFR-05 | 성능 | 첨부 다운로드 부하 중 공지 응답을 확인하고 캐시를 거치지 않는 경로를 따로 측정한다. | 이우빈 |
 | NFR-06 | 운영성 | 보안·백업·장애·배포 알림을 한 메일함에서 확인하고 운영팀에 대응 절차를 인계한다. | 이준호 |
 | NFR-07 | 비용 | 예상 비용과 실제 비용을 비교하고 블루·그린 동시 운영 시간과 워커 용량을 기록한다. | 이우빈·강찬영 |
+
+</details>
 
 최종 이관 전에는 글 등록과 파일 업로드를 잠시 멈추고 원본을 대조한다. 건수·본문·해시가 맞으면 주소를 전환한다. [제약사항과 요구사항 원문](docs/requirements/README.md)
 
@@ -113,28 +164,24 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11–12　·　프
 
 [시연 측정값 기록표](docs/delivery/README.md)　·　[고객 시나리오 원본 화면](docs/images/scenario.png)　·　[제공 자료 전체 목록](docs/originals/README.md)
 
-## 팀원이 처음 참여할 때
+## 저장소 구조
 
-1. [첫날 작업표](docs/delivery/README.md#첫날-작업표)에서 내 작업과 다음 파트에 넘길 결과를 확인한다.
-2. [작업 이슈](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/new?template=team-task.md)에 요구사항 ID, 담당자, 확인할 결과를 적는다. 다른 파트 값이 필요하면 관련 이슈를 연결한다.
-3. 저장소를 복제하고 작업 브랜치를 만든다. 아래는 CI/CD 담당자가 첫 빌드를 준비하는 예다.
-
-```bash
-git clone https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke.git
-cd Final_4gl_team_smoke
-git switch -c cicd/first-war-build
+```text
+Final_4gl_team_smoke/
+├─ network/        강민서 · topology · policies · verification
+├─ server/         이준호 · configuration · backup · mail
+├─ aws/            이우빈 · infrastructure · migration · operations
+├─ cicd/           강찬영 · jenkins · docker · kubernetes · ansible · verification
+├─ app/            공지 웹앱 소스와 인계표
+├─ docs/
+│  ├─ templates/   파트별 기록 양식·출발점 코드 (점수 집계 제외)
+│  ├─ daily/       일일 기록 MMDD.md
+│  ├─ delivery/    일정 · 인계 · 결과 기록표
+│  ├─ progress/    진행률 기준 · evidence.json
+│  ├─ architecture/ requirements/ originals/ demo/
+│  └─ images/live/ Actions가 그리는 README 패널
+├─ tools/
+│  ├─ progress/report.py   이정표 점수 집계
+│  └─ readme/build.py      README 라이브 패널 생성
+└─ .github/        이슈 폼 4종 · PR 양식 · 라벨 · 워크플로
 ```
-
-4. 구현 파일과 실행 기록을 담당 폴더에 저장한다. PR에 이슈 번호와 검증 결과를 연결하고, 실행 증적은 [진행률 등록 방식](docs/progress/README.md#실행-근거를-올리는-방법)에 맞춰 추가한다.
-
-| 폴더 | 여기에 올릴 것 |
-| --- | --- |
-| [network/](network/) | 토폴로지, 접근 정책, 통신 검증 기록 |
-| [server/](server/) | Linux 설정, 백업, 운영 메일 구성 |
-| [aws/](aws/) | 클라우드 인프라, 이관, 장애 측정 |
-| [cicd/](cicd/) | Jenkins, Docker, Ansible, Kubernetes, 배포 증적 |
-| [app/](app/) | 공지 웹앱 소스와 빌드·실행 인계 정보 |
-| [docs/](docs/) | 아키텍처, 요구사항, 일정, 원본 자료와 시뮬레이터 |
-| [tools/progress/](tools/progress/) | 파트별 구현·실행 근거 집계 코드 |
-
-**일정**　11월 26일 첫 WAR 빌드 → 12월 5일까지 AWS·배포 연동 → 12월 7일까지 통합 검증 → 12월 9일까지 최종 보고서·발표 자료. [전체 일정과 파트 간 인계표](docs/delivery/README.md)

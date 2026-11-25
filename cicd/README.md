@@ -25,7 +25,7 @@
 - [ ] 검사 통과 시 이우빈의 ALB 전환 절차를 Jenkins에서 호출한다. 운영 주소 검사 실패 시 Blue 자동 복귀와 이전 버전 응답을 확인한다.
 - [ ] Jenkins 결과를 SNS로 보내고 운영 메일 수신을 이준호와 확인한다. [검증 기록](verification/)에 연속 조회 실패 수와 복귀 시간을 남긴다.
 
-[첫날 작업표와 파트 간 인계](../docs/delivery/README.md#첫날-작업표) · [시연 결과 기록](../docs/delivery/README.md#결과-기록표)
+[첫날 작업표와 파트 간 인계](../docs/delivery/README.md#첫날-작업표) · [시연 결과 기록](../docs/delivery/README.md#결과-기록표) · [작업 양식](../docs/templates/README.md) · [작업 이슈 열기](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/new?template=team-task.yml) · [인계 요청](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/new?template=handoff.yml)
 
 ## 팀 연동
 

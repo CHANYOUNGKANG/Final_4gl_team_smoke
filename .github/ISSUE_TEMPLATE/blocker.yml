@@ -1,0 +1,35 @@
+name: 막힘 · 장애
+description: 진행이 막혔거나 실습 환경에서 장애가 났을 때
+title: "[막힘] "
+labels: ["막힘"]
+body:
+  - type: dropdown
+    id: part
+    attributes:
+      label: 파트
+      options: ["네트워크", "서버", "AWS", "CI/CD", "파트 사이 연동"]
+    validations: {required: true}
+  - type: textarea
+    id: what
+    attributes:
+      label: 무엇을 하다가 어떻게 됐나요
+      placeholder: 실행한 명령, 기대한 결과, 실제 결과
+    validations: {required: true}
+  - type: textarea
+    id: log
+    attributes:
+      label: 오류 메시지 · 로그
+      render: shell
+  - type: textarea
+    id: tried
+    attributes:
+      label: 이미 확인한 것
+      value: |
+        - [ ] 보안 그룹 · ACL에서 포트 허용
+        - [ ] 서비스 상태 (systemctl status 등)
+        - [ ] 
+  - type: dropdown
+    id: impact
+    attributes:
+      label: 영향
+      options: ["나 혼자 막힘", "다른 파트도 기다리는 중", "시연 일정에 영향"]

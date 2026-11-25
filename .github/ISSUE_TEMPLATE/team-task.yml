@@ -1,0 +1,48 @@
+name: 작업
+description: 내 파트에서 할 작업 하나. 완료 기준이 확인 가능한 크기로 나눠 주세요.
+title: "[작업] "
+labels: ["작업"]
+body:
+  - type: dropdown
+    id: part
+    attributes:
+      label: 파트
+      options: ["네트워크 · 강민서", "서버 · 이준호", "AWS · 이우빈", "CI/CD · 강찬영"]
+    validations: {required: true}
+  - type: dropdown
+    id: req
+    attributes:
+      label: 관련 요구사항
+      multiple: true
+      options: ["SRS-REQ-01 네트워크·보안", "SRS-REQ-02 AWS 인프라·이관", "SRS-REQ-03 CI/CD 자동화", "SRS-REQ-04 보안 점검", "SRS-REQ-05 서버·운영 메일", "NFR (비기능)", "해당 없음"]
+  - type: dropdown
+    id: milestone
+    attributes:
+      label: 진행률 이정표
+      description: 이 작업이 끝나면 점수가 오르는 항목 (docs/progress/README.md)
+      options: ["없음", "NET1", "NET2", "NET3", "NET4", "SRV1", "SRV2", "SRV3", "SRV4", "AWS1", "AWS2", "AWS3", "AWS4", "CICD1", "CICD2", "CICD3", "CICD4"]
+  - type: textarea
+    id: goal
+    attributes:
+      label: 작업 목표
+      placeholder: 예) Jenkins에서 공지 앱 WAR를 수동 빌드로 한 번 성공시킨다
+    validations: {required: true}
+  - type: textarea
+    id: done
+    attributes:
+      label: 완료 기준
+      description: 다른 사람이 보고 끝났다고 판단할 수 있는 결과
+      value: |
+        - [ ] 
+        - [ ] 
+    validations: {required: true}
+  - type: textarea
+    id: need
+    attributes:
+      label: 다른 파트에서 받아야 할 값
+      placeholder: 예) 이준호 → Java·Tomcat 버전, WAR 이름 / 이우빈 → Jenkins EC2 접속 경로
+  - type: input
+    id: due
+    attributes:
+      label: 목표일
+      placeholder: 예) 11/27

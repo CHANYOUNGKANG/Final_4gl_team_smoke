@@ -19,7 +19,7 @@
 - [ ] 최종 이관 전 쓰기 중지 시점을 맞추고 이우빈과 원본·대상 데이터를 대조한다.
 - [ ] 보안 탐지·백업·장애·배포 알림이 운영 메일함에 도착하는지 확인하고 수신 기록을 [메일 폴더](mail/)에 남긴다.
 
-[첫날 작업표와 파트 간 인계](../docs/delivery/README.md#첫날-작업표) · [시연 결과 기록](../docs/delivery/README.md#결과-기록표)
+[첫날 작업표와 파트 간 인계](../docs/delivery/README.md#첫날-작업표) · [시연 결과 기록](../docs/delivery/README.md#결과-기록표) · [작업 양식](../docs/templates/README.md) · [작업 이슈 열기](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/new?template=team-task.yml) · [인계 요청](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/new?template=handoff.yml)
 
 ## 팀 연동
 

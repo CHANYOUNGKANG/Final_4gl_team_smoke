@@ -1,0 +1,35 @@
+name: 시연 측정 기록
+description: 결과 기록표 7개 시험 중 하나를 측정했을 때
+title: "[측정] "
+labels: ["시연기록"]
+body:
+  - type: dropdown
+    id: test
+    attributes:
+      label: 시험
+      options: ["데이터 이관", "정상 배포", "전환 전 차단", "전환 후 자동 롤백", "워커 장애", "접근 통제·운영 알림", "비용"]
+    validations: {required: true}
+  - type: dropdown
+    id: result
+    attributes:
+      label: 판정
+      options: ["통과", "실패 · 재측정 필요", "부분 통과"]
+    validations: {required: true}
+  - type: textarea
+    id: numbers
+    attributes:
+      label: 측정값
+      description: docs/delivery/README.md 결과 기록표의 ‘남길 증거’ 항목을 채웁니다.
+      placeholder: 예) 커밋 a1b2c3d · Jenkins #14 · ECR 태그 a1b2c3d · 총 요청 1,200 · 실패 0
+    validations: {required: true}
+  - type: input
+    id: file
+    attributes:
+      label: 로그 · 캡처 파일 경로
+      placeholder: 예) cicd/verification/rollback-1127.log
+  - type: checkboxes
+    id: evidence
+    attributes:
+      label: 진행률 반영
+      options:
+        - label: 같은 파일을 docs/progress/evidence.json 의 verification 으로 등록했다
