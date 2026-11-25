@@ -13,6 +13,22 @@
 
 ---
 
+## 2026-11-25 (수) 22:30 · 저장소 문서 자동화 · 설계 결정 정리 (PR #7)
+
+**확인한 결과**
+- `topology.json` → 구성도 SVG·IP 표 자동 생성이 기존 그림과 같은 결과를 냄 (로컬 실행).
+- AWS VPC를 `10.0.0.0/16`으로 바꾸면 “대역 겹침”으로 생성이 실패함 → 기본 VPC 대역 실수를 PR에서 잡을 수 있음.
+- 문서 링크 검사: 깨진 링크 2건은 모두 이 PR(#3)의 파일을 가리킴 → #3 병합 후 해소.
+
+**이번 PR(#3)에 반영**
+- 체크리스트의 “Webhook 연결”을 Poll SCM 기준으로 수정, `deploy.env.example`에 `EKS_ASG` 추가.
+
+**CI/CD 관련 설계 기록** — [ADR-0003 단일 EKS 블루그린](../docs/decisions/0003-blue-green-single-eks.md), [ADR-0004 Poll SCM](../docs/decisions/0004-jenkins-poll-scm.md), [배포 롤백 런북](../docs/runbooks/deploy-rollback.md) (초안 · 미검증)
+
+**다음 작업** — 병합 순서 #3 → #7(Update branch) → #5. 11/26 인계 이슈 2건(이준호 앱, 이우빈 EC2·SG·IAM).
+
+---
+
 ## 2026-11-25 (수) 21:40 · IP 대역표 반영
 
 **확인한 결과**
