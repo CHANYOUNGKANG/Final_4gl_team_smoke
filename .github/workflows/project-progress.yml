@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '12 15 * * *' # 매일 00:12 KST · D-day와 오늘 선을 새 날짜로 옮긴다 (정시 혼잡 회피)
-    - cron: '12 21 * * *' # 06:12 KST 예비 · 자정 실행이 밀리거나 건너뛴 날 대비 (변경 없으면 커밋 안 함)
+    - cron: '12 21 * * *' # 06:12 KST 예비 · 자정 실행이 밀리거나 건너뛴 날 대비 (갱신 시각이 바뀌므로 실행마다 봇 커밋 1건)
     - cron: '42 3 * * *'  # 12:42 KST 예비
 permissions:
   contents: read
