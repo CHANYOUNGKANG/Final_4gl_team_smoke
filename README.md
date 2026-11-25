@@ -75,6 +75,19 @@ git add cicd/ && git commit -m "cicd: first WAR build"
 git push -u origin cicd/first-war-build     # push하면 Actions가 이 브랜치 점수를 계산
 ```
 
+**팀원 작업 브랜치 (11/26 시작)**　모두 최신 `main`에서 만들었다. 작업이 끝나면 PR을 열고, 병합 후 브랜치는 지운다.
+
+| 담당 | 브랜치 | 첫날 할 일 |
+| --- | --- | --- |
+| 강민서 | [`network/minseo-day1-topology`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/network/minseo-day1-topology) | VLAN·서버 위치·허용 방향 확정, [IP 대역표](docs/architecture/ip-plan.md) 확정 |
+| 이준호 | [`server/junho-day1-app-handoff`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/server/junho-day1-app-handoff) | [앱 인계표](app/README.md) 6개 항목 채우기 |
+| 이우빈 | [`aws/woobin-day1-jenkins-ec2`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/aws/woobin-day1-jenkins-ec2) | Jenkins EC2(퍼블릭 `10.100.1.0/24`)·SG·IAM 역할 준비 |
+| 강찬영 | [`cicd/chanyoung-day1-first-build`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/chanyoung-day1-first-build) | Jenkins 첫 빌드 · 커밋 SHA 대조 |
+
+```bash
+git fetch origin && git switch network/minseo-day1-topology   # 내 브랜치 이름으로
+```
+
 **일정**　11/26 첫 WAR 빌드 → 12/5 AWS·배포 연동 → 12/7 통합 검증 → 12/9 최종 보고서·발표. [전체 일정과 인계표](docs/delivery/README.md)
 
 ## 팀 보안 규칙
@@ -139,6 +152,8 @@ git push -u origin cicd/first-war-build     # push하면 Actions가 이 브랜�
 ## 시스템 아키텍처
 
 [![본사·지사 네트워크, Linux 서버, AWS 이관 경로와 Jenkins 블루그린 배포 파이프라인](docs/images/architecture.png)](docs/architecture/README.md)
+
+**주소 계획**　본사 `10.0.0.0/16` · 지사 `10.1.0.0/16` · AWS VPC `10.100.0.0/16` · GNS3 공인 역할 `198.51.100.0/24`　→ [IP 대역 · 통신 허용표](docs/architecture/ip-plan.md)
 
 | 경로 | 서비스가 동작하는 방식 |
 | --- | --- |
