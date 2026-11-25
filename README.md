@@ -28,16 +28,15 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11.21 – 12.09
 <!-- smoke-activity:start -->
 | 최근 커밋 | 작성자 | 시각 (KST) |
 | --- | --- | ---: |
+| [`5756a52`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/5756a5291dfc280f878f539b2a7a5b842afd94fc) chore: 보안 자동 검사와 AI 작업 규칙 추가 (#2) | CHANYOUNGKANG | 11/25 21:44 |
 | [`d7852e5`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/d7852e5597d8909b5334e815f8bf57fd2897b47f) docs: add team security rules for public project materials | CHANYOUNGKANG | 11/25 21:12 |
 | [`628b270`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/628b270eee0dca78c6609a6ef4cb92c55333e1fd) fix: 최근 활동 시각을 KST 절대 시각으로 표기 | claude | 11/25 21:01 |
-| [`b6ea0bf`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/b6ea0bfb476e25e0840f255a2466935d1f672db4) feat: README 라이브 패널과 팀 작업 공간 구성 | claude | 11/25 20:58 |
-| [`390e4a3`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/390e4a3f416dce45e0901bc316b89dd3fe507ce2) docs: add interactive blue-green demo and evidence-based README scoreb… | CHANYOUNGKANG | 11/25 19:54 |
 
 **열린 이슈·PR**　[#1 팀 구축 진행률 · 구현 근거와 시연 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)
 
-**작업 브랜치 0개**　아직 없음 · 아래 ‘작업 시작하기’ 참고
+**작업 브랜치 7개**　[`aws/woobin-day1-jenkins-ec2`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/aws/woobin-day1-jenkins-ec2)　[`chore/security-automation`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/chore/security-automation)　[`cicd/chanyoung-day1-first-build`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/chanyoung-day1-first-build)　[`cicd/worklog-jenkins-bootstrap`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/worklog-jenkins-bootstrap)　[`docs/ip-plan`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/docs/ip-plan)　[`network/minseo-day1-topology`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/network/minseo-day1-topology)　[`server/junho-day1-app-handoff`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/server/junho-day1-app-handoff)
 
-<sub>11/25 21:12 KST 기준 · main push와 매일 00:05에 갱신</sub>
+<sub>11/25 21:44 KST 기준 · main push와 매일 00:05에 갱신</sub>
 <!-- smoke-activity:end -->
 
 <details>
@@ -62,7 +61,8 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11.21 – 12.09
 
 | 순서 | 할 일 | 바로가기 |
 | :---: | --- | --- |
-| 1 | 오늘 내 작업과 다음 파트에 넘길 결과 확인 | [첫날 작업표](docs/delivery/README.md#첫날-작업표) · [일일 기록](docs/daily/) |
+| 0 | 보안 규칙과 AI 도구 작업 규칙 확인 | [팀 보안 규칙](#팀-보안-규칙) · [AGENTS.md](AGENTS.md) · [SECURITY.md](SECURITY.md) |
+| 1 | 오늘 내 작업과 다음 파트에 넘길 결과 확인 | [첫날 작업표](docs/delivery/README.md#첫날-작업표) · [일일 기록](docs/daily/) · 파트별 `WORKLOG.md` |
 | 2 | 작업 이슈 열기 (파트·요구사항·이정표 선택) | [작업](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/new?template=team-task.yml) · [인계 요청](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/new?template=handoff.yml) · [막힘·장애](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/new?template=blocker.yml) |
 | 3 | 브랜치를 만들고 내 파트 폴더에서 작업 | 아래 명령 · [작업 양식](docs/templates/) |
 | 4 | PR에 이슈 번호와 확인 결과를 적고 main에 병합 | [PR 체크리스트](.github/PULL_REQUEST_TEMPLATE.md) |
@@ -111,6 +111,10 @@ git fetch origin && git switch network/minseo-day1-topology   # 내 브랜치 �
 1. **코드와 설정에서 먼저 치환한다.** 실제 비밀값이 포함된 입력을 받으면 코드·명령 예시·일지에 복사하지 않고 자격 증명 참조나 변수명으로 바꾼다. 환경 변수로 주입한 비밀값도 셸 추적과 디버그 출력에서 제외한다.
 2. **증빙을 확인한다.** 터미널·Jenkins 콘솔·AWS 콘솔·주소창·QR 코드에 표시된 토큰, 관리 주소, 계정 정보, 개인정보를 확인한다. 원본과 별도로 잘라내거나 해당 영역을 불투명하게 가린 사본을 만들고, 내보낸 PNG·PDF·PPT를 다시 열어 확인한다. PPT의 원본 이미지, 발표자 노트, 숨은 슬라이드에도 민감값을 남기지 않는다.
 3. **커밋·푸시 전에 확인한다.** 스테이징된 파일 목록과 diff를 확인하고 이미지·문서·압축파일은 실제 내용도 확인한다. 사용 가능한 비밀값 검사나 GitHub 푸시 보호 경고가 있으면 원인을 확인하고, 민감값이 남은 파일은 수정한 뒤 게시한다. 일지와 PR에는 검증 결과와 마스킹한 증빙만 링크한다.
+
+### 자동 검사
+
+모든 push·PR에서 **gitleaks**가 비밀값을 검사하고, PR에서는 워크플로·Dockerfile·Kubernetes 매니페스트 형식과 코드 속 IP 주소를 확인한다. 로컬에서는 `pip install pre-commit && pre-commit install` 후 커밋할 때마다 같은 검사가 돈다. 세부 절차는 [SECURITY.md](SECURITY.md).
 
 ### 민감값이 공개된 경우
 
@@ -217,12 +221,15 @@ Final_4gl_team_smoke/
 ├─ docs/
 │  ├─ templates/   파트별 기록 양식·출발점 코드 (점수 집계 제외)
 │  ├─ daily/       일일 기록 MMDD.md
+│  ├─ presentation/ 발표 자료 후보 색인 (가린 캡처 + 슬라이드 설명)
 │  ├─ delivery/    일정 · 인계 · 결과 기록표
 │  ├─ progress/    진행률 기준 · evidence.json
 │  ├─ architecture/ requirements/ originals/ demo/
 │  └─ images/live/ Actions가 그리는 README 패널
+├─ AGENTS.md      AI 도구·팀원 공통 작업 규칙 (CLAUDE.md가 참조)
+├─ SECURITY.md    민감값 노출 대응 · 자동 검사
 ├─ tools/
 │  ├─ progress/report.py   이정표 점수 집계
 │  └─ readme/build.py      README 라이브 패널 생성
-└─ .github/        이슈 폼 4종 · PR 양식 · 라벨 · 워크플로
+└─ .github/        이슈 폼 4종 · PR 양식 · 라벨 · 워크플로 (진행률·비밀 스캔·PR 검사)
 ```
