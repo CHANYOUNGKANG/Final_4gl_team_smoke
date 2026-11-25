@@ -1,6 +1,6 @@
 # 시스템 아키텍처
 
-[프로젝트 홈](../../README.md) · [요구사항 명세서](../requirements/README.md) · [전체 구성도 크게 보기](../images/architecture.png)
+[프로젝트 홈](../../README.md) · [요구사항 명세서](../requirements/README.md) · [**IP 대역 · 통신 허용표**](ip-plan.md) · [전체 구성도 크게 보기](../images/architecture.png)
 
 ![본사와 지사, 서버 VLAN, AWS 및 배포 구성도](../images/architecture.png)
 

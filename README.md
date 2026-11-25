@@ -136,6 +136,8 @@ git push -u origin cicd/first-war-build     # push하면 Actions가 이 브랜�
 
 [![본사·지사 네트워크, Linux 서버, AWS 이관 경로와 Jenkins 블루그린 배포 파이프라인](docs/images/architecture.png)](docs/architecture/README.md)
 
+**주소 계획**　본사 `10.0.0.0/16` · 지사 `10.1.0.0/16` · AWS VPC `10.100.0.0/16` · GNS3 공인 역할 `198.51.100.0/24`　→ [IP 대역 · 통신 허용표](docs/architecture/ip-plan.md)
+
 | 경로 | 서비스가 동작하는 방식 |
 | --- | --- |
 | **공지 조회** | HTTPS 요청은 ALB를 거쳐 운영 중인 EKS 버전으로 들어간다. 첨부파일은 CloudFront가 비공개 S3에서 가져와 제공한다. |
