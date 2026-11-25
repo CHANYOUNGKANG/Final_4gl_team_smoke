@@ -85,7 +85,7 @@ def proof(root, tracked):
     return evidence
 
 
-def render(root, base_url):
+def render(root, base_url, update_readme=False):
     tracked = files_at(root)
     corpus = implementation(root, tracked)
     evidence = proof(root, tracked)
@@ -116,11 +116,22 @@ def render(root, base_url):
     summary = [f"**전체 구축 진행률 {100*total/maximum:.1f}%**　·　{total}/{maximum}점", "", "| 파트 | 점수 | 진행률 |", "| --- | ---: | ---: |"]
     for role, values in scores.items():
         summary.append(f"| {OWNERS[role]} | {sum(values)}/{2*len(values)} | {100*sum(values)/(2*len(values)):.1f}% |")
+    if update_readme:
+        path = root / "README.md"
+        content = path.read_text()
+        begin = "<!-- smoke-progress:start -->"
+        end = "<!-- smoke-progress:end -->"
+        if content.count(begin) != 1 or content.count(end) != 1:
+            raise ValueError("README progress markers must each appear once")
+        before, middle = content.split(begin)
+        _, after = middle.split(end)
+        path.write_text(before + begin + "\n" + "\n".join(summary) + "\n" + end + after)
     return "\n".join(summary + ["", "구현 신호 또는 구성 증적 1점 + 팀이 등록한 실행 결과 1점. 설계 준비는 별도다.", "", "| ID | 측정 항목 | 점수 | 근거 |", "| --- | --- | ---: | --- |", *rows]) + "\n"
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--base-url", required=True)
+    parser.add_argument("--update-readme", action="store_true")
     args = parser.parse_args()
-    print(render(Path.cwd(), args.base_url), end="")
+    print(render(Path.cwd(), args.base_url, args.update_readme), end="")

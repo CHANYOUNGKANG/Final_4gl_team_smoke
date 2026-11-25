@@ -13,34 +13,50 @@ jobs:
         env:
           COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}
         run: |
-          python3 tools/progress/report.py --base-url "$COMMIT_URL" > "$RUNNER_TEMP/report.md"
-          cat "$RUNNER_TEMP/report.md" >> "$GITHUB_STEP_SUMMARY"
+          mkdir -p "$RUNNER_TEMP/progress"
+          python3 tools/progress/report.py --base-url "$COMMIT_URL" --update-readme > "$RUNNER_TEMP/progress/report.md"
+          cp README.md "$RUNNER_TEMP/progress/README.md"
+          cat "$RUNNER_TEMP/progress/report.md" >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         if: github.ref == 'refs/heads/main'
         with:
           name: progress
-          path: ${{ runner.temp }}/report.md
+          path: ${{ runner.temp }}/progress/
           retention-days: 1
   publish:
     if: github.ref == 'refs/heads/main'
     needs: score
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       issues: write
     concurrency:
       group: team-progress-main
       cancel-in-progress: false
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           name: progress
+          path: ${{ runner.temp }}/progress
       - name: Publish the latest main result
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           current=$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)
           if [ "$current" != "$GITHUB_SHA" ]; then exit 0; fi
+          cd "$RUNNER_TEMP/progress"
           echo >> report.md
           echo "[분석 커밋]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/commit/$GITHUB_SHA) · [실행 기록]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID) · [산정 기준]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/blob/main/docs/progress/README.md)" >> report.md
           gh api --method PATCH "repos/$GITHUB_REPOSITORY/issues/1" -F body=@report.md --silent
+          cd "$GITHUB_WORKSPACE"
+          cp "$RUNNER_TEMP/progress/README.md" README.md
+          if git diff --quiet -- README.md; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add README.md
+          git commit -m 'docs: refresh team progress'
+          if ! git push origin HEAD:main; then
+            latest=$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)
+            if [ "$latest" = "$GITHUB_SHA" ]; then exit 1; fi
+          fi
