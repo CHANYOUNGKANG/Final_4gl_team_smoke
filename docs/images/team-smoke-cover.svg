@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc"><title id="title">Team Smoke · KDT Final Project</title><desc id="desc">짙은 남색 배경 위의 팀 이름과 파란색·민트색 두 배포 환경을 겹쳐 그린 프로젝트 표지.</desc><defs>
+<linearGradient id="bg" x2="1" y2="0.35" gradientUnits="objectBoundingBox"><stop stop-color="#101424"/><stop offset=".5" stop-color="#181b3d"/><stop offset="1" stop-color="#252155"/></linearGradient>
+<radialGradient id="halo"><stop stop-color="#6b50dc" stop-opacity=".5"/><stop offset="1" stop-color="#6b50dc" stop-opacity="0"/></radialGradient>
+<linearGradient id="lid" x2="1" y2=".4"><stop stop-color="#6655cf"/><stop offset=".55" stop-color="#676ed6"/><stop offset="1" stop-color="#6497c2"/></linearGradient>
+<linearGradient id="silver" x2="1" y2=".4"><stop stop-color="#d7e6ff"/><stop offset=".48" stop-color="#a5b6ff"/><stop offset="1" stop-color="#8cebd9"/></linearGradient>
+<pattern id="grid" width="52" height="30" patternUnits="userSpaceOnUse"><path d="M0 0L52 30M52 0L0 30" stroke="#a8b5ff" opacity=".12" fill="none" stroke-width=".7"/></pattern>
+</defs><rect width="1200" height="360" rx="18" fill="url(#bg)"/><ellipse cx="912" cy="185" rx="335" ry="220" fill="url(#halo)"/><path d="M590 24H1170V336H590Z" fill="url(#grid)"/>
+<g font-family="DejaVu Sans,Arial,sans-serif"><g transform="translate(50 35)" fill="none" stroke-linecap="round" stroke-width="4"><path d="M0 16C9 16 9 3 18 3" stroke="#9f8aff"/><path d="M9 20C18 20 18 7 27 7" stroke="#69ebda"/></g>
+<text x="94" y="53" font-size="16" letter-spacing="2.2" font-weight="bold" fill="#c8d3f5">KDT  /  FINAL PROJECT</text>
+<text x="47" y="174" font-size="102" font-weight="bold" letter-spacing="-6" fill="#f2f4ff">SMOKE<tspan fill="#80efcd">.</tspan></text>
+<text x="53" y="219" font-size="24" font-family="Noto Sans CJK KR,Malgun Gothic,sans-serif" font-weight="bold" fill="#dee4ff">공지·자료실 인프라 전환</text>
+<path d="M53 268H476" stroke="#646c91" stroke-width="1"/><text x="53" y="303" font-size="15" fill="#cad4ed" letter-spacing="1">ON-PREMISES</text><path d="M190 298H230m-5 -4 5 4-5 4" stroke="#78e6ce" fill="none"/><text x="247" y="303" font-size="15" fill="#cad4ed" letter-spacing="1">AWS CLOUD</text></g>
+<polyline points="752.6,246.0 720.0,262.3 720.0,281.6 707.7,287.8" fill="none" stroke="#7762cd" stroke-width="1.7" opacity="0.85" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="707.72" cy="287.8" r="2.5" fill="#a0cdde"/>
+<polyline points="1025.4,246.0 1055.3,261.0 1095.8,263.6 1113.4,272.4" fill="none" stroke="#7762cd" stroke-width="1.7" opacity="0.85" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="1113.4" cy="272.4" r="2.5" fill="#a0cdde"/>
+<polyline points="867.0,166.8 833.6,150.1 831.8,133.4 812.4,123.7" fill="none" stroke="#7762cd" stroke-width="1.7" opacity="0.85" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="812.44" cy="123.67999999999999" r="2.5" fill="#a0cdde"/>
+<polyline points="773.7,256.6 738.5,274.2 738.5,293.5 725.3,300.1" fill="none" stroke="#4b80aa" stroke-width="1.7" opacity="0.85" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="725.3199999999999" cy="300.12" r="2.5" fill="#a0cdde"/>
+<polyline points="1004.3,256.6 1036.8,272.8 1077.3,275.5 1094.9,284.3" fill="none" stroke="#4b80aa" stroke-width="1.7" opacity="0.85" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="1094.92" cy="284.28" r="2.5" fill="#a0cdde"/>
+<polyline points="845.9,177.4 812.4,160.6 810.7,143.9 791.3,134.2" fill="none" stroke="#4b80aa" stroke-width="1.7" opacity="0.85" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="791.3199999999999" cy="134.24" r="2.5" fill="#a0cdde"/>
+<polyline points="794.8,267.1 757.0,286.0 757.0,305.4 742.9,312.4" fill="none" stroke="#51bdaf" stroke-width="1.7" opacity="0.85" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="742.92" cy="312.44" r="2.5" fill="#a0cdde"/>
+<polyline points="983.2,267.1 1018.4,284.7 1058.8,287.4 1076.4,296.2" fill="none" stroke="#51bdaf" stroke-width="1.7" opacity="0.85" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="1076.44" cy="296.16" r="2.5" fill="#a0cdde"/>
+<polyline points="824.8,187.9 791.3,171.2 789.6,154.5 770.2,144.8" fill="none" stroke="#51bdaf" stroke-width="1.7" opacity="0.85" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="770.2" cy="144.8" r="2.5" fill="#a0cdde"/>
+<polyline points="816.0,277.7 775.5,297.9 775.5,317.3 760.5,324.8" fill="none" stroke="#7762cd" stroke-width="1.7" opacity="0.85" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="760.52" cy="324.76" r="2.5" fill="#a0cdde"/>
+<polyline points="962.0,277.7 999.9,296.6 1040.4,299.2 1058.0,308.0" fill="none" stroke="#7762cd" stroke-width="1.7" opacity="0.85" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="1057.96" cy="308.04" r="2.5" fill="#a0cdde"/>
+<polyline points="803.6,198.5 770.2,181.8 768.4,165.0 749.1,155.4" fill="none" stroke="#7762cd" stroke-width="1.7" opacity="0.85" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="749.08" cy="155.36" r="2.5" fill="#a0cdde"/>
+<polyline points="837.1,288.2 794.0,309.8 794.0,329.2 778.1,337.1" fill="none" stroke="#4b80aa" stroke-width="1.7" opacity="0.85" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="778.12" cy="337.08" r="2.5" fill="#a0cdde"/>
+<polyline points="940.9,288.2 981.4,308.5 1021.9,311.1 1039.5,319.9" fill="none" stroke="#4b80aa" stroke-width="1.7" opacity="0.85" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="1039.48" cy="319.92" r="2.5" fill="#a0cdde"/>
+<polyline points="782.5,209.0 749.1,192.3 747.3,175.6 728.0,165.9" fill="none" stroke="#4b80aa" stroke-width="1.7" opacity="0.85" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="727.96" cy="165.92000000000002" r="2.5" fill="#a0cdde"/>
+<polyline points="858.2,298.8 812.4,321.7 812.4,341.0 795.7,349.4" fill="none" stroke="#51bdaf" stroke-width="1.7" opacity="0.85" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="795.72" cy="349.4" r="2.5" fill="#a0cdde"/>
+<polyline points="919.8,298.8 962.9,320.4 1003.4,323.0 1021.0,331.8" fill="none" stroke="#51bdaf" stroke-width="1.7" opacity="0.85" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="1021.0" cy="331.8" r="2.5" fill="#a0cdde"/>
+<polyline points="761.4,219.6 728.0,202.9 726.2,186.2 706.8,176.5" fill="none" stroke="#51bdaf" stroke-width="1.7" opacity="0.85" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="706.84" cy="176.48" r="2.5" fill="#a0cdde"/>
+<polygon points="1053.6,222.2 1053.6,231.8 1053.6,242.8 1053.6,233.2" fill="#292c61" stroke="#8079c6" stroke-width="0.9" stroke-linejoin="round"/>
+<polygon points="1053.6,231.8 898.7,309.3 898.7,320.3 1053.6,242.8" fill="#292c61" stroke="#8079c6" stroke-width="0.9" stroke-linejoin="round"/>
+<polygon points="898.7,309.3 879.3,309.3 879.3,320.3 898.7,320.3" fill="#292c61" stroke="#8079c6" stroke-width="0.9" stroke-linejoin="round"/>
+<polygon points="879.3,309.3 724.4,231.8 724.4,242.8 879.3,320.3" fill="#292b55" stroke="#8079c6" stroke-width="0.9" stroke-linejoin="round"/>
+<polygon points="724.4,231.8 724.4,222.2 724.4,233.2 724.4,242.8" fill="#292b55" stroke="#8079c6" stroke-width="0.9" stroke-linejoin="round"/>
+<polygon points="879.3,144.7 898.7,144.7 1053.6,222.2 1053.6,231.8 898.7,309.3 879.3,309.3 724.4,231.8 724.4,222.2" fill="#383570" stroke="#8079c6" stroke-width="1.5" stroke-linejoin="round"/>
+<polygon points="1036.0,185.2 1036.0,194.8 1036.0,207.8 1036.0,198.2" fill="#354478" stroke="#9397dd" stroke-width="0.9" stroke-linejoin="round"/>
+<polygon points="1036.0,194.8 898.7,263.5 898.7,276.5 1036.0,207.8" fill="#354478" stroke="#9397dd" stroke-width="0.9" stroke-linejoin="round"/>
+<polygon points="898.7,263.5 879.3,263.5 879.3,276.5 898.7,276.5" fill="#354478" stroke="#9397dd" stroke-width="0.9" stroke-linejoin="round"/>
+<polygon points="879.3,263.5 742.0,194.8 742.0,207.8 879.3,276.5" fill="#2e426e" stroke="#9397dd" stroke-width="0.9" stroke-linejoin="round"/>
+<polygon points="742.0,194.8 742.0,185.2 742.0,198.2 742.0,207.8" fill="#2e426e" stroke="#9397dd" stroke-width="0.9" stroke-linejoin="round"/>
+<polygon points="879.3,116.5 898.7,116.5 1036.0,185.2 1036.0,194.8 898.7,263.5 879.3,263.5 742.0,194.8 742.0,185.2" fill="#464f93" stroke="#9397dd" stroke-width="1.5" stroke-linejoin="round"/>
+<polygon points="1016.6,149.2 1016.6,158.8 1016.6,171.8 1016.6,162.2" fill="#34667c" stroke="#a2acff" stroke-width="0.9" stroke-linejoin="round"/>
+<polygon points="1016.6,158.8 898.7,217.8 898.7,230.8 1016.6,171.8" fill="#34667c" stroke="#a2acff" stroke-width="0.9" stroke-linejoin="round"/>
+<polygon points="898.7,217.8 879.3,217.8 879.3,230.8 898.7,230.8" fill="#34667c" stroke="#a2acff" stroke-width="0.9" stroke-linejoin="round"/>
+<polygon points="879.3,217.8 761.4,158.8 761.4,171.8 879.3,230.8" fill="#4b4793" stroke="#a2acff" stroke-width="0.9" stroke-linejoin="round"/>
+<polygon points="761.4,158.8 761.4,149.2 761.4,162.2 761.4,171.8" fill="#4b4793" stroke="#a2acff" stroke-width="0.9" stroke-linejoin="round"/>
+<polygon points="879.3,90.2 898.7,90.2 1016.6,149.2 1016.6,158.8 898.7,217.8 879.3,217.8 761.4,158.8 761.4,149.2" fill="url(#lid)" stroke="#a2acff" stroke-width="1.5" stroke-linejoin="round"/>
+<polygon points="990.2,117.2 990.2,126.8 990.2,136.8 990.2,127.2" fill="#639aaa" stroke="#d3e3ff" stroke-width="0.9" stroke-linejoin="round"/>
+<polygon points="990.2,126.8 898.7,172.6 898.7,182.6 990.2,136.8" fill="#639aaa" stroke="#d3e3ff" stroke-width="0.9" stroke-linejoin="round"/>
+<polygon points="898.7,172.6 879.3,172.6 879.3,182.6 898.7,182.6" fill="#639aaa" stroke="#d3e3ff" stroke-width="0.9" stroke-linejoin="round"/>
+<polygon points="879.3,172.6 787.8,126.8 787.8,136.8 879.3,182.6" fill="#7985c4" stroke="#d3e3ff" stroke-width="0.9" stroke-linejoin="round"/>
+<polygon points="787.8,126.8 787.8,117.2 787.8,127.2 787.8,136.8" fill="#7985c4" stroke="#d3e3ff" stroke-width="0.9" stroke-linejoin="round"/>
+<polygon points="879.3,71.4 898.7,71.4 990.2,117.2 990.2,126.8 898.7,172.6 879.3,172.6 787.8,126.8 787.8,117.2" fill="url(#silver)" stroke="#d3e3ff" stroke-width="1.5" stroke-linejoin="round"/>
+<polyline points="871.4,105.2 887.2,113.1 912.8,113.5 931.2,122.8" fill="none" stroke="#393d7a" stroke-width="3.1" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="859.1,111.3 874.9,119.2 900.4,119.7 918.9,128.9" fill="none" stroke="#393d7a" stroke-width="3.1" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="846.8,117.5 862.6,125.4 888.1,125.8 906.6,135.1" fill="none" stroke="#393d7a" stroke-width="3.1" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="777.2,172.8 780.8,174.5" fill="none" stroke="#93f0de" stroke-width="2.2" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="786.0,177.2 789.6,178.9" fill="none" stroke="#93f0de" stroke-width="2.2" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="794.8,181.6 798.4,183.3" fill="none" stroke="#93f0de" stroke-width="2.2" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="803.6,186.0 807.2,187.7" fill="none" stroke="#93f0de" stroke-width="2.2" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="812.4,190.4 816.0,192.1" fill="none" stroke="#93f0de" stroke-width="2.2" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1003 167 L1053 167 L1078 74 H1100" stroke="#aab5ff" fill="none" opacity=".9"/><circle cx="1101" cy="74" r="3" fill="#aab5ff"/><text x="1111" y="78" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" letter-spacing="1.4" font-weight="bold" fill="#aab5ff">BLUE</text>
+<path d="M1003 211 L1053 211 L1078 284 H1100" stroke="#8bf0d0" fill="none" opacity=".9"/><circle cx="1101" cy="284" r="3" fill="#8bf0d0"/><text x="1111" y="288" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" letter-spacing="1.4" font-weight="bold" fill="#8bf0d0">GREEN</text>
+</svg>
