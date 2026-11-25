@@ -16,3 +16,27 @@ target/
 
 # 파이썬 캐시
 __pycache__/
+
+# 자격 증명 · 접속 정보 (팀 보안 규칙)
+.aws/
+credentials
+*credentials*.json
+kubeconfig
+*.kubeconfig
+.kube/
+id_rsa*
+id_ed25519*
+*.ppk
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.tfvars
+!*.tfvars.example
+*.env
+!*.env.example
+secrets/
+# 가리지 않은 원본 캡처는 올리지 않는다 (가린 사본은 *-masked.png)
+*-raw.png
+*-raw.jpg
+*.raw.png

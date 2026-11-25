@@ -19,15 +19,16 @@ jobs:
           IS_PR: ${{ github.event.pull_request.number != '' }}
         run: |
           add() { gh issue edit "$NUM" --repo "$GITHUB_REPOSITORY" --add-label "$1" >/dev/null 2>&1 || true; }
+          has() { grep -qE "$1" <<<"$2"; }
           if [ "$IS_PR" = "true" ]; then
             files=$(gh pr view "$NUM" --repo "$GITHUB_REPOSITORY" --json files --jq '.files[].path')
-            grep -q '^network/' <<<"$files" && add 네트워크
-            grep -qE '^(server|app)/' <<<"$files" && add 서버
-            grep -q '^aws/' <<<"$files" && add AWS
-            grep -q '^cicd/' <<<"$files" && add CI/CD
+            if has '^network/' "$files"; then add 네트워크; fi
+            if has '^(server|app)/' "$files"; then add 서버; fi
+            if has '^aws/' "$files"; then add AWS; fi
+            if has '^cicd/' "$files"; then add CI/CD; fi
           else
-            grep -q '네트워크' <<<"$BODY" && add 네트워크
-            grep -q '서버 · 이준호' <<<"$BODY" && add 서버
-            grep -q 'AWS · 이우빈' <<<"$BODY" && add AWS
-            grep -q 'CI/CD · 강찬영' <<<"$BODY" && add CI/CD
+            if has '네트워크 · 강민서' "$BODY"; then add 네트워크; fi
+            if has '서버 · 이준호' "$BODY"; then add 서버; fi
+            if has 'AWS · 이우빈' "$BODY"; then add AWS; fi
+            if has 'CI/CD · 강찬영' "$BODY"; then add CI/CD; fi
           fi
