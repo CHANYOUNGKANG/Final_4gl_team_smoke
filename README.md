@@ -28,12 +28,12 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11.21 – 12.09
 <!-- smoke-activity:start -->
 | 최근 커밋 | 작성자 | 시각 |
 | --- | --- | ---: |
+| [`b6ea0bf`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/b6ea0bfb476e25e0840f255a2466935d1f672db4) feat: README 라이브 패널과 팀 작업 공간 구성 | claude | 1분 전 |
 | [`390e4a3`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/390e4a3f416dce45e0901bc316b89dd3fe507ce2) docs: add interactive blue-green demo and evidence-based README scoreb… | CHANYOUNGKANG | 1시간 전 |
 | [`29e5f96`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/29e5f96813c736b520fed4e7f4b9172ddd5bca10) feat: push마다 팀 구축 진행률과 항목별 근거 집계 | CHANYOUNGKANG | 2시간 전 |
 | [`f8ef111`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/f8ef1119a1f7ea49124aec231c239fa85eef456b) docs: 팀 작업 바로가기, 파트별 실행 순서와 인계표 추가 | CHANYOUNGKANG | 2시간 전 |
 | [`25be020`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/25be020e4aef3c4057236f28b379b53ca74cdc44) design: 담당자별 연락처와 팀 워크스페이스 카드 정리 | CHANYOUNGKANG | 2시간 전 |
 | [`ce46e2a`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/ce46e2afe7e4240670950c24d6b8baaf3cbcc4bb) design: SMOKE 팀 배너와 담당자 카드로 프로젝트 홈 개편 | CHANYOUNGKANG | 2시간 전 |
-| [`9408fac`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/9408fac196ceeeb92de5271452e33a5b8a47815f) docs: 프로젝트 소개, 아키텍처·요구사항과 담당별 작업 공간 구성 | CHANYOUNGKANG | 2시간 전 |
 
 **열린 이슈·PR**　[#1 팀 구축 진행률 · 구현 근거와 시연 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)
 
