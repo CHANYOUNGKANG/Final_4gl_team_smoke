@@ -28,16 +28,15 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11.21 – 12.09
 <!-- smoke-activity:start -->
 | 최근 커밋 | 작성자 | 시각 (KST) |
 | --- | --- | ---: |
+| [`5756a52`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/5756a5291dfc280f878f539b2a7a5b842afd94fc) chore: 보안 자동 검사와 AI 작업 규칙 추가 (#2) | CHANYOUNGKANG | 11/25 21:44 |
 | [`d7852e5`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/d7852e5597d8909b5334e815f8bf57fd2897b47f) docs: add team security rules for public project materials | CHANYOUNGKANG | 11/25 21:12 |
 | [`628b270`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/628b270eee0dca78c6609a6ef4cb92c55333e1fd) fix: 최근 활동 시각을 KST 절대 시각으로 표기 | claude | 11/25 21:01 |
-| [`b6ea0bf`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/b6ea0bfb476e25e0840f255a2466935d1f672db4) feat: README 라이브 패널과 팀 작업 공간 구성 | claude | 11/25 20:58 |
-| [`390e4a3`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/390e4a3f416dce45e0901bc316b89dd3fe507ce2) docs: add interactive blue-green demo and evidence-based README scoreb… | CHANYOUNGKANG | 11/25 19:54 |
 
 **열린 이슈·PR**　[#1 팀 구축 진행률 · 구현 근거와 시연 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)
 
-**작업 브랜치 0개**　아직 없음 · 아래 ‘작업 시작하기’ 참고
+**작업 브랜치 7개**　[`aws/woobin-day1-jenkins-ec2`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/aws/woobin-day1-jenkins-ec2)　[`chore/security-automation`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/chore/security-automation)　[`cicd/chanyoung-day1-first-build`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/chanyoung-day1-first-build)　[`cicd/worklog-jenkins-bootstrap`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/worklog-jenkins-bootstrap)　[`docs/ip-plan`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/docs/ip-plan)　[`network/minseo-day1-topology`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/network/minseo-day1-topology)　[`server/junho-day1-app-handoff`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/server/junho-day1-app-handoff)
 
-<sub>11/25 21:12 KST 기준 · main push와 매일 00:05에 갱신</sub>
+<sub>11/25 21:44 KST 기준 · main push와 매일 00:05에 갱신</sub>
 <!-- smoke-activity:end -->
 
 <details>
