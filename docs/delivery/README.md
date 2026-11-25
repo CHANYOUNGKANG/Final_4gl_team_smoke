@@ -10,8 +10,8 @@
 | --- | --- | --- |
 | [강민서 · 네트워크](../../network/README.md#작업-체크리스트) | 본사·지사의 VLAN, 서버 위치, 허용할 통신 방향을 한 장에 표시 | 이준호가 Bastion·웹·메일 서버의 위치와 허용 경로를 확인 |
 | [이준호 · 서버](../../server/README.md#작업-체크리스트) | 기존 공지 앱의 소스 위치, Java·Tomcat 버전, WAR 이름, 공지 조회 경로를 공유 | 강찬영이 같은 소스를 받아 빌드하고 조회 경로를 확인 |
-| [이우빈 · AWS](../../aws/README.md#작업-체크리스트) | 실습 예산·가동 시간과 Jenkins EC2 접속 경로, Webhook 수신 경로를 합의 | 강찬영이 EC2에 접속하고 GitHub에서 Jenkins까지 연결 가능한지 확인 |
-| [강찬영 · CI/CD](../../cicd/README.md#작업-체크리스트) | Jenkins 수동 빌드 성공 후 Webhook 연결. 테스트 커밋 한 번 push | 같은 커밋 SHA가 Jenkins 로그에 보이고 테스트 결과와 WAR가 남음 |
+| [이우빈 · AWS](../../aws/README.md#작업-체크리스트) | 실습 예산·가동 시간과 Jenkins EC2(퍼블릭 서브넷)·SG(실습 PC IP/32)·IAM 역할을 합의 | 강찬영이 EC2에 접속하고 GitHub에서 Jenkins까지 연결 가능한지 확인 |
+| [강찬영 · CI/CD](../../cicd/README.md#작업-체크리스트) | Jenkins 수동 빌드 성공 후 Poll SCM 자동 빌드 연결([ADR-0004](../decisions/0004-jenkins-poll-scm.md)). 테스트 커밋 한 번 push | 같은 커밋 SHA가 Jenkins 로그에 보이고 테스트 결과와 WAR가 남음 |
 
 ## 파트 간 인계
 

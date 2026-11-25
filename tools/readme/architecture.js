@@ -1,11 +1,28 @@
-// 시스템 아키텍처 구성도 생성기 → docs/images/architecture.svg
-// 팀 아키텍처 대시보드(2페이지 전체 아키텍처)의 구성도 그리기 코드를 그대로 옮기고 "IP 주소 표시"를 켠 상태로 내보낸다.
-// 값의 기준: docs/architecture/ip-plan.md. 주소가 바뀌면 아래 node({ip:...})·tip_() 값을 고치고
-//   node tools/readme/architecture.js
-// 를 실행해 SVG와 함께 커밋한다. 실제 공인 IP·계정 ID는 넣지 않는다.
+// 시스템 아키텍처 구성도 · IP 문서 생성기
+//   입력: docs/architecture/topology.json (주소·포트의 단일 기준)
+//   출력: docs/images/architecture.svg, docs/architecture/ip-plan.md 의 자동 표 블록
+// 구성도 배치는 팀 아키텍처 대시보드(2페이지 전체 아키텍처, IP 표시)의 그리기 코드를 옮긴 것이다.
+// main 병합 시 Actions(Team progress)가 자동 실행한다. 로컬 미리보기: node tools/readme/architecture.js
 const fs = require("fs");
 const path = require("path");
-const OUT = path.join(__dirname, "../../docs/images/architecture.svg");
+const ROOT = path.join(__dirname, "../..");
+const OUT = path.join(ROOT, "docs/images/architecture.svg");
+const PLAN = path.join(ROOT, "docs/architecture/ip-plan.md");
+const TOPO = JSON.parse(fs.readFileSync(path.join(ROOT, "docs/architecture/topology.json"), "utf8"));
+/* 대역 검증: 형식 오류·사설 대역 겹침이면 실패 (본사·지사·AWS가 겹치면 VPN·이관 라우팅이 깨진다) */
+const cidr = (c) => {
+  const m = /^(\d+)\.(\d+)\.(\d+)\.(\d+)\/(\d+)$/.exec(c);
+  if (!m || m.slice(1, 5).some((o) => +o > 255) || +m[5] > 32) throw new Error(`잘못된 CIDR: ${c}`);
+  const ip = m.slice(1, 5).reduce((a, o) => a * 256 + +o, 0), size = 2 ** (32 - +m[5]);
+  if (ip % size) throw new Error(`네트워크 주소가 아님: ${c}`);
+  return [ip, ip + size - 1];
+};
+const R = TOPO.ranges.map(([n, c]) => [n, c, cidr(c)]);
+for (let i = 0; i < R.length; i++) for (let j = i + 1; j < R.length; j++)
+  if (R[i][2][0] <= R[j][2][1] && R[j][2][0] <= R[i][2][1]) throw new Error(`대역 겹침: ${R[i][0]} ${R[i][1]} ↔ ${R[j][0]} ${R[j][1]}`);
+for (const [sub, a, c] of TOPO.aws) for (const x of [a, c]) { const [lo, hi] = cidr(x), v = R.find((r) => r[0] === "AWS VPC")[2]; if (lo < v[0] || hi > v[1]) throw new Error(`VPC 밖 서브넷: ${sub} ${x}`); }
+for (const [, c] of TOPO.gns3) if (/^\d/.test(c)) cidr(c);
+const D = new Proxy(TOPO.diagram, { get: (o, k) => { if (!(k in o)) throw new Error(`topology.json diagram.${String(k)} 없음`); return o[k]; } });
 
 const OWN = {
   net: { c: "#2b4fbf", n: "강민서", r: "네트워크·보안" },
@@ -105,9 +122,9 @@ const role = (x, y, l, c) => { const w = tw(l, 11.5) + 20; S += `<rect x="${x - 
 
 /* ============ 인터넷 · ISP ============ */
 S += `<rect x="24" y="24" width="1652" height="140" rx="18" fill="#f7f6f3" stroke="#e6e3dc" stroke-dasharray="3 4"/><text x="44" y="50" font-size="14" font-weight="700" fill="#7a766e">🌍 인터넷 · ISP 구간 <tspan font-weight="500" font-size="12.5">GNS3 안의 가상 통신사 → GNS3 NAT 노드 → 실제 인터넷</tspan></text>`;
-node({ ip: "203.0.113.50/24", x: 44, y: 66, w: 212, h: 70, is: 40, g: "bug", t: "Kali 공격자", s: "Kali Linux VM", fs: 16.5, o: "net" });
-node({ ip: "198.51.100.1·.5·.9", x: 380, y: 66, w: 220, h: 70, is: 40, g: "router", t: "ISP 라우터", s: "AS 65100 · 가상 통신사", fs: 16.5, o: "net" });
-node({ ip: "192.168.122.0/24", x: 660, y: 66, w: 220, h: 70, is: 40, g: "cloud", t: "GNS3 NAT 노드", s: "실제 인터넷 출구", fs: 16.5, o: "net" });
+node({ ip: D.kali, x: 44, y: 66, w: 212, h: 70, is: 40, g: "bug", t: "Kali 공격자", s: "Kali Linux VM", fs: 16.5, o: "net" });
+node({ ip: D.isp, x: 380, y: 66, w: 220, h: 70, is: 40, g: "router", t: "ISP 라우터", s: "AS 65100 · 가상 통신사", fs: 16.5, o: "net" });
+node({ ip: D.gns3_nat, x: 660, y: 66, w: 220, h: 70, is: 40, g: "cloud", t: "GNS3 NAT 노드", s: "실제 인터넷 출구", fs: 16.5, o: "net" });
 S += `<rect x="560" y="52" width="64" height="24" rx="12" fill="#141414" stroke="#fff" stroke-width="2"/><text x="592" y="68.5" font-size="12" font-weight="800" fill="#fff" text-anchor="middle">NAT ①</text>`;
 S += `<path d="M600 101H656" stroke="#a8a399" stroke-width="2.5"/><path d="M880 101H1300V180" fill="none" stroke="#c45a1c" stroke-width="2.5" stroke-dasharray="7 6"/>`;
 S += `<rect x="960" y="88" width="260" height="26" rx="13" fill="#fff" stroke="#c45a1c"/><text x="1090" y="105.5" font-size="13" font-weight="700" fill="#c45a1c" text-anchor="middle">인터넷 · HTTPS 443 → AWS</text>`;
@@ -115,25 +132,25 @@ t(1320, 108, "이관 데이터 · 알림(SQS) · 외부 사용자 접속", "#9a9
 
 /* ============ GNS3 (강민서) ============ */
 zone("net", 24, 184, 776, 500, "GNS3 네트워크", "");
-tip_(112, 273, "10.1.0.0/16", "#2b4fbf", "", 12); tip_(346, 273, "10.0.0.0/16", "#2b4fbf", "", 12);
+tip_(112, 273, D.branch_range, "#2b4fbf", "", 12); tip_(346, 273, D.hq_range, "#2b4fbf", "", 12);
 block(44, 250, 210, 414, "🏬  지사");
-node({ ip: "WAN 198.51.100.10", x: 56, y: 290, w: 186, g: "fw", t: "pfSense", s: "지사 방화벽", o: "net" });
-node({ ip: "10.1.10.100/24", x: 56, y: 392, w: 186, g: "pc", t: "지사 PC", s: "VLAN 10 업무", o: "net" });
+node({ ip: D.pfsense, x: 56, y: 290, w: 186, g: "fw", t: "pfSense", s: "지사 방화벽", o: "net" });
+node({ ip: D.branch_pc, x: 56, y: 392, w: 186, g: "pc", t: "지사 PC", s: "VLAN 10 업무", o: "net" });
 t(149, 520, "공지 허용", OWN.net.c, 13.5, 600, "middle"); t(149, 542, "관리망·서버팜 차단", "#c0392b", 13.5, 600, "middle");
 block(274, 250, 506, 414, "🏢  본사");
-node({ ip: "198.51.100.2 · .130", x: 288, y: 284, w: 226, h: 64, is: 38, g: "router", t: "Edge R1", s: "eBGP · HSRP Active", fs: 16, o: "net" });
-node({ ip: "198.51.100.6 · .131", x: 540, y: 284, w: 226, h: 64, is: 38, g: "router", t: "Edge R2", s: "eBGP · HSRP Standby", fs: 16, o: "net" });
-S += `<rect x="380" y="356" width="294" height="22" rx="11" fill="#eef2fb"/>`; tip_(527, 371.5, "198.51.100.128/28 · HSRP .129", "#2b4fbf", "middle");
-node({ ip: "out .132 · in 10.0.0.1", x: 288, y: 386, w: 226, h: 64, is: 38, g: "fw", t: "ASA-1", s: "Active · ACL · VPN 종단", fs: 16, o: "net" });
-node({ ip: "out .133 · 대기", x: 540, y: 386, w: 226, h: 64, is: 38, g: "fw", t: "ASA-2", s: "Standby", fs: 16, o: "net" });
+node({ ip: D.r1, x: 288, y: 284, w: 226, h: 64, is: 38, g: "router", t: "Edge R1", s: "eBGP · HSRP Active", fs: 16, o: "net" });
+node({ ip: D.r2, x: 540, y: 284, w: 226, h: 64, is: 38, g: "router", t: "Edge R2", s: "eBGP · HSRP Standby", fs: 16, o: "net" });
+S += `<rect x="380" y="356" width="294" height="22" rx="11" fill="#eef2fb"/>`; tip_(527, 371.5, D.hsrp, "#2b4fbf", "middle");
+node({ ip: D.asa1, x: 288, y: 386, w: 226, h: 64, is: 38, g: "fw", t: "ASA-1", s: "Active · ACL · VPN 종단", fs: 16, o: "net" });
+node({ ip: D.asa2, x: 540, y: 386, w: 226, h: 64, is: 38, g: "fw", t: "ASA-2", s: "Standby", fs: 16, o: "net" });
 S += `<rect x="700" y="376" width="64" height="24" rx="12" fill="#2b4fbf" stroke="#fff" stroke-width="2"/><text x="732" y="392.5" font-size="12" font-weight="800" fill="#fff" text-anchor="middle">NAT ②</text>`;
-node({ ip: "10.0.0.2 · SVI .2", x: 288, y: 482, w: 226, h: 64, is: 38, g: "switch", t: "Core SW-1", s: "VLAN SVI · RSTP", fs: 16, o: "net" });
-node({ ip: "10.0.0.3 · SVI .3", x: 540, y: 482, w: 226, h: 64, is: 38, g: "switch", t: "Core SW-2", s: "SPAN → Snort", fs: 16, o: "net" });
-node({ ip: "VMnet2·3·4", x: 288, y: 578, w: 226, h: 64, is: 38, g: "cloud", t: "Cloud 노드 ×3", s: "VLAN 20·30·40 ↔ VMnet", fs: 16, o: "net" });
-node({ ip: "관리 10.0.20.20", x: 540, y: 578, w: 226, h: 64, is: 38, g: "shield", t: "Snort IDS", s: "Ubuntu VM", fs: 16, o: "net" });
+node({ ip: D.sw1, x: 288, y: 482, w: 226, h: 64, is: 38, g: "switch", t: "Core SW-1", s: "VLAN SVI · RSTP", fs: 16, o: "net" });
+node({ ip: D.sw2, x: 540, y: 482, w: 226, h: 64, is: 38, g: "switch", t: "Core SW-2", s: "SPAN → Snort", fs: 16, o: "net" });
+node({ ip: D.cloud, x: 288, y: 578, w: 226, h: 64, is: 38, g: "cloud", t: "Cloud 노드 ×3", s: "VLAN 20·30·40 ↔ VMnet", fs: 16, o: "net" });
+node({ ip: D.snort, x: 540, y: 578, w: 226, h: 64, is: 38, g: "shield", t: "Snort IDS", s: "Ubuntu VM", fs: 16, o: "net" });
 S += `<g stroke="#b5b1a8" stroke-width="2" fill="none"><path d="M149 290V176H330V140"/><path d="M450 284V140"/><path d="M560 284V140"/><path d="M514 316H540"/><path d="M401 348V386"/><path d="M653 348V386"/><path d="M514 418H540" stroke-dasharray="5 4"/><path d="M401 450V482"/><path d="M653 450V482"/><path d="M514 508H540M514 520H540" stroke="#2b4fbf" stroke-width="3.5"/><path d="M401 546V578"/><path d="M149 354V392"/></g>`;
-tip_(158, 190, "198.51.100.8/30", "#6b675f"); tip_(462, 200, "198.51.100.0/30", "#2b4fbf", "", 11); tip_(572, 200, "198.51.100.4/30", "#2b4fbf", "", 11);
-tip_(527, 470, "FO 10.0.255.0/30", "#2b4fbf", "middle", 11.5); tip_(296, 470, "10.0.0.0/29", "#2b4fbf", "", 11.5); t(527, 566, "↔ LACP", "#2b4fbf", 11.5, 700, "middle");
+tip_(158, 190, D.link_branch_wan, "#6b675f"); tip_(462, 200, D.link_r1, "#2b4fbf", "", 11); tip_(572, 200, D.link_r2, "#2b4fbf", "", 11);
+tip_(527, 470, D.link_failover, "#2b4fbf", "middle", 11.5); tip_(296, 470, D.link_asa_sw, "#2b4fbf", "", 11.5); t(527, 566, "↔ LACP", "#2b4fbf", 11.5, 700, "middle");
 S += `<text x="440" y="662" font-size="12" font-weight="600"><tspan fill="#c0392b" font-weight="800">공격</tspan><tspan fill="#6b675f"> Kali → ISP → R1 → ASA → 공지 웹</tspan><tspan fill="#c9c5bc">  │  </tspan><tspan fill="#1f8a4c" font-weight="800">방어</tspan><tspan fill="#6b675f"> ASA 차단 · Snort 탐지</tspan></text>`;
 const colsX = [162, 418, 674];
 [["VMnet2 ↔ VLAN 20"], ["VMnet3 ↔ VLAN 30"], ["VMnet4 ↔ VLAN 40"]].forEach(([l], i) => {
@@ -144,15 +161,15 @@ const colsX = [162, 418, 674];
 S += `<g transform="translate(0,280)">`;
 /* ============ VMware Linux (이준호) ============ */
 zone("srv", 24, 452, 776, 360, "Linux 서버 VM", "");
-tip_(248, 490, "VLAN 20·30·40 = 10.0.20·30·40.0/24", "#0f7a5a", "", 13.5);
-[[44, "관리망 · VLAN 20", 20, "① 관리 서버"], [300, "서비스망 · VLAN 30", 30, "② 서비스 서버"], [556, "서버팜 · VLAN 40", 40, "③ 데이터 서버"]].forEach(([x, l, v, vm]) => {
+tip_(248, 490, D.vlan_summary, "#0f7a5a", "", 13.5);
+[[44, "관리망 · VLAN 20", D.vm_mgmt, "① 관리 서버"], [300, "서비스망 · VLAN 30", D.vm_svc, "② 서비스 서버"], [556, "서버팜 · VLAN 40", D.vm_data, "③ 데이터 서버"]].forEach(([x, l, ip, vm]) => {
   S += `<line x1="${x}" y1="544" x2="${x + 236}" y2="544" stroke="${OWN.srv.c}" stroke-opacity=".35"/><text x="${x}" y="535" font-size="14" font-weight="700" fill="${OWN.srv.c}">${l}</text>` +
-    `<rect x="${x}" y="782" width="112" height="22" rx="11" fill="${tint(OWN.srv.c, 0.1)}"/><text x="${x + 56}" y="797.5" font-size="12.5" font-weight="700" fill="${OWN.srv.c}" text-anchor="middle">${vm.slice(0, 1)} <tspan font-family="${MONO}">10.0.${v}.10</tspan></text>`;
+    `<rect x="${x}" y="782" width="112" height="22" rx="11" fill="${tint(OWN.srv.c, 0.1)}"/><text x="${x + 56}" y="797.5" font-size="12.5" font-weight="700" fill="${OWN.srv.c}" text-anchor="middle">${vm.slice(0, 1)} <tspan font-family="${MONO}">${esc(ip)}</tspan></text>`;
 });
 [
-  [44, 556, "term", "SSH Bastion", "10.0.20.10 :22"], [44, 632, "disk", "Ansible·백업", "10.0.20.10 /backup"], [44, 708, "log", "로그 수집", "10.0.20.10 :514"],
-  [300, 556, "web", "Tomcat 웹", "10.0.30.10 :8080"], [300, 632, "swap", "Nginx", "10.0.30.10 :80·443"], [300, 708, "mail", "메일 서버", "10.0.30.10 :25·143"],
-  [556, 556, "folder", "첨부파일", "10.0.40.10 :2049"], [556, 632, "db", "MariaDB", "10.0.40.10 :3306"], [556, 708, "file", "원본 검증", "10.0.40.10"],
+  [44, 556, "term", "SSH Bastion", `${D.vm_mgmt} ${D.svc_ssh}`], [44, 632, "disk", "Ansible·백업", `${D.vm_mgmt}${D.svc_backup}`], [44, 708, "log", "로그 수집", `${D.vm_mgmt} ${D.svc_log}`],
+  [300, 556, "web", "Tomcat 웹", `${D.vm_svc} ${D.svc_tomcat}`], [300, 632, "swap", "Nginx", `${D.vm_svc} ${D.svc_nginx}`], [300, 708, "mail", "메일 서버", `${D.vm_svc} ${D.svc_mail}`],
+  [556, 556, "folder", "첨부파일", `${D.vm_data} ${D.svc_nfs}`], [556, 632, "db", "MariaDB", `${D.vm_data} ${D.svc_db}`], [556, 708, "file", "원본 검증", `${D.vm_data}${D.svc_hash}`],
 ].forEach(([x, y, g, tt, ip]) => node({ x, y, w: 236, h: 66, is: 42, g, t: tt, s: "", o: "srv", ip }));
 role(530, 546, "🎯 공격 대상", "#c0392b");
 flow("E", [[280, 665], [290, 665], [290, 741], [296, 741]]);
@@ -171,25 +188,25 @@ S += `</g>`;
 
 S += `<g transform="translate(0,160)">`;
 /* ============ AWS (이우빈) ============ */
-zone("aws", 840, 24, 836, 904, "AWS 클라우드", "서울 리전"); tip_(1150, 62, "VPC 10.100.0.0/16", "#c45a1c", "", 13.5);
+zone("aws", 840, 24, 836, 904, "AWS 클라우드", "서울 리전"); tip_(1150, 62, D.vpc, "#c45a1c", "", 13.5);
 node({ x: 860, y: 104, w: 180, g: "user", t: "외부 사용자", s: "조회 · 다운로드", o: "user" });
-node({ ip: "smoke.internal", x: 1062, y: 104, w: 180, g: "globe", t: "Route 53", s: "", o: "aws" });
-node({ ip: "엣지 · HTTPS", x: 1264, y: 104, w: 180, g: "bolt", t: "CloudFront", s: "", o: "aws", fs: 17 });
-node({ ip: "VPC 밖 · HTTPS", x: 1478, y: 104, w: 178, g: "bucket", t: "S3", s: "", o: "aws" });
-node({ ip: "퍼블릭 10.100.1.0/24 · 10.100.2.0/24", x: 900, y: 206, w: 460, g: "swap", t: "ALB 로드밸런서", s: "", o: "aws" });
+node({ ip: D.route53, x: 1062, y: 104, w: 180, g: "globe", t: "Route 53", s: "", o: "aws" });
+node({ ip: D.cloudfront, x: 1264, y: 104, w: 180, g: "bolt", t: "CloudFront", s: "", o: "aws", fs: 17 });
+node({ ip: D.s3, x: 1478, y: 104, w: 178, g: "bucket", t: "S3", s: "", o: "aws" });
+node({ ip: D.alb, x: 900, y: 206, w: 460, g: "swap", t: "ALB 로드밸런서", s: "", o: "aws" });
 node({ x: 1478, y: 206, w: 178, g: "lock", t: "IAM · SG", s: "최소 권한", o: "aws" });
 S += `<rect x="860" y="304" width="586" height="252" rx="16" fill="none" stroke="#d9d5cc" stroke-width="1" stroke-dasharray="3 4"/>`;
 S += icon("box", 876, 316, 28, OWN.aws.c) + `<text x="914" y="336" font-size="17" font-weight="700" fill="${TXT}">Amazon EKS  ☸️</text>`;
 t(1054, 543, "장애 시에도 유지 · ASG 교체", "#9a958b", 13, 500, "middle");
-[["wA", 876, "워커 A · AZ-a", "10.100.11.0/24"], ["wC", 1160, "워커 C · AZ-c", "10.100.12.0/24"]].forEach(([id, x, l, ip]) => {
+[["wA", 876, "워커 A · AZ-a", D.worker_a], ["wC", 1160, "워커 C · AZ-c", D.worker_c]].forEach(([id, x, l, ip]) => {
   S += `<rect x="${x}" y="352" width="270" height="164" rx="12" fill="#fff" stroke="#e3e0d9" stroke-width="1"/>${icon("server", x + 12, 362, 32, OWN.aws.c)}<text x="${x + 54}" y="384" font-size="16.5" font-weight="700" fill="${TXT}">${l}</text><text x="${x + 258}" y="384" font-size="12.5" font-weight="700" fill="${OWN.aws.c}" text-anchor="end" font-family="${MONO}">${ip}</text>`;
   [["Blue v1 · 운영", "#2b4fbf", "#f4f6fc"], ["Green v2 · 검증", "#1f8a4c", "#f3faf6"]].forEach(([p, s, f], i) => { const y = 404 + i * 50; S += `<rect x="${x + 12}" y="${y}" width="246" height="42" rx="11" fill="${f}"/>${icon("pods", x + 20, y + 8, 26, s)}<text x="${x + 56}" y="${y + 27}" font-size="15" font-weight="600" fill="${s}">공지 서비스 ${p}</text>`; });
 });
-node({ ip: "10.100.21·22.0/24", x: 860, y: 596, w: 186, g: "db", t: "RDS", s: "", o: "aws" });
-node({ ip: "데이터 서브넷 :6379", x: 1062, y: 596, w: 186, g: "bolt", t: "Redis", s: "", o: "aws" });
-node({ ip: "데이터 서브넷 :2049", x: 1264, y: 596, w: 186, g: "folder", t: "EFS", s: "", o: "aws" });
+node({ ip: D.rds, x: 860, y: 596, w: 186, g: "db", t: "RDS", s: "", o: "aws" });
+node({ ip: D.redis, x: 1062, y: 596, w: 186, g: "bolt", t: "Redis", s: "", o: "aws" });
+node({ ip: D.efs, x: 1264, y: 596, w: 186, g: "folder", t: "EFS", s: "", o: "aws" });
 node({ x: 1478, y: 596, w: 178, g: "chart", t: "CloudWatch", s: "장애 측정 · 알람", o: "aws", fs: 16.5 });
-node({ ip: "10.100.1.0/24 :22", x: 860, y: 690, w: 186, h: 70, g: "term", t: "Bastion EC2", s: "", o: "aws", fs: 17 });
+node({ ip: D.bastion, x: 860, y: 690, w: 186, h: 70, g: "term", t: "Bastion EC2", s: "", o: "aws", fs: 17 });
 S += `<rect x="1062" y="690" width="390" height="70" rx="12" fill="#fff" stroke="${tint(FLOW.B.c, 0.45)}"/><text x="1080" y="717" font-size="15" font-weight="700" fill="${FLOW.B.c}">MariaDB → RDS 이관 · 백업</text><text x="1080" y="743" font-size="13" font-weight="500" fill="#6b675f">① mysqldump ② SSH 전송 ③ mysql 복원 ④ 건수 대조</text>`;
 t(862, 792, "RDS Multi-AZ는 고객 요구에 따라 선택 · 단일 AZ면 스냅샷 복원 시간 측정", "#9a958b", 13, 500);
 flow("A", [[1040, 140], [1058, 140]]); flow("A", [[1242, 140], [1260, 140]]); flow("A", [[1444, 140], [1474, 140]]);
@@ -202,7 +219,7 @@ S += `</g>`;
 S += `<g transform="translate(0,280)">`;
 /* ============ CI/CD (강찬영) ============ */
 zone("cicd", 24, 968, 1652, 180, "CI/CD 파이프라인", "무중단 블루그린 배포");
-[["git", "GitHub", "코드 push"], ["gear", "Jenkins", "Poll SCM · WAR 빌드"], ["box", "Docker", "이미지 빌드"], ["layers", "ECR", "커밋 태그 저장"], ["play", "Ansible", "Green 배포"], ["check", "Green 검증", "글 작성·조회"], ["swap", "ALB 전환", "실패 시 롤백"]]
+[["git", "GitHub", "코드 push"], ["gear", "Jenkins", D.jenkins_trigger], ["box", "Docker", "이미지 빌드"], ["layers", "ECR", "커밋 태그 저장"], ["play", "Ansible", "Green 배포"], ["check", "Green 검증", "글 작성·조회"], ["swap", "ALB 전환", "실패 시 롤백"]]
   .forEach(([g, tt, s], i) => tile({ x: 44 + i * 232, y: 1022, w: 200, h: 112, g, t: tt, s, o: "cicd", num: i + 1, sc: i === 6 ? "#c0392b" : null }));
 for (let i = 0; i < 6; i++) flow("C", [[44 + i * 232 + 200, 1078], [44 + (i + 1) * 232 - 6, 1078]]);
 S += `</g>`;
@@ -238,3 +255,27 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1710" height="1444" 
   `<style>.fl{fill:none;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:9 7;animation:run 1.1s linear infinite}@keyframes run{to{stroke-dashoffset:-32}}@media (prefers-reduced-motion:reduce){.fl{animation:none}}</style>` +
   `<g font-family="${FONT}">${S}</g></svg>\n`;
 fs.writeFileSync(OUT, svg);
+
+/* ============ ip-plan.md 자동 표 ============ */
+const cell = (v) => {
+  const s = String(v).replace(/\|/g, "／");
+  return /^\d[\d./]*$/.test(s) ? "`" + s + "`" : s;
+};
+const table = (head, rows) => ["| " + head.join(" | ") + " |", "| " + head.map(() => "---").join(" | ") + " |", ...rows.map((r) => "| " + r.map(cell).join(" | ") + " |")].join("\n");
+const blocks = {
+  "topology-status": `> **상태: ${TOPO.status} (${TOPO.updated}).** 값을 바꿀 때는 [topology.json](topology.json)만 고쳐 PR을 올린다. 이 문서의 자동 표와 [구성도](../images/architecture.svg)는 main 병합 때 Actions가 다시 만든다.`,
+  "topology-ranges": table(["구역", "대역", "용도"], TOPO.ranges),
+  "topology-gns3": table(["구간", "대역", "장비 · 주소", "메모"], TOPO.gns3),
+  "topology-vms": table(["VM", "주소", "서비스"], TOPO.vms),
+  "topology-aws": table(["서브넷", "AZ a", "AZ c", "들어가는 것", "라우팅"], TOPO.aws),
+  "topology-allow": TOPO.allow.map(([g, rows]) => `### ${g}\n\n` + table(["출발", "도착", "포트", "용도", "어디서 열기"], rows)).join("\n\n"),
+};
+let plan = fs.readFileSync(PLAN, "utf8");
+for (const [k, body] of Object.entries(blocks)) {
+  const a = `<!-- ${k}:start -->`, z = `<!-- ${k}:end -->`;
+  const i = plan.indexOf(a), j = plan.indexOf(z);
+  if (i < 0 || j < 0) throw new Error(`ip-plan.md에 ${k} 표시가 없음`);
+  plan = plan.slice(0, i + a.length) + "\n" + body + "\n" + plan.slice(j);
+}
+fs.writeFileSync(PLAN, plan);
+console.log("architecture.svg · ip-plan.md 갱신");

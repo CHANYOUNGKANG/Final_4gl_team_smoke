@@ -28,7 +28,7 @@
   "CICD1": {
     "verification": {
       "file": "cicd/verification/first-build.log",
-      "observed": "같은 커밋의 Webhook 빌드에서 테스트 통과와 WAR 생성 경로를 확인"
+      "observed": "push 후 Poll SCM으로 시작된 같은 커밋 빌드에서 테스트 통과와 WAR 생성 경로를 확인"
     }
   }
 }

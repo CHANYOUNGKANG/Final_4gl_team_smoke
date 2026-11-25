@@ -4,7 +4,7 @@
 
 ![㈜스모크 시스템 아키텍처](../images/architecture.svg)
 
-> 구성도는 팀 아키텍처 대시보드의 그리기 코드를 옮긴 [tools/readme/architecture.js](../../tools/readme/architecture.js)로 생성한다 (IP 표시 모드). 주소가 바뀌면 [ip-plan.md](ip-plan.md)와 스크립트의 값을 함께 고치고 `node tools/readme/architecture.js`를 실행해 SVG를 커밋한다. 이전 설계 화면: [architecture.png](../images/architecture.png)
+> 구성도와 [IP 대역표](ip-plan.md)의 표는 [topology.json](topology.json)에서 자동 생성된다 ([tools/readme/architecture.js](../../tools/readme/architecture.js), 배치는 팀 아키텍처 대시보드와 같음). 주소를 바꿀 때는 `topology.json`만 PR로 고치면 main 병합 때 Actions가 다시 그린다. 결정 배경은 [ADR](../decisions/README.md). 이전 설계 화면: [architecture.png](../images/architecture.png)
 
 ## 접속과 데이터 이동
 

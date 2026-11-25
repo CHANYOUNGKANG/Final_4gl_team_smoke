@@ -18,3 +18,4 @@
 - [ ] 담당 파트 `WORKLOG.md`에 확인 결과 · 막힌 부분 · 다음 작업을 적었다
 - [ ] 실행 결과를 남겼다면 `docs/progress/evidence.json`에 등록했다
 - [ ] 다른 파트가 받아야 할 값이 있으면 인계 이슈를 열었다
+- [ ] 주소·포트를 바꿨다면 `docs/architecture/topology.json`만 고쳤다 (구성도·IP 표는 자동)
