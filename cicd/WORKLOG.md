@@ -13,6 +13,24 @@
 
 ---
 
+## 2026-11-25 (수) 21:40 · IP 대역표 반영
+
+**확인한 결과**
+- 팀 대시보드의 IP 대역·통신 허용표가 최신화됨 → 공용 문서 `docs/architecture/ip-plan.md`로 옮김 (PR #4, 제안 값).
+- CI/CD에 걸리는 값: Jenkins는 퍼블릭 서브넷 `10.100.1.0/24`, Jenkins SG는 8080·22를 **실습 PC 공인 IP/32만** 허용, Ansible EC2와 EKS 워커는 프라이빗 앱 `10.100.11·12.0/24`, ALB → Pod 포트 8080, Jenkins·Ansible → EKS API·ECR 443은 IAM 역할 + Access Entry.
+
+**바꾼 것**
+- Jenkinsfile 트리거: SG 때문에 GitHub Webhook이 도달할 수 없어 `pollSCM('H/2 * * * *')`를 기본으로 추가 (`githubPush()`는 SG에 GitHub hooks 대역을 열 때를 위해 유지).
+- Jenkins README·`deploy.env.example`에 서브넷 배치와 SG 조건 반영.
+
+**막힌 부분 · 확인 필요**
+- Webhook을 쓸지(SG에 GitHub hooks 대역 추가) Poll SCM으로 갈지 이우빈과 결정.
+- 대시보드의 DVWA 포트(`:8081` vs `-p 8080:80`) 불일치 — 강민서·이준호 확인.
+
+**다음 작업** — 11/26 이우빈에게 Jenkins EC2·SG·IAM 역할(ECR push, EKS Access Entry) 인계 요청
+
+---
+
 ## 2026-11-25 (수) · 저장소 점검과 CICD1 준비
 
 **확인한 결과**

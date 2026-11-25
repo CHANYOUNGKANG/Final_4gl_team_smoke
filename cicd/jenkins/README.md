@@ -10,9 +10,11 @@ GitHub `main`(또는 작업 브랜치)에 push하면 Jenkins가 같은 커밋으
 
 | 장비 | 담당 | 확인할 값 | 상태 |
 | --- | --- | --- | --- |
-| Jenkins EC2 | 이우빈 생성 · 강찬영 설정 | OS, 인스턴스 유형, 접속 경로(Bastion/SSM), IAM 역할 | 인계 대기 |
+| Jenkins EC2 | 이우빈 생성 · 강찬영 설정 | 퍼블릭 서브넷 `10.100.1.0/24`(AZ a), OS, 인스턴스 유형, IAM 역할 | 인계 대기 |
+| Jenkins SG | 이우빈 | 8080·22 ← **실습 PC 공인 IP/32만** ([허용표](../../docs/architecture/ip-plan.md#aws-안-보안-그룹-참조)) | 인계 대기 |
+| Ansible EC2 | 이우빈 | 프라이빗 앱 서브넷 `10.100.11.0/24` → `DEPLOY_HOST` | CICD3 전 |
 | 공지 앱 소스 | 이준호 | `pom.xml` 위치, Java·Tomcat 버전, WAR 이름 | 인계 대기 ([app/README.md](../../app/README.md)) |
-| GitHub 저장소 | 강찬영 | Webhook → `https://<Jenkins 주소>/github-webhook/` | Jenkins 준비 후 |
+| GitHub 저장소 | 강찬영 | 기본 Poll SCM (Webhook은 선택) | Jenkins 준비 후 |
 
 ## 명령 근거
 
@@ -27,7 +29,7 @@ GitHub `main`(또는 작업 브랜치)에 push하면 Jenkins가 같은 커밋으
 | 작업 유형 | Pipeline · *Pipeline script from SCM* | Jenkinsfile을 저장소에서 버전 관리 |
 | Script Path | `cicd/jenkins/Jenkinsfile` | 파트 폴더 규칙 |
 | Branch Specifier | `*/main` (테스트 때는 작업 브랜치) | |
-| Build Triggers | *GitHub hook trigger for GITScm polling* | Jenkinsfile의 `githubPush()`와 같은 설정 |
+| Build Triggers | *Poll SCM* `H/2 * * * *` (기본) · *GitHub hook trigger* (선택) | SG가 실습 PC IP만 열려 있어 Webhook이 도달하지 못한다. Jenkinsfile에 둘 다 선언 |
 | 플러그인 | Pipeline, Git, GitHub, JUnit, Timestamper | 기본 추천 플러그인에 대부분 포함 |
 | 전역 환경 변수 | `APP_DIR` 등 ([예시](../config/deploy.env.example)) | 주소·계정 값을 코드에서 분리 |
 
@@ -37,23 +39,23 @@ GitHub `main`(또는 작업 브랜치)에 push하면 Jenkins가 같은 커밋으
 | --- | --- | --- | --- |
 | *(없음)* | 공개 저장소 체크아웃 | CICD1 | — |
 | `deploy-ssh` | SSH Username with private key | CICD3 Ansible → 배포 대상 | 아니오 |
-| *(EC2 IAM 역할)* | ECR push · EKS · ALB · SNS | CICD2~4 | 아니오 · 키 대신 역할 |
+| *(EC2 IAM 역할)* | ECR push · EKS · ALB · SNS | CICD2~4 | 아니오 · 키 대신 역할. EKS는 이 역할을 **Access Entry**로 등록 (이우빈) |
 
 ## 성공 기준
 
 1. 수동 *Build Now* 결과가 **SUCCESS**이고 콘솔에 `commit=<SHA>`, 테스트 요약, `target/*.war`, `sha256` 줄이 모두 보인다.
-2. 작업 브랜치에 테스트 커밋을 push하면 **사람이 누르지 않아도** 빌드가 시작되고, 콘솔의 SHA가 GitHub 커밋 SHA와 같다.
+2. 작업 브랜치에 테스트 커밋을 push하면 **2분 안에 사람이 누르지 않아도** 빌드가 시작되고(Poll SCM), 콘솔의 SHA가 GitHub 커밋 SHA와 같다.
 3. 빌드 페이지에 *Test Result*와 WAR 아티팩트가 남는다.
 
 → 콘솔 로그를 `cicd/verification/build-<번호>.log`로 저장(주소·계정 가림)하고 `evidence.json`의 `CICD1.verification`에 등록.
 
 ## 문제 해결 순서
 
-1. **Jenkins 화면이 안 열린다** → 서비스 상태 → 보안 그룹 8080 허용 출발지(관리자 IP만) → Bastion/SSM 경로
+1. **Jenkins 화면이 안 열린다** → 서비스 상태 → 실습 PC 공인 IP가 바뀌었는지(`curl -s ifconfig.me` 결과를 SG와 비교, 값은 기록하지 않음) → SG 8080 규칙
 2. **`mvn: not found`** → EC2에 Maven 설치 여부, Jenkins 사용자 `PATH`
 3. **`pom.xml` 없음** → 전역 변수 `APP_DIR`가 이준호 인계값과 같은지
 4. **테스트 실패** → 로컬 같은 커밋에서 `mvn -B clean package` 재현, Java 버전 차이 확인
-5. **push해도 빌드가 안 돈다** → GitHub Webhook *Recent Deliveries* 응답 코드 → 보안 그룹이 GitHub Webhook 출발지 대역을 허용하는지 → Build Triggers 체크
+5. **push해도 빌드가 안 돈다** → Job의 *Git Polling Log*에서 최근 폴링 시각·변경 감지 → Branch Specifier가 push한 브랜치와 같은지 → (Webhook을 쓰는 경우) *Recent Deliveries* 응답 코드와 SG의 GitHub hooks 대역
 
 ## 명령 모음 (Jenkins EC2, Amazon Linux 2023 기준 · OS 확정 후 재확인)
 

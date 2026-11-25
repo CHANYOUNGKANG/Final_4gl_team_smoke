@@ -8,7 +8,12 @@ pipeline {
     disableConcurrentBuilds()
     buildDiscarder(logRotator(numToKeepStr: '20'))
   }
-  triggers { githubPush() }
+  triggers {
+    // Jenkins SG는 실습 PC 공인 IP/32만 허용(docs/architecture/ip-plan.md) → GitHub Webhook이 들어올 수 없다.
+    // 기본은 2분 간격 Poll SCM. SG에 GitHub hooks 대역을 열면 githubPush()가 즉시 반응한다.
+    pollSCM('H/2 * * * *')
+    githubPush()
+  }
   environment {
     // pom.xml 위치. 이준호 앱 인계(app/README.md) 후 확정
     APP_DIR = "${env.APP_DIR ?: 'app'}"
