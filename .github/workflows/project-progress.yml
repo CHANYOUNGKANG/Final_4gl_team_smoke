@@ -1,0 +1,46 @@
+name: Team progress
+on: [push, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  score:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Measure repository evidence
+        env:
+          COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}
+        run: |
+          python3 tools/progress/report.py --base-url "$COMMIT_URL" > "$RUNNER_TEMP/report.md"
+          cat "$RUNNER_TEMP/report.md" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/main'
+        with:
+          name: progress
+          path: ${{ runner.temp }}/report.md
+          retention-days: 1
+  publish:
+    if: github.ref == 'refs/heads/main'
+    needs: score
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    concurrency:
+      group: team-progress-main
+      cancel-in-progress: false
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: progress
+      - name: Publish the latest main result
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          current=$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)
+          if [ "$current" != "$GITHUB_SHA" ]; then exit 0; fi
+          echo >> report.md
+          echo "[분석 커밋]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/commit/$GITHUB_SHA) · [실행 기록]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID) · [산정 기준]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/blob/main/docs/progress/README.md)" >> report.md
+          gh api --method PATCH "repos/$GITHUB_REPOSITORY/issues/1" -F body=@report.md --silent

@@ -8,6 +8,8 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11–12　·　설
 
 [![첫날 작업표](docs/images/nav-start.svg)](docs/delivery/README.md#첫날-작업표) [![작업 이슈 열기](docs/images/nav-task.svg)](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/new?template=team-task.md) [![시연 결과 기록](docs/images/nav-results.svg)](docs/delivery/README.md#결과-기록표)
 
+**팀 구축 진행률**　[최신 팀·파트별 %](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)　/　[브랜치별 분석 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/actions/workflows/project-progress.yml)　/　[산정 기준과 협업 방식](docs/progress/README.md)
+
 **프로젝트 문서**　 [아키텍처](docs/architecture/README.md)　/　[요구사항 명세서](docs/requirements/README.md)　/　[일정과 검증 계획](docs/delivery/README.md)　/　[수행계획서 원본](docs/originals/project-plan.docx)
 
 ## 프로젝트 소개
