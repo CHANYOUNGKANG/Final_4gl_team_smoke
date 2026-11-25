@@ -151,9 +151,11 @@ git fetch origin && git switch network/minseo-day1-topology   # 내 브랜치 �
 
 ## 시스템 아키텍처
 
-[![㈜스모크 시스템 아키텍처: GNS3 본사·지사 네트워크, Linux 서버 VM 3대, AWS VPC 3계층 서브넷, CI/CD 블루그린 파이프라인](docs/images/architecture.svg)](docs/architecture/README.md)
+[![㈜스모크 전체 아키텍처: GNS3 본사·지사 네트워크, Linux 서버 VM, AWS, CI/CD와 흐름 6개 (IP 표시)](docs/images/architecture.svg)](docs/architecture/README.md)
 
-**주소 계획**　본사 `10.0.0.0/16` · 지사 `10.1.0.0/16` · AWS VPC `10.100.0.0/16` · GNS3 공인 역할 `198.51.100.0/24`　→ [IP 대역 · 통신 허용표](docs/architecture/ip-plan.md) · [구성도 생성 스크립트](tools/readme/architecture.py) · [이전 설계 화면](docs/images/architecture.png)
+<sub>팀 아키텍처 대시보드의 구성도를 IP 표시 모드로 내보낸 그림이다. 점선 흐름은 움직이며, 번호는 아래 표의 흐름과 같다.</sub>
+
+**주소 계획**　본사 `10.0.0.0/16` · 지사 `10.1.0.0/16` · AWS VPC `10.100.0.0/16` · GNS3 공인 역할 `198.51.100.0/24`　→ [IP 대역 · 통신 허용표](docs/architecture/ip-plan.md) · [구성도 생성 스크립트](tools/readme/architecture.js) · [이전 설계 화면](docs/images/architecture.png)
 
 | # | 흐름 | 서비스가 동작하는 방식 |
 | :---: | --- | --- |
