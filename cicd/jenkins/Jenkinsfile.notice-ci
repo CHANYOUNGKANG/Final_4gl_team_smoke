@@ -1,0 +1,73 @@
+// Reference notice application CI only. No Kubernetes/ALB deployment.
+pipeline {
+  agent any
+  options {
+    timestamps()
+    disableConcurrentBuilds()
+    skipDefaultCheckout()
+    buildDiscarder(logRotator(numToKeepStr: '15'))
+    timeout(time: 20, unit: 'MINUTES')
+  }
+  parameters {
+    booleanParam(name: 'NOTICE_DOCKER_CHECK', defaultValue: false, description: 'Build and verify the real notice image with isolated H2')
+    booleanParam(name: 'NOTICE_ECR_PUSH', defaultValue: false, description: 'Publish only after the Docker check passes; no deployment')
+  }
+  triggers { pollSCM('H/2 * * * *') }
+  stages {
+    stage('Source') {
+      steps {
+        checkout scm
+        script {
+          env.BUILD_COMMIT = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+          if (params.NOTICE_ECR_PUSH && !params.NOTICE_DOCKER_CHECK) {
+            error('ECR push requires NOTICE_DOCKER_CHECK')
+          }
+        }
+        sh 'git log -1 --format="commit=%H%nsubject=%s"'
+      }
+    }
+    stage('Java 17 + WAR') {
+      steps {
+        dir('app') {
+          sh '''
+            set -eu
+            export JAVA_HOME="${NOTICE_JAVA_HOME:-/usr/lib/jvm/java-17-openjdk-amd64}"
+            export PATH="$JAVA_HOME/bin:$PATH"
+            test -x "$JAVA_HOME/bin/java"
+            java -version
+            mvn -v
+            mvn -B -ntp clean package
+            test -s target/notice.war
+            sha256sum target/notice.war | tee target/war.sha256
+          '''
+        }
+      }
+      post {
+        always {
+          junit testResults: 'app/target/surefire-reports/*.xml', allowEmptyResults: false
+        }
+      }
+    }
+    stage('Record WAR') {
+      steps {
+        archiveArtifacts artifacts: 'app/target/notice.war,app/target/war.sha256', fingerprint: true
+      }
+    }
+    stage('Notice Docker + H2 Check') {
+      when { expression { params.NOTICE_DOCKER_CHECK } }
+      steps {
+        sh 'bash cicd/docker/build-notice-ci.sh'
+      }
+    }
+    stage('Notice ECR Push + Verify') {
+      when { expression { params.NOTICE_ECR_PUSH } }
+      steps {
+        sh 'bash cicd/docker/push-notice-ci.sh'
+        archiveArtifacts artifacts: 'app/target/notice-ecr-image.txt', fingerprint: true
+      }
+    }
+  }
+  post {
+    success { echo "NOTICE CI OK: build=${env.BUILD_NUMBER} commit=${env.BUILD_COMMIT}" }
+  }
+}
