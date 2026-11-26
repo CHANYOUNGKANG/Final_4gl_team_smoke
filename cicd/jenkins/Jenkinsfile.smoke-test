@@ -1,0 +1,60 @@
+// Isolated test fixture only; does not deploy the real notice application.
+pipeline {
+  agent any
+  options {
+    timestamps()
+    disableConcurrentBuilds()
+    skipDefaultCheckout()
+    buildDiscarder(logRotator(numToKeepStr: '20'))
+    timeout(time: 15, unit: 'MINUTES')
+  }
+  triggers { pollSCM('H/2 * * * *') }
+  stages {
+    stage('Source') {
+      steps {
+        checkout scm
+        script { env.BUILD_COMMIT = sh(script: 'git rev-parse HEAD', returnStdout: true).trim() }
+        sh 'git log -1 --format="commit=%H%nsubject=%s"'
+      }
+    }
+    stage('Test + WAR') {
+      steps {
+        dir('cicd/test-app') {
+          sh 'mvn -B -ntp clean package'
+        }
+      }
+      post {
+        always {
+          junit testResults: 'cicd/test-app/target/surefire-reports/*.xml', allowEmptyResults: false
+        }
+      }
+    }
+    stage('Docker Build + Smoke') {
+      steps {
+        sh 'bash cicd/docker/build-smoke-test.sh'
+      }
+    }
+    stage('ECR Push + Verify') {
+      when { expression { env.SMOKE_ECR_PUSH == 'true' } }
+      steps {
+        sh 'bash cicd/docker/push-smoke-test.sh'
+        archiveArtifacts artifacts: 'cicd/test-app/target/ecr-image.txt', fingerprint: true
+      }
+    }
+    stage('Ansible Remote Check') {
+      when { expression { env.SMOKE_ANSIBLE_CHECK == 'true' } }
+      steps {
+        sh 'bash cicd/ansible/check-remote.sh'
+      }
+    }
+    stage('Record') {
+      steps {
+        sh 'ls -l cicd/test-app/target/smoke-test.war && sha256sum cicd/test-app/target/smoke-test.war | tee cicd/test-app/target/war.sha256'
+        archiveArtifacts artifacts: 'cicd/test-app/target/smoke-test.war,cicd/test-app/target/war.sha256', fingerprint: true
+      }
+    }
+  }
+  post {
+    success { echo "SMOKE TEST OK: build=${env.BUILD_NUMBER} commit=${env.BUILD_COMMIT}" }
+  }
+}

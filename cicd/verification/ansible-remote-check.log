@@ -1,0 +1,11 @@
+Sanitized observations from user-provided terminal screenshots, 2026-11-26 KST.
+Jenkins -> Ansible TCP 22: succeeded.
+Ansible Core 2.16.3; Python 3.12.3; Git 2.43.0; AWS CLI 2.42.4.
+SSH host ED25519 fingerprint verified; known_hosts registered.
+Jenkins service user SSH: BatchMode=yes, StrictHostKeyChecking=yes, IdentitiesOnly=yes.
+Remote hostname: smoke-ansible
+Remote whoami: ansadmin
+Remote Ansible local ping: localhost | SUCCESS; changed=false; ping=pong
+Remote AWS STS: assumed-role/smoke-ansible-role (account and instance identifiers redacted)
+Earlier eks:ListClusters: AccessDeniedException.
+Scope: manually invoked as Jenkins service user, not a Jenkins Job execution or EKS deployment.

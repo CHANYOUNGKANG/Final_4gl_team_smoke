@@ -1,0 +1,9 @@
+---
+# Copy OUTSIDE the public repo, e.g. /opt/devops/bootstrap-smoke.local.yml.
+# Replace placeholders with privately handed-off values. Not actual resources.
+expected_context: "REPLACE_WITH_EKS_CONTEXT"
+ecr_repository_uri: "000000000000.dkr.ecr.ap-northeast-2.amazonaws.com/smoke-notice"
+blue_digest: "sha256:89cbb9d7197385f7a77bec308ef85826d86e54180a5c7ffb5aec0af76b290cea"
+green_digest: "sha256:c310410ef3f7449678920ea39699772c9a31be67fa06a9e0a46ab5a392123568"
+# Defaults: server dry-run only. Explicitly opt in after inspecting results.
+confirm_bootstrap: false

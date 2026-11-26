@@ -1,0 +1,88 @@
+# Test fixture only; render through bootstrap-smoke.yml.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notice-{{ slot.name }}
+  namespace: notice
+  labels:
+    app: notice
+    slot: "{{ slot.name }}"
+spec:
+  replicas: 2
+  revisionHistoryLimit: 2
+  progressDeadlineSeconds: 300
+  selector:
+    matchLabels:
+      app: notice
+      slot: "{{ slot.name }}"
+  template:
+    metadata:
+      labels:
+        app: notice
+        slot: "{{ slot.name }}"
+    spec:
+      automountServiceAccountToken: false
+      nodeSelector:
+        kubernetes.io/os: linux
+        kubernetes.io/arch: amd64
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: notice
+              slot: "{{ slot.name }}"
+      containers:
+        - name: notice
+          image: "{{ slot.image }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: CATALINA_OPTS
+              value: "-Xms128m -Xmx512m"
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 5
+            failureThreshold: 24
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notice-{{ slot.name }}-svc
+  namespace: notice
+spec:
+  type: ClusterIP
+  selector:
+    app: notice
+    slot: "{{ slot.name }}"
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP

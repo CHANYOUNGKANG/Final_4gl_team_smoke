@@ -1,0 +1,17 @@
+Sanitized excerpts and observations from user-supplied Jenkins Build #5 console and ECR describe-images screenshot.
+Scope: isolated test WAR, not production notice application.
+Started by an SCM change
+12:26:10 commit=32233749f3ae7ebf9cbc03b1b4d58ca6bb17a4b1
+12:26:16 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+12:26:16 BUILD SUCCESS; Maven total time: 3.799 s
+12:26:18 image=sha256:c310410ef3f7449678920ea39699772c9a31be67fa06a9e0a46ab5a392123568 platform=linux/amd64
+12:26:22 SMOKE HTTP 200
+12:26:24 Login Succeeded
+12:26:26 tag=test-32233749f3ae7ebf9cbc03b1b4d58ca6bb17a4b1
+12:26:26 digest=sha256:c310410ef3f7449678920ea39699772c9a31be67fa06a9e0a46ab5a392123568
+12:26:26 ECR PUSH VERIFIED
+12:26:27 Archiving artifacts; Recording fingerprints
+12:26:27 SMOKE TEST OK: build=5 commit=32233749f3ae7ebf9cbc03b1b4d58ca6bb17a4b1
+Finished: SUCCESS
+Independent ECR query screenshot: same tag and digest, pushed 2026-11-26 12:26:25.661 KST.
+No production deployment, DB or availability measurement performed.

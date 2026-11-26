@@ -1,0 +1,8 @@
+Sanitized observations from user-provided Jenkins build status screenshot; test fixture only.
+Build #2: 2026-11-26 12:14:09 KST
+Started by an SCM change
+Revision: efd84d33bbbabfed4e114707147127468e1b489c
+Duration displayed: 12 sec
+Result: SUCCESS (green status)
+Artifacts: smoke-test.war, war.sha256
+Tests: no failures shown

@@ -1,0 +1,12 @@
+Sanitized observations from user-provided Jenkins console and ECR terminal screenshot (test fixture only).
+Build #3: Started by an SCM change
+commit=7683373495abb6cfab7cbb2df46339cb2d83bb01
+JUnit: 1 passed, 0 failures/errors
+Maven time: 4.307 s
+Image platform: linux/amd64
+SMOKE HTTP 200
+Finished: SUCCESS at 12:20:41 KST
+ECR manual push: Login Succeeded; all layers Pushed; ECR PUSH SUCCESS
+Tag: test-7683373495abb6cfab7cbb2df46339cb2d83bb01
+Digest: sha256:89cbb9d7197385f7a77bec308ef85826d86e54180a5c7ffb5aec0af76b290cea
+ECR describe-images confirmed same digest and tag, 2026-11-26 12:22:36 KST, 248381248 bytes

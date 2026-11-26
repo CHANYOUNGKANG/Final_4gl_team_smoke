@@ -1,0 +1,72 @@
+---
+- name: Prepare initial Blue and Green test deployments (no ALB mutation)
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    confirm_bootstrap: false
+    slots:
+      - name: blue
+        image: "{{ ecr_repository_uri }}@{{ blue_digest }}"
+      - name: green
+        image: "{{ ecr_repository_uri }}@{{ green_digest }}"
+  tasks:
+    - name: Require real cluster context and two distinct ECR digests
+      ansible.builtin.assert:
+        that:
+          - expected_context is defined
+          - expected_context is match('^arn:aws:eks:ap-northeast-2:[0-9]{12}:cluster/[A-Za-z0-9_-]+$')
+          - ecr_repository_uri is defined
+          - ecr_repository_uri is match('^[0-9]{12}\\.dkr\\.ecr\\.ap-northeast-2\\.amazonaws\\.com/smoke-notice$')
+          - not ecr_repository_uri.startswith('000000000000.')
+          - ecr_repository_uri.split('.')[0] == expected_context.split(':')[4]
+          - blue_digest is match('^sha256:[a-f0-9]{64}$')
+          - green_digest is match('^sha256:[a-f0-9]{64}$')
+          - blue_digest != green_digest
+        quiet: true
+    - name: Verify current context matches handed-off cluster
+      ansible.builtin.command:
+        argv: [kubectl, config, current-context]
+      register: current_context
+      changed_when: false
+      no_log: true
+    - name: Reject unexpected context
+      ansible.builtin.assert:
+        that: current_context.stdout == expected_context
+        quiet: true
+    - name: Validate create for both slots without modifying resources
+      ansible.builtin.command:
+        argv: [kubectl, --context, "{{ expected_context }}", -n, notice, create, --dry-run=server, -f, "-"]
+        stdin: "{{ lookup('ansible.builtin.template', playbook_dir + '/../kubernetes/notice-slot.yaml.j2') }}"
+      loop: "{{ slots }}"
+      loop_control:
+        loop_var: slot
+        label: "{{ slot.name }}"
+      changed_when: false
+      no_log: true
+    - name: Report dry-run validation
+      ansible.builtin.debug:
+        msg: "Both slot manifests passed API server dry-run. No resources created yet."
+    - name: Create both slots only after explicit opt-in
+      when: confirm_bootstrap | bool
+      block:
+        - name: Create new resources only (never overwrite existing workloads)
+          ansible.builtin.command:
+            argv: [kubectl, --context, "{{ expected_context }}", -n, notice, create, -f, "-"]
+            stdin: "{{ lookup('ansible.builtin.template', playbook_dir + '/../kubernetes/notice-slot.yaml.j2') }}"
+          loop: "{{ slots }}"
+          loop_control:
+            loop_var: slot
+            label: "{{ slot.name }}"
+          no_log: true
+        - name: Wait until each deployment is available
+          ansible.builtin.command:
+            argv: [kubectl, --context, "{{ expected_context }}", -n, notice, rollout, status, "deployment/notice-{{ slot.name }}", --timeout=300s]
+          loop: "{{ slots }}"
+          loop_control:
+            loop_var: slot
+            label: "{{ slot.name }}"
+          changed_when: false
+        - name: Report initial deployment status
+          ansible.builtin.debug:
+            msg: "Both rollouts completed. Check versions and target health separately; ALB unchanged."

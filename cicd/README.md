@@ -18,6 +18,18 @@
 
 **작업일지** [WORKLOG.md](WORKLOG.md) · **Jenkins 설정** [jenkins/README.md](jenkins/README.md)
 
+## 현재 현황 (2026-11-26)
+
+테스트 환경: Jenkins 수동·SCM 자동 WAR 빌드, Docker 이미지 생성, Tomcat HTTP 200, ECR 자동 Push 및 Digest 검증 성공. [Build #5 증빙](verification/smoke-test-build-5-ecr.log) · [작업일지](WORKLOG.md). 실제 공지 앱 통합은 미검증이며 공식 이정표 점수와 구분한다. [Ansible/EKS 인계 및 블루그린 협의안](ansible/HANDOFF.md)은 아직 구현 전이다.
+
+Jenkins 서비스 계정 → Ansible 배포 계정 SSH 및 원격 Ansible ping/AWS STS 인증 성공. [실행 관찰 기록](verification/ansible-remote-check.log). Jenkins Job 원격 플레이북 검사는 Build #8에서 6개 작업 모두 성공했다. [Build #8](verification/smoke-test-build-8-ansible.log). EKS 배포는 아직 미검증이다. 활성화하려면 Jenkins 환경 변수 `SMOKE_ANSIBLE_HOST`(실제 주소 비공개), `SMOKE_ANSIBLE_CHECK=true`를 설정한다.
+
+초기 Blue/Green 배포 코드는 [Kubernetes 실행 가이드](kubernetes/README.md) 및 [초기 배포 플레이북](ansible/bootstrap-smoke.yml)에 작성했다. 기본값은 서버 dry-run이며 실제 EKS 배포 및 ALB 전환은 자동 실행하지 않는다.
+
+## 실제 공지 앱 연동
+
+`main`의 [레퍼런스 공지 앱](../app/README.md)은 Java 17 / Spring Boot 3.3.5 / `notice.war`, MariaDB 10.11 연동 검사 성공 상태다. 기존 `smoke-cicd` 테스트 Job과 분리해 실제 앱 Jenkins 빌드부터 검증한다. 실제 DB 주소 및 RDS/EFS 인계는 [#11](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11)에서 확정한다. 테스트 이미지의 `/`와 실제 앱의 `/health`를 구분한다.
+
 ## 작업 체크리스트
 
 - [ ] 이준호에게 [앱 빌드 정보](../app/README.md)를 받고 이우빈과 Jenkins EC2(퍼블릭 서브넷)·SG(실습 PC IP/32)·IAM 역할을 확인한다.
