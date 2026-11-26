@@ -12,6 +12,14 @@
 | [migration/](migration/) | RDS·S3 이관 절차와 원본 대조 결과 |
 | [operations/](operations/) | 전환·복귀 스크립트, 복구 시간과 실제 비용 기록 |
 
+## 현재 구축 현황 (2026-11-26)
+
+AWS 담당자 보고 기준으로 Terraform EKS 및 Managed Node Group 구축 완료: 두 프라이빗 앱 서브넷의 t3.medium 워커 2대, Private Only API, 워커 2/2 Ready 및 시스템 Pod 6/6 Running, 재시작 0회. 실제 Terraform 원본·검증 화면 및 로그는 추가 제출 대기 중이다.
+
+Access Entry와 notice namespace RBAC 설정 진행 중이며 Ansible 접속 검증, AWS Load Balancer Controller 및 ALB Blue/Green 구성은 후속 작업이다.
+
+[상세 작업일지](WORKLOG.md) · [EKS 구축 보고 및 CI/CD 인계](infrastructure/eks-handoff-2026-11-26.md)
+
 ## 작업 체크리스트
 
 - [ ] 예산·가동 시간을 합의하고 Jenkins EC2 접근 경로와 Webhook 수신 경로를 강찬영에게 전달한다.
