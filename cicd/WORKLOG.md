@@ -13,6 +13,18 @@
 
 ---
 
+## 2026-11-26 · Docker 자동 빌드 및 ECR 수동 Push 성공
+
+**확인한 결과** — Jenkins 사용자 hello-world 성공. Build #3 사용자 제공 콘솔: SCM 자동 실행, SHA `7683373495abb6cfab7cbb2df46339cb2d83bb01`, JUnit 1건 통과, Maven 4.307초, linux/amd64 이미지 생성, Tomcat 10.1.62 기반 HTTP 200, 아티팩트 보관, SUCCESS (12:20:41 KST). AWS CLI 2.42.4, EC2 IAM 역할 기반 STS 인증과 ECR 조회 성공. 사용자 제공 화면에서 12:22:36 KST 테스트 이미지 수동 Push 및 ECR 조회 digest 일치 확인.
+
+**막힌 부분** — 실제 공지 앱 인계 및 ECR 자동 Push 실행 검증 전. 관리 인증 강화와 IAM 최소 권한 확인 필요.
+
+**다음 작업** — ECR 자동 Push 단계는 기본 비활성화. 관리 인증 강화 후 Jenkins 환경 변수로 명시적으로 켜고 실제 자동 Push와 digest 대조를 검증한다. 운영 태그와 분리된 test-SHA만 사용한다.
+
+**증빙** — [Build #3 및 ECR 수동 Push 발췌](verification/smoke-test-build-3-ecr.log).
+
+---
+
 ## 2026-11-26 · Poll SCM 자동 빌드 성공 및 Docker 기반 준비
 
 **확인한 결과** — 사용자 제공 Jenkins Build #2 화면: 12:14:09 KST, Started by an SCM change, revision `efd84d33bbbabfed4e114707147127468e1b489c`, SUCCESS, 소요 12초, WAR 및 해시 아티팩트, 테스트 실패 없음. Docker Engine 29.10.1, Buildx 0.39.1, 서비스 active 및 root hello-world 성공. Jenkins docker 그룹 등록, Jenkins 재시작, Jenkins 사용자 docker ps 정상.
