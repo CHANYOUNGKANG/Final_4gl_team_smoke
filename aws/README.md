@@ -12,6 +12,14 @@
 | [migration/](migration/) | RDS·S3 이관 절차와 원본 대조 결과 |
 | [operations/](operations/) | 전환·복귀 스크립트, 복구 시간과 실제 비용 기록 |
 
+## 현재 구축 현황 (2026-11-26)
+
+[팀 공유 인계 PR #15](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pull/15)의 AWS 담당자 보고 기준으로 Terraform EKS 및 Managed Node Group 구축 완료: 두 프라이빗 앱 서브넷의 t3.medium 워커 2대, Private Only API, 워커 2/2 Ready 및 시스템 Pod 6/6 Running, 재시작 0회. 실제 Terraform 원본·검증 화면 및 로그는 추가 제출 대기 중이다.
+
+Access Entry와 notice namespace RBAC 설정 진행 중이며 Ansible 접속 검증, AWS Load Balancer Controller 및 ALB Blue/Green 구성은 후속 작업이다.
+
+[상세 작업일지](WORKLOG.md) · [EKS 구축 보고 및 CI/CD 인계](infrastructure/eks-handoff-2026-11-26.md)
+
 ## 작업 체크리스트
 
 - [ ] 예산·가동 시간을 합의하고 Jenkins EC2 접근 경로와 Poll SCM 기준을 강찬영에게 전달한다. Webhook 도입은 공개 수신 경로를 별도 합의한 경우에 검토한다.
@@ -68,7 +76,7 @@ VPC·서브넷·보안 그룹은 서비스와 관리 통신의 경계를 구성�
 ## 다음 작업과 협업
 
 1. **이우빈:** 사용한 Terraform 원본·실제 EKS 설정과 노드 AZ 라벨을 확보해 구성과 관찰 결과를 대조한다.
-2. **이우빈 ↔ 강찬영:** 동일 Ansible 역할의 `eks:ListClusters` 상태와 필요한 EKS Access Entry/RBAC·프라이빗 API 접근을 확인한다. 사용자 kubectl 성공을 다른 주체의 권한 해결로 간주하지 않는다.
+2. **이우빈 ↔ 강찬영:** PR #15에 기록된 Access Entry 및 `notice` namespace / `smoke-deployers` RBAC 설정 진행 상태를 인계하고, 동일 Ansible 역할의 `eks:ListClusters` 상태와 필요한 EKS Access Entry/RBAC·프라이빗 API 접근을 확인한다. 사용자 kubectl 성공을 다른 주체의 권한 해결로 간주하지 않는다.
 3. **이우빈 ↔ 강찬영·이준호:** 실제 후보 앱, RDS·첨부 저장소 조건을 [Issue #11](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11)에서 맞춘 뒤 EKS 배포·접속을 검증한다.
 4. **이우빈:** ALB 전환·복귀, 데이터 이관 대조, 워커 장애·복구 시간·비용을 실제 실행 순서대로 기록한다.
 

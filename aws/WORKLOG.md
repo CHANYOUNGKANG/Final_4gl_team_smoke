@@ -64,7 +64,7 @@ SMOKE 프로젝트의 AWS 서비스 기반을 준비하고, CI/CD 담당자가 J
 | 워커 인스턴스 유형 | `t3.medium` | Terraform 계획에서 확인. 실제 EC2 인스턴스 유형의 별도 API 조회 결과는 이 기록에 없음 |
 | 노드 그룹 크기 | desired 2, min 2, max 3 | Terraform 계획값. 현재 관찰된 Ready 노드 수는 2대이며 ASG 설정 전체를 별도로 검증한 것은 아님 |
 | EKS API 접근 계획 | 프라이빗 엔드포인트 전용 | Terraform 계획 및 최신 인계 설계 기준. 노드의 외부 주소 유무만으로 API 엔드포인트 설정을 판정하지 않음 |
-| EKS 연결 서브넷 계획 | 앱 서브넷 2개 | 계획 및 공통 설계 기준. 실제 노드별 AZ 라벨은 아직 미확인 |
+| EKS 연결 서브넷 계획 | 앱 서브넷 2개. 팀 인계 PR #15에는 각 서브넷에 워커 1대라는 담당자 보고가 있음 | 계획·담당자 보고와 독립 확인을 구분. 실제 노드별 AZ 라벨 원문은 아직 미확인 |
 | 노드 그룹 적용 후 상태 | `ACTIVE` | 17:03:39 KST 출력 회수 요약 |
 | Terraform 실행 버전 | 미확인 | 원본 실행 환경 또는 버전 출력 확보 후 보완 |
 | kubectl 클라이언트 버전 | 미확인 | 노드 버전을 kubectl 클라이언트 버전으로 대신 기록하지 않음 |
@@ -166,7 +166,7 @@ kubectl get pods -A
 | --- | --- | --- |
 | Jenkins → Ansible | 팀원 로그에서 SSH 연결, Ansible local ping 및 도구 확인 | 배포 시 사용할 계정·경로·역할의 최종 인계 상태 |
 | Ansible → AWS | STS 인증 성공 기록 | STS 성공과 EKS 관리 권한은 별개. 필요한 작업별 권한과 Kubernetes 접근 확인 |
-| Ansible → EKS | 기본 인계와 EKS 준비 상태를 정리한 단계 | EKS 접근·권한 및 실제 배포 결과는 별도 증거 필요 |
+| Ansible → EKS | [팀 인계 PR #15](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pull/15)에서 Access Entry 및 `notice` namespace / `smoke-deployers` RBAC 설정 진행 중으로 보고 | 완료 후 같은 Ansible 주체로 접근·권한을 검증해야 하며 실제 앱 배포 결과는 별도 |
 | CI 실행 방식 | 최신 공통 문서는 Poll SCM을 기본으로 정함 | 기존 AWS README의 Webhook 조건과 차이를 기록하고 공통 정책에 맞춰 인계 설명 정리 |
 | 애플리케이션 접속 | 최신 공통 정책은 초기 HTTP 사용 후 HTTPS 전환을 협의 | 최종 HTTPS 목표와 초기 접속 방식을 구분. HTTPS 구축 완료로 표현하지 않음 |
 | EKS 네트워크 | 프라이빗 엔드포인트 및 앱 서브넷 2개를 사용하는 설계. VPC 이미지에서 두 AZ의 앱 서브넷 존재 확인 | 실제 EKS 연결 관계, 노드별 AZ 및 접근 경로 확인 |
@@ -308,3 +308,15 @@ kubectl get pods -A
 | 인계 추적 | [Issue #11](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11) | 파트 간 접근·권한·배포 인계의 후속 확인 |
 
 공개 문서에는 키·토큰·비밀번호·인증 파일·실제 관리 주소·AWS 계정 및 리소스 식별자를 포함하지 않는다. 위 링크가 가리키는 자료도 같은 기준으로 검토하며, 검증하지 않은 상태를 완료로 고쳐 적지 않는다.
+
+### 13. 같은 날 병합된 팀 공유 인계 기록 보존
+
+이 문서를 준비하는 동안 [PR #15](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pull/15)가 `main`에 병합됐다. 기존 AWS 작업일지에 추가된 아래 보고를 함께 보존한다. 구성·검증 결과를 독립 재실행한 증거와 구분하며, 최신 상세 인계는 [EKS 구축 보고](infrastructure/eks-handoff-2026-11-26.md)를 따른다. 해당 보고의 서브넷별 워커 배치와 이번에 회수한 노드 출력 요약을 함께 기록하되, 노드별 AZ 원문을 별도 확보한 것으로 표시하지 않는다.
+
+**담당자 보고** — Terraform으로 EKS와 Managed Node Group 구축 완료. 서울 리전, Kubernetes 1.37, 워커 v1.37.1-eks-9adbfea (버전은 보고값), t3.medium 2대, Amazon Linux 2023 x86_64, 두 프라이빗 앱 서브넷, Private Only API. 워커 2/2 Ready, 시스템 Pod 6/6 Running, Restart 0회로 보고됨.
+
+**현재 진행 중** — Ansible 전용 IAM Role의 EKS Access Entry 및 notice namespace / smoke-deployers RBAC 설정. 완료 후 CI/CD 담당자에게 접속·권한 검증 요청 예정.
+
+**후속 작업** — AWS Load Balancer Controller, ALB Blue/Green 대상 그룹 구성. 실제 앱 배포, RDS/EFS 인계, 트래픽 전환과 복구 검증은 별도.
+
+**증빙** — [담당자 보고 및 인계 현황](infrastructure/eks-handoff-2026-11-26.md). Terraform 원본 및 실제 화면·로그 추가 제출 필요. 민감값은 제외했으며 공식 진행률 등록은 원본 근거 확보 후 진행.
