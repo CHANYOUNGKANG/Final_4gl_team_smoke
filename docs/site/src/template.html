@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>㈜스모크 | 인프라 전환 전문</title>
+<meta name="description" content="㈜스모크는 온프레미스 보안 재구축, AWS 이전, 무중단 배포를 한 흐름으로 맡습니다.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23292C61'/%3E%3Cpath d='M9 21c3-1 3-5 7-5s4 4 7 3' stroke='%233FD1A6' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Cpath d='M9 13c3-1 3-4 7-4s4 3 7 2' stroke='%23AAB5FF' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+/*
+VOICE   기업 홈페이지 — 차분하고 신뢰감 있게, 제품(서비스)별로 큰 장면을 넘기는 대형 슬라이더
+IDEA    제조사 제품 카탈로그 홈: 서비스 하나가 한 장의 "제품 사진"이 된다
+PICTURE 슬라이드마다 그린 장면(타워·서버 통로·구름 위 두 영역·빛 궤적), 아래 카드 줄은 같은 장면의 크롭
+COLOUR  남색 #292C61 기반, 민트 #3FD1A6 는 서비스 이름과 버튼에만, 파랑/초록은 블루그린 슬롯 의미로만
+TYPE    한국어 시스템 고딕 800/700/400, 제목 44–58px, 본문 16–17px
+LAYOUT  흰 헤더 → 전폭 히어로 슬라이더 + 원형 배지 → 히어로에 걸친 이미지 카드 5장 → 섹션 → 남색 푸터
+*/
+:root{
+  --navy:#292C61; --navy-2:#354478; --navy-3:#1E2150; --ink:#1F2340; --text-2:#5A6180;
+  --mint:#3FD1A6; --mint-d:#16946F; --peri:#AAB5FF; --sky:#A0CDDE;
+  --bg:#FFFFFF; --soft:#F3F5FA; --line:#E1E5EF;
+  --blue:#4060E0; --green:#14916E; --red:#C33A3A;
+  --font:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",system-ui,sans-serif;
+}
+*{box-sizing:border-box;min-width:0}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);font-size:16.5px;line-height:1.65;word-break:keep-all;overflow-wrap:break-word;overflow-x:clip}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--mint);outline-offset:3px;border-radius:4px}
+h1,h2,h3{margin:0;letter-spacing:-.035em;line-height:1.2}
+p{margin:0}
+.wrap{width:min(1200px,100% - 40px);margin-inline:auto}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+svg.sym{position:absolute;width:0;height:0;overflow:hidden}
+
+/* ---------- 헤더 ---------- */
+.hd{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--line)}
+.hd-in{display:flex;align-items:center;gap:28px;height:72px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--navy);flex:none}
+.logo svg{width:32px;height:32px}
+.logo b{font-size:1.2rem;font-weight:800;letter-spacing:-.04em}
+.logo small{font-size:.72rem;color:var(--text-2);font-weight:600;padding-left:10px;border-left:1px solid var(--line);line-height:1.2}
+.gnb{display:flex;gap:6px;margin:0 auto}
+.gnb a{position:relative;padding:24px 14px;text-decoration:none;font-weight:700;font-size:.98rem;color:var(--ink)}
+.gnb a::after{content:"";position:absolute;left:14px;right:14px;bottom:-1px;height:3px;background:var(--mint);transform:scaleX(0);transition:transform .2s}
+.gnb a:hover::after,.gnb a.on::after{transform:scaleX(1)}
+.util{display:flex;align-items:center;gap:12px;flex:none}
+.pill{display:inline-flex;align-items:center;height:36px;padding:0 18px;border-radius:999px;background:var(--mint);color:#06372A;font-weight:800;font-size:.9rem;text-decoration:none}
+.pill:hover{background:#5BE0B9}
+.lang{font-size:.82rem;font-weight:700;color:var(--text-2)}
+.burger{display:none;width:44px;height:44px;border:0;background:none;cursor:pointer;padding:10px}
+.burger span{display:block;height:2px;background:var(--navy);margin:5px 0}
+
+/* ---------- 히어로 슬라이더 ---------- */
+.hero{position:relative;height:clamp(560px,78vh,720px);background:var(--navy-3);overflow:hidden;color:#fff}
+.slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .9s ease,visibility 0s .9s}
+.slide.on{opacity:1;visibility:visible;transition:opacity .9s ease}
+.slide .bg{position:absolute;inset:0;width:100%;height:100%;transform:scale(1.06);transition:transform 7s ease-out}
+.slide.on .bg{transform:scale(1)}
+.slide::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(12,16,48,.78) 0%,rgba(12,16,48,.45) 42%,rgba(12,16,48,0) 70%)}
+.copy{position:relative;z-index:2;padding-top:clamp(70px,12vh,120px)}
+.tag{font-size:.86rem;font-weight:700;color:var(--mint);display:flex;gap:6px;align-items:center}
+.tag::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--mint)}
+.copy h1,.copy h2{font-size:clamp(2.1rem,4.4vw,3.5rem);font-weight:800;margin-top:14px;max-width:14em;text-wrap:balance}
+.copy h1 em,.copy h2 em{font-style:normal;color:var(--mint)}
+.copy p{margin-top:18px;max-width:31em;color:#E3E7F6;font-size:1.04rem}
+.more{display:inline-flex;gap:8px;align-items:center;margin-top:24px;font-weight:700;font-size:.92rem;color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.5);padding-bottom:3px}
+.more:hover{border-color:var(--mint);color:var(--mint)}
+.badges{display:flex;gap:14px;margin-top:38px}
+.badge{width:96px;height:96px;border-radius:50%;background:rgba(255,255,255,.14);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25);display:grid;place-items:center;text-align:center;font-size:.78rem;font-weight:700;line-height:1.3;padding:10px}
+.badge b{display:block;font-size:1.05rem;font-weight:800;color:#fff}
+.arrow{position:absolute;top:44%;z-index:4;width:52px;height:52px;border-radius:50%;border:1px solid rgba(255,255,255,.4);background:rgba(10,14,40,.25);color:#fff;font-size:1.4rem;cursor:pointer;display:grid;place-items:center}
+.arrow:hover{background:rgba(255,255,255,.18)}
+.arrow.prev{left:clamp(10px,2vw,28px)}.arrow.next{right:clamp(10px,2vw,28px)}
+.dots{position:absolute;z-index:4;left:50%;transform:translateX(-50%);bottom:150px;display:flex;gap:10px;align-items:center}
+.dots button{width:10px;height:10px;border-radius:999px;border:0;background:rgba(255,255,255,.45);cursor:pointer;padding:0;transition:width .3s}
+.dots button.on{width:30px;background:var(--mint)}
+.dots .pause{width:auto;height:auto;background:none;color:#fff;font-size:.75rem;font-weight:700;margin-left:6px;opacity:.8}
+
+/* 히어로에 걸친 카드 줄 */
+.quick{position:relative;z-index:5;margin-top:-118px}
+.quick ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.quick a{display:block;text-decoration:none;color:var(--ink)}
+.quick .ph{display:block;height:150px;border-radius:10px;overflow:hidden;box-shadow:0 18px 34px -18px rgba(20,24,70,.55);position:relative}
+.quick .ph svg{width:100%;height:100%;display:block;transition:transform .5s}
+.quick a:hover .ph svg{transform:scale(1.06)}
+.quick .lb{display:flex;justify-content:space-between;align-items:center;padding:12px 2px 0;font-weight:800;font-size:.98rem}
+.quick .lb i{font-style:normal;color:var(--mint-d);font-size:1.2rem;line-height:1}
+
+/* ---------- 공통 섹션 ---------- */
+.sec{padding:clamp(64px,8vw,110px) 0}
+.sec.soft{background:var(--soft)}
+.sec-t{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:40px;flex-wrap:wrap}
+.sec-t h2{font-size:clamp(1.8rem,3.2vw,2.5rem);font-weight:800}
+.sec-t p{color:var(--text-2);max-width:34em}
+.kicker{display:block;font-size:.9rem;font-weight:700;color:var(--mint-d);margin-bottom:10px;letter-spacing:-.01em}
+
+/* 서비스: 큰 이미지 + 글, 좌우 교차 */
+.svc{display:grid;gap:clamp(48px,6vw,80px)}
+.svc article{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(28px,4vw,56px);align-items:center}
+.svc article:nth-child(even) .ph{order:2}
+.svc .ph{height:340px;border-radius:14px;overflow:hidden;position:relative}
+.svc .ph svg{width:100%;height:100%;display:block}
+.svc .ph .who{position:absolute;left:16px;bottom:16px;background:rgba(255,255,255,.92);color:var(--navy);font-size:.82rem;font-weight:700;padding:6px 12px;border-radius:999px}
+.svc h3{font-size:clamp(1.5rem,2.4vw,1.9rem);font-weight:800}
+.svc h3 em{font-style:normal;color:var(--mint-d)}
+.svc .lead{margin-top:12px;color:var(--text-2)}
+.svc dl{margin:24px 0 0;display:grid;gap:0;border-top:2px solid var(--navy)}
+.svc dl div{display:grid;grid-template-columns:7.5em 1fr;gap:16px;padding:12px 0;border-bottom:1px solid var(--line)}
+.svc dt{font-weight:700;color:var(--navy-2);font-size:.92rem}
+.svc dd{margin:0;font-size:.96rem}
+
+/* 사례 + 데모 */
+.case{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:stretch}
+.case-card{background:#fff;border-radius:14px;overflow:hidden;border:1px solid var(--line);display:flex;flex-direction:column}
+.case-card .ph{height:220px}
+.case-card .ph svg{width:100%;height:100%;display:block}
+.case-card .body{padding:26px 28px 28px;display:grid;gap:18px}
+.case-card h3{font-size:1.4rem;font-weight:800}
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.ba h4{margin:0 0 8px;font-size:.88rem;color:var(--text-2)}
+.ba ul{margin:0;padding-left:1.1em;display:grid;gap:6px;font-size:.93rem}
+.ba .after h4{color:var(--mint-d)}
+.case-card .fine{font-size:.82rem;color:var(--text-2)}
+.textlink{font-weight:700;color:var(--navy-2)}
+
+.switch{background:var(--navy);color:#fff;border-radius:14px;padding:24px 24px 20px;display:flex;flex-direction:column}
+.switch h3{font-size:1.25rem;font-weight:800}
+.switch .sub{color:#C9CEEA;font-size:.9rem;margin-top:4px}
+.flow{width:100%;height:auto;display:block;margin-top:8px}
+.checks{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-size:.9rem}
+.checks li{display:flex;gap:8px;align-items:center;color:#C9CEEA}
+.checks .m{width:18px;height:18px;border-radius:50%;border:1.5px solid #6A70A8;flex:none;display:grid;place-items:center;font-size:.7rem;font-weight:800}
+.checks li.run,.checks li.ok{color:#fff}
+.checks li.run .m{border-color:var(--peri);border-top-color:transparent;animation:spin .8s linear infinite}
+.checks li.ok .m{background:var(--mint);border-color:var(--mint);color:var(--navy)}
+.checks li.fail{color:#FFD2D2}.checks li.fail .m{background:var(--red);border-color:var(--red);color:#fff}
+@keyframes spin{to{transform:rotate(360deg)}}
+.meter{display:flex;gap:26px;margin-top:auto;padding-top:16px;border-top:1px solid rgba(255,255,255,.14);align-items:flex-end;flex-wrap:wrap}
+.meter div{display:grid}
+.meter b{font-size:1.6rem;font-weight:800;line-height:1.1}
+.meter span{font-size:.8rem;color:#C9CEEA}
+.meter .zero b{color:var(--mint)}
+.sw-btns{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border-radius:8px;font:inherit;font-weight:700;font-size:.92rem;cursor:pointer;border:1.5px solid #fff;text-decoration:none}
+.btn-w{background:#fff;color:var(--navy)}.btn-w:hover{background:var(--mint);border-color:var(--mint)}
+.btn-o{background:transparent;color:#fff}.btn-o:hover{background:rgba(255,255,255,.1)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.log{margin-top:12px;font-size:.88rem;color:var(--sky);min-height:1.5em}
+.note{margin-top:8px;font-size:.78rem;color:#9EA4D0}
+.note a{color:var(--sky)}
+
+/* 진행 방식 */
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr))}
+.steps li{padding:22px 18px 0 0;border-top:3px solid var(--line)}
+.steps li.done{border-top-color:var(--navy)}
+.steps li.now{border-top-color:var(--mint)}
+.steps .n{font-size:.85rem;font-weight:700;color:var(--text-2)}
+.steps h3{font-size:1.04rem;font-weight:800;margin:6px 0 8px}
+.steps p{font-size:.9rem;color:var(--text-2)}
+.steps time{display:block;margin-top:10px;font-size:.84rem;font-weight:700;color:var(--mint-d);white-space:nowrap}
+
+/* 측정 */
+.measure{width:100%;border-collapse:collapse;background:#fff;border-top:2px solid var(--navy)}
+.measure th,.measure td{text-align:left;padding:16px 18px;border-bottom:1px solid var(--line);vertical-align:top;font-size:.96rem}
+.measure th{font-size:.84rem;color:var(--text-2);font-weight:700}
+.measure td:first-child{font-weight:800;white-space:nowrap}
+.status{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.8rem;font-weight:700;background:var(--soft);color:var(--text-2);white-space:nowrap}
+.status.on{background:#DDF7EE;color:#0E6E52}
+
+/* 팀 */
+.team{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}
+.member{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px}
+.member .av{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;font-size:1.1rem;margin-bottom:14px}
+.member h3{font-size:1.15rem;font-weight:800}
+.member .role{color:var(--text-2);font-size:.9rem}
+.member ul{margin:14px 0 0;padding:0;list-style:none;font-size:.9rem;display:grid;gap:4px}
+.member .mail{display:block;margin-top:14px;font-size:.85rem;color:var(--navy-2);word-break:break-all}
+
+/* 상담 배너 */
+.cta{position:relative;border-radius:18px;overflow:hidden;color:#fff;min-height:300px;display:grid;align-items:center}
+.cta svg.bgimg{position:absolute;inset:0;width:100%;height:100%}
+.cta::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(12,16,48,.88),rgba(12,16,48,.55) 60%,rgba(12,16,48,.2))}
+.cta-in{position:relative;padding:44px clamp(24px,5vw,56px);display:grid;grid-template-columns:1.2fr 1fr;gap:36px;align-items:center}
+.cta h2{font-size:clamp(1.6rem,3vw,2.3rem);font-weight:800}
+.cta p{color:#D9DDF2;margin-top:10px}
+.cta ol{margin:0;padding-left:1.2em;display:grid;gap:8px;color:#E9ECF9}
+.cta .pill{margin-top:22px;height:46px;padding:0 24px;font-size:.98rem}
+.cta .addr{display:block;margin-top:10px;font-size:.85rem;color:#C9CEEA}
+
+/* 푸터 */
+.ft{background:var(--navy-3);color:#B9BEDB;font-size:.88rem;padding:48px 0 40px;margin-top:clamp(64px,8vw,110px)}
+.ft-in{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:32px}
+.ft .logo{color:#fff}.ft .logo small{color:#B9BEDB;border-color:rgba(255,255,255,.2)}
+.ft h4{margin:0 0 10px;color:#fff;font-size:.92rem}
+.ft ul{margin:0;padding:0;list-style:none;display:grid;gap:6px}
+.ft a{color:#DDE1F5;text-decoration:none}.ft a:hover{color:var(--mint)}
+.ft .copyr{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.12);padding-top:18px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.top-btn{position:fixed;right:22px;bottom:22px;z-index:20;width:46px;height:46px;border-radius:50%;background:var(--mint);color:#06372A;border:0;font-size:1.1rem;font-weight:800;cursor:pointer;box-shadow:0 8px 20px -6px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .3s}
+.top-btn.show{opacity:1;pointer-events:auto}
+
+@media (max-width:1080px){
+  .gnb{position:absolute;top:72px;left:0;right:0;background:#fff;flex-direction:column;gap:0;padding:8px 20px 16px;border-bottom:1px solid var(--line);display:none}
+  .gnb.open{display:flex}
+  .gnb a{padding:14px 4px;border-bottom:1px solid var(--line)}
+  .gnb a::after{display:none}
+  .burger{display:block}
+  .util{margin-left:auto}
+  .quick ul{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .quick li:nth-child(n+4){display:none}
+  .svc article,.case,.cta-in{grid-template-columns:1fr}
+  .svc article:nth-child(even) .ph{order:0}
+  .steps{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:28px}
+  .team{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ft-in{grid-template-columns:1fr 1fr}
+}
+@media (max-width:600px){
+  body{font-size:16px}
+  .logo small,.lang{display:none}
+  .hero{height:600px}
+  .slide::after{background:linear-gradient(180deg,rgba(12,16,48,.55),rgba(12,16,48,.85))}
+  .copy{padding-top:48px}
+  .badges{margin-top:26px}.badge{width:84px;height:84px;font-size:.72rem}
+  .arrow{display:none}
+  .dots{bottom:128px}
+  .quick{margin-top:-96px}
+  .quick ul{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .quick li:nth-child(n+3){display:none}
+  .quick .ph{height:120px}
+  .svc .ph{height:230px}
+  .svc dl div{grid-template-columns:1fr;gap:2px}
+  .ba{grid-template-columns:1fr}
+  .checks{grid-template-columns:1fr}
+  .sw-btns{margin-left:0;width:100%}
+  .steps{grid-template-columns:1fr 1fr}
+  .team,.ft-in{grid-template-columns:1fr}
+  .measure thead{display:none}
+  .measure tr{display:grid;padding:12px 0;border-bottom:1px solid var(--line)}
+  .measure td{border:0;padding:3px 0}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .slide,.slide.on,.slide .bg,.quick .ph svg{transition:none}
+  .slide .bg{transform:none}
+  .checks li.run .m{animation:none;border-top-color:var(--peri)}
+}
+</style>
+</head>
+<body>
+
+<svg class="sym" aria-hidden="true" focusable="false"><!--SYMBOLS--></svg>
+
+<header class="hd">
+  <div class="wrap hd-in">
+    <a class="logo" href="#top" aria-label="㈜스모크 홈">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#292C61"/><path d="M9 21c3-1 3-5 7-5s4 4 7 3" stroke="#3FD1A6" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M9 13c3-1 3-4 7-4s4 3 7 2" stroke="#AAB5FF" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
+      <b>㈜스모크</b><small>INFRA<br>TRANSITION</small>
+    </a>
+    <nav class="gnb" id="gnb" aria-label="주 메뉴">
+      <a href="#services">서비스</a>
+      <a href="#case">구축 사례</a>
+      <a href="#demo">무중단 배포 체험</a>
+      <a href="#process">진행 방식</a>
+      <a href="#measure">검증 항목</a>
+      <a href="#team">팀 소개</a>
+    </nav>
+    <div class="util">
+      <span class="lang">KR</span>
+      <a class="pill" href="#contact">상담 요청</a>
+      <button class="burger" id="burger" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="gnb"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero" aria-roledescription="carousel" aria-label="㈜스모크 서비스">
+    <div class="slide on" id="s0" role="group" aria-roledescription="slide" aria-label="1 / 4">
+      <svg class="bg" aria-hidden="true"><use href="#sc-tower" width="100%" height="100%"/></svg>
+      <div class="wrap copy">
+        <span class="tag">제조 · 유통 · 공공기관 · 본사-지사 구조의 기업</span>
+        <h1><em>SMOKE NET,</em> 침입 경로를 망 단위로 끊다</h1>
+        <p>업무망·관리망·서비스망을 VLAN으로 나누고 방화벽과 게이트웨이를 이중화합니다. 지사는 IPsec VPN으로 서비스망에만 연결됩니다.</p>
+        <a class="more" href="#svc-net">자세히 보기 →</a>
+        <div class="badges"><span class="badge"><span><b>VLAN</b>망 분리</span></span><span class="badge"><span><b>HA</b>방화벽 이중화</span></span></div>
+      </div>
+    </div>
+    <div class="slide" id="s1" role="group" aria-roledescription="slide" aria-label="2 / 4">
+      <svg class="bg" aria-hidden="true"><use href="#sc-racks" width="100%" height="100%"/></svg>
+      <div class="wrap copy">
+        <span class="tag">서버 한 대가 모든 일을 하던 전산실</span>
+        <h2><em>SMOKE OPS,</em> 흩어진 로그를 한 메일함으로</h2>
+        <p>계정·SSH·백업을 정비하고, 이관할 게시글과 첨부파일의 원본 목록과 해시를 먼저 만듭니다. 보안 탐지·백업·장애·배포 알림은 한곳에서 받습니다.</p>
+        <a class="more" href="#svc-ops">자세히 보기 →</a>
+        <div class="badges"><span class="badge"><span><b>SHA-256</b>원본 목록</span></span><span class="badge"><span><b>4종</b>알림 통합</span></span></div>
+      </div>
+    </div>
+    <div class="slide" id="s2" role="group" aria-roledescription="slide" aria-label="3 / 4">
+      <svg class="bg" aria-hidden="true"><use href="#sc-cloud" width="100%" height="100%"/></svg>
+      <div class="wrap copy">
+        <span class="tag">디스크가 부족하고 서버가 멈추면 서비스도 멈추던 환경</span>
+        <h2><em>SMOKE MOVE,</em> 글 한 건 잃지 않고 AWS로</h2>
+        <p>두 가용 영역의 EKS로 서비스를 옮기고, 게시글은 사설 RDS로, 첨부는 비공개 S3로 이관합니다. 건수·본문·해시가 모두 맞아야 주소를 바꿉니다.</p>
+        <a class="more" href="#svc-move">자세히 보기 →</a>
+        <div class="badges"><span class="badge"><span><b>2 AZ</b>분산 배치</span></span><span class="badge"><span><b>3중</b>이관 대조</span></span></div>
+      </div>
+    </div>
+    <div class="slide" id="s3" role="group" aria-roledescription="slide" aria-label="4 / 4">
+      <svg class="bg" aria-hidden="true"><use href="#sc-trails" width="100%" height="100%"/></svg>
+      <div class="wrap copy">
+        <span class="tag">배포할 때마다 Tomcat을 재시작하던 서비스</span>
+        <h2><em>SMOKE SHIFT,</em> 배포하는 동안에도 공지는 열려 있다</h2>
+        <p>코드를 올리면 Jenkins가 빌드하고, 새 버전을 옆에 띄워 공지 작성·조회를 검사한 뒤에만 트래픽을 넘깁니다. 이상이 보이면 이전 버전으로 돌아갑니다.</p>
+        <a class="more" href="#demo">전환 직접 해보기 →</a>
+        <div class="badges"><span class="badge"><span><b>Blue</b>Green 전환</span></span><span class="badge"><span><b>자동</b>롤백</span></span></div>
+      </div>
+    </div>
+
+    <button class="arrow prev" type="button" aria-label="이전 슬라이드">‹</button>
+    <button class="arrow next" type="button" aria-label="다음 슬라이드">›</button>
+    <div class="dots" role="group" aria-label="슬라이드 선택">
+      <button type="button" class="on" aria-label="1번 슬라이드" aria-current="true"></button>
+      <button type="button" aria-label="2번 슬라이드"></button>
+      <button type="button" aria-label="3번 슬라이드"></button>
+      <button type="button" aria-label="4번 슬라이드"></button>
+      <button type="button" class="pause" id="pause" aria-label="자동 넘김 멈추기">멈춤</button>
+    </div>
+  </section>
+
+  <nav class="wrap quick" aria-label="서비스 바로가기">
+    <ul>
+      <li><a href="#svc-net"><span class="ph"><svg aria-hidden="true"><use href="#sc-tower" width="100%" height="100%"/></svg></span><span class="lb">보안 네트워크<i>+</i></span></a></li>
+      <li><a href="#svc-ops"><span class="ph"><svg aria-hidden="true"><use href="#sc-racks" width="100%" height="100%"/></svg></span><span class="lb">서버·운영 알림<i>+</i></span></a></li>
+      <li><a href="#svc-move"><span class="ph"><svg aria-hidden="true"><use href="#sc-cloud" width="100%" height="100%"/></svg></span><span class="lb">AWS 이전<i>+</i></span></a></li>
+      <li><a href="#svc-shift"><span class="ph"><svg aria-hidden="true"><use href="#sc-trails" width="100%" height="100%"/></svg></span><span class="lb">무중단 배포<i>+</i></span></a></li>
+      <li><a href="#case"><span class="ph"><svg aria-hidden="true"><use href="#sc-shafts" width="100%" height="100%"/></svg></span><span class="lb">해든정밀 사례<i>+</i></span></a></li>
+    </ul>
+  </nav>
+
+  <section class="sec" id="services">
+    <div class="wrap">
+      <div class="sec-t">
+        <div><span class="kicker">서비스</span><h2>네 가지 일을 한 팀이 한 흐름으로</h2></div>
+        <p>망 분리, 서버 정비, 클라우드 이전, 배포 자동화는 서로의 결과를 넘겨받아야 끝납니다. 각 단계에서 확인한 결과를 다음 단계의 시작 조건으로 씁니다.</p>
+      </div>
+      <div class="svc">
+        <article id="svc-net">
+          <div class="ph"><svg aria-hidden="true"><use href="#sc-tower" width="100%" height="100%"/></svg><span class="who">담당 강민서 · PM</span></div>
+          <div>
+            <h3><em>SMOKE NET</em> 보안 네트워크 재구축</h3>
+            <p class="lead">업무망·관리망·서비스망이 한 대역이면 웹 서버 침입이 어디까지 번졌는지 알 수 없습니다.</p>
+            <dl>
+              <div><dt>바꾸는 것</dt><dd>VLAN 분리, 경계 라우터·방화벽·코어 스위치 이중화, 지사는 IPsec VPN으로 서비스망에만 연결</dd></div>
+              <div><dt>쓰는 기술</dt><dd>GNS3, Cisco IOSv·ASA, pfSense, BGP·OSPF·HSRP, Snort</dd></div>
+              <div><dt>완료 기준</dt><dd>업무 PC에서 관리 포트 접근 차단, 장비 한 대를 끊어도 통신 복구 기록</dd></div>
+            </dl>
+          </div>
+        </article>
+        <article id="svc-ops">
+          <div class="ph"><svg aria-hidden="true"><use href="#sc-racks" width="100%" height="100%"/></svg><span class="who">담당 이준호</span></div>
+          <div>
+            <h3><em>SMOKE OPS</em> 서버 정비와 운영 알림</h3>
+            <p class="lead">계정과 SSH 설정이 제각각이고 로그가 서버마다 흩어져 있으면 사고가 나도 경로를 따라갈 수 없습니다.</p>
+            <dl>
+              <div><dt>바꾸는 것</dt><dd>계정·SSH 키 인증·로그·백업 정비, 이관 원본의 게시글 건수와 파일 해시 목록, 알림 메일 통합</dd></div>
+              <div><dt>쓰는 기술</dt><dd>Rocky Linux, MariaDB, NFS, rsyslog, Postfix·Roundcube, Ansible</dd></div>
+              <div><dt>완료 기준</dt><dd>원본 해시 목록, IDS·백업·장애·배포 알림의 수신 기록</dd></div>
+            </dl>
+          </div>
+        </article>
+        <article id="svc-move">
+          <div class="ph"><svg aria-hidden="true"><use href="#sc-cloud" width="100%" height="100%"/></svg><span class="who">담당 이우빈</span></div>
+          <div>
+            <h3><em>SMOKE MOVE</em> AWS 이전</h3>
+            <p class="lead">첨부파일이 늘어 디스크가 부족하고, 서버 한 대가 멈추면 공지도 함께 멈추던 구조를 바꿉니다.</p>
+            <dl>
+              <div><dt>바꾸는 것</dt><dd>두 가용 영역의 EKS, HTTPS ALB, 게시글은 사설 RDS, 첨부는 비공개 S3·CloudFront</dd></div>
+              <div><dt>쓰는 기술</dt><dd>VPC, EKS, ALB·ACM, Route 53, RDS, S3, EFS, ElastiCache, CloudWatch</dd></div>
+              <div><dt>완료 기준</dt><dd>이관 전후 글 건수·본문·파일 해시 일치, 워커 한 대를 내려도 조회 유지</dd></div>
+            </dl>
+          </div>
+        </article>
+        <article id="svc-shift">
+          <div class="ph"><svg aria-hidden="true"><use href="#sc-trails" width="100%" height="100%"/></svg><span class="who">담당 강찬영</span></div>
+          <div>
+            <h3><em>SMOKE SHIFT</em> 무중단 배포</h3>
+            <p class="lead">새 버전을 올릴 때마다 Tomcat을 재시작하면, 고객이 읽던 공지가 그 순간 끊깁니다.</p>
+            <dl>
+              <div><dt>바꾸는 것</dt><dd>Git 반영 → Jenkins 테스트·이미지 빌드 → Green 배포·검사 → ALB 전환, 실패하면 Blue로 자동 복귀</dd></div>
+              <div><dt>쓰는 기술</dt><dd>GitHub, Jenkins, Maven, Docker, ECR, Ansible, Kubernetes</dd></div>
+              <div><dt>완료 기준</dt><dd>커밋·빌드·이미지 태그가 한 줄로 이어지고, 배포 중 조회 실패 0건</dd></div>
+            </dl>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec soft" id="case">
+    <div class="wrap">
+      <div class="sec-t">
+        <div><span class="kicker">구축 사례</span><h2>해든정밀㈜ 공지·자료실 이전</h2></div>
+        <p>고객사와 협력사에 납품 일정, 품질 인증서, 도면을 배포하는 정밀 가공 부품 제조사입니다. 기존 글과 파일을 하나도 잃지 않고, 배포 중에도 조회가 끊기지 않는 것이 의뢰 조건이었습니다.</p>
+      </div>
+      <div class="case" id="demo">
+        <article class="case-card">
+          <div class="ph"><svg aria-hidden="true"><use href="#sc-shafts" width="100%" height="100%"/></svg></div>
+          <div class="body">
+            <h3>서버 한 대에서 두 가용 영역으로</h3>
+            <div class="ba">
+              <div><h4>의뢰 당시</h4><ul><li>서버 한 대가 사내 업무와 대외 공지를 함께 처리</li><li>비정상 접근 흔적, 망이 나뉘지 않아 추적 어려움</li><li>첨부 증가로 디스크 부족</li><li>배포마다 Tomcat 재시작으로 조회 중단</li></ul></div>
+              <div class="after"><h4>이전 후 목표</h4><ul><li>관리·서비스·서버팜 VLAN 분리, 지사는 VPN</li><li>EKS 두 영역, 게시글 RDS, 첨부 S3</li><li>첨부마다 SHA-256 기록·대조</li><li>검사를 통과한 버전으로만 전환, 실패 시 복귀</li></ul></div>
+            </div>
+            <a class="textlink" href="https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/main/app">공지·자료실 앱 소스와 인계표 보기</a>
+            <p class="fine">해든정밀㈜은 KDT 최종 프로젝트 시나리오의 가상 고객사입니다.</p>
+          </div>
+        </article>
+
+        <div class="switch" aria-labelledby="sw-title">
+          <h3 id="sw-title">블루그린 전환 직접 해보기</h3>
+          <p class="sub">해든정밀 공지·자료실 운영 주소에서 일어나는 일입니다.</p>
+          <svg class="flow" viewBox="0 0 560 230" role="img" aria-labelledby="flow-desc">
+            <desc id="flow-desc">사용자 요청이 로드밸런서를 거쳐 운영 중인 버전으로 가는 그림. 배포를 누르면 새 버전이 검사를 통과한 뒤 요청이 그쪽으로 옮겨 간다.</desc>
+            <g font-size="13" fill="#C9CEEA">
+              <rect x="6" y="88" width="88" height="54" rx="10" fill="#353A78"/>
+              <text x="50" y="112" text-anchor="middle" fill="#fff" font-weight="700">사용자</text>
+              <text x="50" y="130" text-anchor="middle" font-size="11">고객·협력사</text>
+              <rect x="196" y="82" width="98" height="66" rx="10" fill="#353A78"/>
+              <text x="245" y="110" text-anchor="middle" fill="#fff" font-weight="700">ALB</text>
+              <text x="245" y="128" text-anchor="middle" font-size="11">HTTPS 443</text>
+            </g>
+            <path id="p-in" d="M94 115 H196" stroke="#6A70A8" stroke-width="2" fill="none"/>
+            <path id="p-blue" d="M294 115 C330 115 340 52 390 52" stroke="#6A70A8" stroke-width="2" fill="none"/>
+            <path id="p-green" d="M294 115 C330 115 340 178 390 178" stroke="#6A70A8" stroke-width="2" fill="none" stroke-dasharray="4 5"/>
+            <g id="n-blue"><rect x="390" y="22" width="162" height="62" rx="12" fill="#4060E0"/><text x="406" y="47" fill="#fff" font-size="14" font-weight="800">BLUE</text><text id="t-blue-v" x="406" y="68" fill="#DCE3FF" font-size="12">v1.0.0 운영 중</text></g>
+            <g id="n-green" opacity=".35"><rect x="390" y="148" width="162" height="62" rx="12" fill="#14916E"/><text x="406" y="173" fill="#fff" font-size="14" font-weight="800">GREEN</text><text id="t-green-v" x="406" y="194" fill="#D5F7EC" font-size="12">대기</text></g>
+            <g id="dots"></g>
+          </svg>
+          <ol class="checks" aria-label="배포 단계">
+            <li><span class="m" aria-hidden="true"></span>테스트 · 이미지 빌드</li>
+            <li><span class="m" aria-hidden="true"></span>Green 상태 검사</li>
+            <li><span class="m" aria-hidden="true"></span>공지 작성 · 조회 검사</li>
+            <li><span class="m" aria-hidden="true"></span>트래픽 전환 · 재검사</li>
+          </ol>
+          <div class="meter">
+            <div><b id="c-total">0</b><span>처리한 요청</span></div>
+            <div class="zero"><b id="c-fail">0</b><span>실패한 요청</span></div>
+            <div class="sw-btns">
+              <button class="btn btn-w" id="b-deploy" type="button">v1.1.0 배포</button>
+              <button class="btn btn-o" id="b-bad" type="button">검사 실패 배포</button>
+            </div>
+          </div>
+          <p class="log" id="log" role="status" aria-live="polite">Blue(v1.0.0)가 모든 요청을 받고 있습니다.</p>
+          <p class="note">설계를 설명하는 화면입니다. 실제 측정값은 시연 기록표에 남깁니다. 단계별 시나리오: <a href="https://smoke-release-lab.chanyoungcplus.chatgpt.site">배포 시뮬레이터</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="process">
+    <div class="wrap">
+      <div class="sec-t">
+        <div><span class="kicker">진행 방식</span><h2>앞 단계의 확인 결과가 다음 단계의 시작 조건</h2></div>
+        <p>원본 해시 목록이 없으면 이관을 시작하지 않고, 새 버전이 검사를 통과하지 않으면 트래픽을 넘기지 않습니다.</p>
+      </div>
+      <ol class="steps">
+        <li class="done"><span class="n">1단계</span><h3>요구사항·구조 설계</h3><p>RFP를 요구사항 명세와 아키텍처 구성도로 정리</p><time>11.21 – 11.26</time></li>
+        <li class="now"><span class="n">2단계</span><h3>망 분리·접근 통제</h3><p>본사·지사 VLAN, 방화벽 이중화, IPsec VPN</p><time>11.26 – 12.03</time></li>
+        <li class="now"><span class="n">3단계</span><h3>서버 정비·원본 목록</h3><p>계정·SSH·백업 정비, 게시글 건수와 파일 해시</p><time>11.26 – 12.03</time></li>
+        <li class="now"><span class="n">4단계</span><h3>AWS 이전</h3><p>EKS·ALB·RDS·S3 구성, 이관 전후 대조</p><time>11.26 – 12.05</time></li>
+        <li class="now"><span class="n">5단계</span><h3>무중단 배포</h3><p>Jenkins 빌드·ECR·Green 검사·전환·자동 복귀</p><time>11.26 – 12.05</time></li>
+        <li><span class="n">6단계</span><h3>장애 훈련·인계</h3><p>워커 장애·롤백 측정, 보고서와 운영 절차 인계</p><time>11.30 – 12.09</time></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="sec soft" id="measure">
+    <div class="wrap">
+      <div class="sec-t">
+        <div><span class="kicker">검증 항목</span><h2>“잘 됐다” 대신 측정값으로 인계합니다</h2></div>
+        <p>아래 항목은 시연 때 실제로 재고, 결과는 시연 기록표에 그대로 남깁니다.</p>
+      </div>
+      <table class="measure">
+        <thead><tr><th scope="col">항목</th><th scope="col">재는 방법</th><th scope="col">통과 기준</th><th scope="col">상태</th></tr></thead>
+        <tbody>
+          <tr><td>무중단 배포</td><td>배포하는 동안 운영 주소로 공지 목록을 계속 조회</td><td>조회 실패 0건, 전환 후 검사 실패 시 이전 버전 응답</td><td><span class="status on">구축 중</span></td></tr>
+          <tr><td>데이터 무결성</td><td>이관 전후 게시글 건수·대표 본문·첨부 SHA-256 대조</td><td>세 가지가 모두 일치해야 주소 전환</td><td><span class="status">측정 예정</span></td></tr>
+          <tr><td>가용성</td><td>EKS 워커 한 대를 중단하고 조회 실패 수와 교체 시간 기록</td><td>조회 유지, 대체 워커 투입 시간 기록</td><td><span class="status">측정 예정</span></td></tr>
+          <tr><td>접근 통제</td><td>업무망·지사·외부에서 관리 포트와 서버팜 접근 시도</td><td>허용 경로만 통과, 차단 로그 확인</td><td><span class="status on">구축 중</span></td></tr>
+          <tr><td>운영 알림</td><td>IDS 탐지·백업·장애·배포 알림을 발생시키고 메일함 확인</td><td>네 종류 모두 한 메일함에서 수신</td><td><span class="status">측정 예정</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="sec" id="team">
+    <div class="wrap">
+      <div class="sec-t">
+        <div><span class="kicker">팀 소개</span><h2>영역마다 담당자가 정해진 네 명</h2></div>
+        <p>문의는 영역 담당자가 바로 받습니다. 넘겨받는 값과 넘겨주는 값은 저장소의 인계 이슈로 남깁니다.</p>
+      </div>
+      <div class="team">
+        <div class="member"><span class="av" style="background:#292C61">민서</span><h3>강민서</h3><p class="role">PM · 보안 네트워크</p><ul><li>GNS3 본사·지사망, HSRP·BGP</li><li>ASA·pfSense, IPsec VPN</li><li>모의 해킹 점검·IDS</li></ul><span class="mail">ehdanfqnd@naver.com</span></div>
+        <div class="member"><span class="av" style="background:#34667C">준호</span><h3>이준호</h3><p class="role">Linux 서버 · 운영 메일</p><ul><li>계정·SSH·로그·백업 정비</li><li>이관 원본 목록·해시</li><li>Postfix·Roundcube 알림</li></ul><span class="mail">dlwnsgh7789@gmail.com</span></div>
+        <div class="member"><span class="av" style="background:#5B68C9">우빈</span><h3>이우빈</h3><p class="role">AWS 클라우드 · 이관</p><ul><li>VPC·EKS·ALB·ASG</li><li>RDS·S3·CloudFront·EFS</li><li>장애 복구·비용 점검</li></ul><span class="mail">woobin6318@gmail.com</span></div>
+        <div class="member"><span class="av" style="background:#14916E">찬영</span><h3>강찬영</h3><p class="role">CI/CD · 블루그린 배포</p><ul><li>Jenkins·Maven·Docker·ECR</li><li>Ansible Green 배포·검사</li><li>전환·자동 롤백</li></ul><span class="mail">chanyoungcplus@gmail.com</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" id="contact">
+    <div class="cta">
+      <svg class="bgimg" aria-hidden="true"><use href="#sc-trails" width="100%" height="100%"/></svg>
+      <div class="cta-in">
+        <div>
+          <h2>서버 한 대에 서비스가 몰려 있다면</h2>
+          <p>지금 구성과 가장 큰 불편 한 가지를 알려 주세요. 첫 회의에서 무엇부터 나눌지, 어떤 값을 재서 확인할지 정리해 드립니다.</p>
+          <a class="pill" href="mailto:ehdanfqnd@naver.com?subject=%5B%EC%83%81%EB%8B%B4%5D%20%EC%9D%B8%ED%94%84%EB%9D%BC%20%EC%A0%84%ED%99%98%20%EB%AC%B8%EC%9D%98">상담 메일 보내기</a>
+          <span class="addr">상담 메일: ehdanfqnd@naver.com (PM 강민서)</span>
+        </div>
+        <ol>
+          <li>지금 서비스가 돌아가는 서버 수와 위치</li>
+          <li>꼭 지켜야 할 데이터와 끊기면 안 되는 화면</li>
+          <li>배포 주기와 지금 걸리는 시간</li>
+          <li>운영을 맡을 인원과 월 예산 범위</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="ft">
+  <div class="wrap ft-in">
+    <div>
+      <span class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#3B3F86"/><path d="M9 21c3-1 3-5 7-5s4 4 7 3" stroke="#3FD1A6" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M9 13c3-1 3-4 7-4s4 3 7 2" stroke="#AAB5FF" stroke-width="3" fill="none" stroke-linecap="round"/></svg><b>㈜스모크</b><small>INFRA<br>TRANSITION</small></span>
+      <p style="margin-top:14px">온프레미스 보안 재구축 · AWS 이전 · 무중단 배포<br>KDT 최종 프로젝트 스모커 팀이 운영하는 가상 수행사입니다.</p>
+    </div>
+    <div>
+      <h4>서비스</h4>
+      <ul><li><a href="#svc-net">SMOKE NET 보안 네트워크</a></li><li><a href="#svc-ops">SMOKE OPS 서버·알림</a></li><li><a href="#svc-move">SMOKE MOVE AWS 이전</a></li><li><a href="#svc-shift">SMOKE SHIFT 무중단 배포</a></li></ul>
+    </div>
+    <div>
+      <h4>프로젝트</h4>
+      <ul><li><a href="https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke">GitHub 저장소</a></li><li><a href="https://smoke-release-lab.chanyoungcplus.chatgpt.site">배포 시뮬레이터</a></li><li><a href="#case">해든정밀 구축 사례</a></li><li><a href="#contact">상담 요청</a></li></ul>
+    </div>
+    <div class="copyr"><span>© 2026 ㈜스모크 · 스모커 팀 (2026.11.21 – 12.09)</span><span>강민서 · 이준호 · 이우빈 · 강찬영</span></div>
+  </div>
+</footer>
+
+<button class="top-btn" id="top-btn" type="button" aria-label="맨 위로">↑</button>
+
+<script>
+{
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const $ = (id) => document.getElementById(id);
+
+  /* 모바일 메뉴 */
+  const burger = $('burger'), gnb = $('gnb');
+  burger.addEventListener('click', () => {
+    const open = gnb.classList.toggle('open');
+    burger.setAttribute('aria-expanded', open);
+  });
+  gnb.addEventListener('click', (e) => { if (e.target.tagName === 'A') { gnb.classList.remove('open'); burger.setAttribute('aria-expanded', 'false'); } });
+
+  /* 히어로 슬라이더 */
+  const slides = [...document.querySelectorAll('.slide')];
+  const dotBtns = [...document.querySelectorAll('.dots button:not(.pause)')];
+  const pauseBtn = $('pause');
+  let cur = 0, timer = null, paused = reduce, hover = false;
+  function go(i) {
+    cur = (i + slides.length) % slides.length;
+    slides.forEach((s, k) => s.classList.toggle('on', k === cur));
+    dotBtns.forEach((d, k) => { d.classList.toggle('on', k === cur); d.toggleAttribute('aria-current', k === cur); });
+    restart();
+  }
+  function restart() {
+    clearInterval(timer);
+    if (!paused && !hover) timer = setInterval(() => go(cur + 1), 6500);
+  }
+  document.querySelector('.arrow.prev').addEventListener('click', () => go(cur - 1));
+  document.querySelector('.arrow.next').addEventListener('click', () => go(cur + 1));
+  dotBtns.forEach((d, k) => d.addEventListener('click', () => go(k)));
+  pauseBtn.addEventListener('click', () => {
+    paused = !paused;
+    pauseBtn.textContent = paused ? '재생' : '멈춤';
+    pauseBtn.setAttribute('aria-label', paused ? '자동 넘김 다시 시작' : '자동 넘김 멈추기');
+    restart();
+  });
+  if (reduce) pauseBtn.textContent = '재생';
+  const hero = document.querySelector('.hero');
+  hero.addEventListener('mouseenter', () => { hover = true; restart(); });
+  hero.addEventListener('mouseleave', () => { hover = false; restart(); });
+  hero.addEventListener('focusin', () => { hover = true; restart(); });
+  hero.addEventListener('focusout', () => { hover = false; restart(); });
+  hero.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') go(cur - 1); if (e.key === 'ArrowRight') go(cur + 1); });
+  let sx = null;
+  hero.addEventListener('touchstart', (e) => { sx = e.touches[0].clientX; }, { passive: true });
+  hero.addEventListener('touchend', (e) => { if (sx === null) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 50) go(cur + (dx < 0 ? 1 : -1)); sx = null; });
+  restart();
+
+  /* 맨 위로 */
+  const topBtn = $('top-btn');
+  addEventListener('scroll', () => topBtn.classList.toggle('show', scrollY > 600), { passive: true });
+  topBtn.addEventListener('click', () => scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }));
+
+  /* 블루그린 전환 데모 */
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const dots = $('dots');
+  const paths = { in: $('p-in'), blue: $('p-blue'), green: $('p-green') };
+  const len = Object.fromEntries(Object.entries(paths).map(([k, p]) => [k, p.getTotalLength()]));
+  const steps = [...document.querySelectorAll('.checks li')];
+  const bDeploy = $('b-deploy'), bBad = $('b-bad'), log = $('log');
+  let live = 'blue', versions = { blue: 'v1.0.0', green: null };
+  let total = 0, fail = 0, busy = false, nextVer = 1;
+  const color = { blue: '#AAB5FF', green: '#3FD1A6' };
+  const flying = [];
+  const setStep = (i, st) => { steps[i].className = st || ''; steps[i].querySelector('.m').textContent = st === 'ok' ? '✓' : st === 'fail' ? '!' : ''; };
+  const say = (t) => { log.textContent = t; };
+  const node = (s, on) => $('n-' + s).setAttribute('opacity', on ? '1' : '.35');
+  const edge = (s, on) => { paths[s].setAttribute('stroke', on ? color[s] : '#6A70A8'); paths[s].setAttribute('stroke-dasharray', on ? '' : '4 5'); paths[s].setAttribute('stroke-width', on ? '2.5' : '2'); };
+  const label = (s, t) => { $('t-' + s + '-v').textContent = t; };
+  const wait = (ms) => new Promise((r) => setTimeout(r, reduce ? Math.min(ms, 250) : ms));
+  const showTotal = () => { $('c-total').textContent = total.toLocaleString('ko-KR'); };
+
+  /* 요청은 출발할 때 목적지를 정한다 → 전환 중에도 실패가 없다 */
+  function spawn() {
+    const c = document.createElementNS(svgNS, 'circle');
+    c.setAttribute('r', '4.5'); c.setAttribute('fill', '#fff');
+    dots.appendChild(c);
+    flying.push({ c, t: 0, to: live });
+  }
+  let last = performance.now(), acc = 0;
+  function frame(now) {
+    const dt = Math.min(now - last, 50); last = now; acc += dt;
+    if (!reduce && acc > 210) { acc = 0; spawn(); }
+    for (let i = flying.length - 1; i >= 0; i--) {
+      const f = flying[i];
+      f.t += dt / 1300;
+      let pt;
+      if (f.t < 0.45) pt = paths.in.getPointAtLength(len.in * (f.t / 0.45));
+      else { pt = paths[f.to].getPointAtLength(len[f.to] * Math.min((f.t - 0.45) / 0.55, 1)); f.c.setAttribute('fill', color[f.to]); }
+      f.c.setAttribute('cx', pt.x); f.c.setAttribute('cy', pt.y);
+      if (f.t >= 1) { f.c.remove(); flying.splice(i, 1); total++; showTotal(); }
+    }
+    requestAnimationFrame(frame);
+  }
+  if (reduce) setInterval(() => { total += 5; showTotal(); }, 1000);
+  requestAnimationFrame(frame);
+
+  async function deploy(bad) {
+    if (busy) return;
+    busy = true; bDeploy.disabled = bBad.disabled = true;
+    const idle = live === 'blue' ? 'green' : 'blue', prev = live;
+    const ver = 'v1.' + nextVer + '.0', NAME = idle.toUpperCase(), PREV = prev.toUpperCase();
+    steps.forEach((_, i) => setStep(i, ''));
+    setStep(0, 'run'); say(`커밋을 받아 ${ver} 테스트와 이미지 빌드를 진행합니다.`);
+    await wait(1400); setStep(0, 'ok');
+    node(idle, true); label(idle, ver + ' 검사 중');
+    setStep(1, 'run'); say(`${NAME}에 ${ver}를 띄웠습니다. 운영 요청은 계속 ${PREV}가 받습니다.`);
+    await wait(1300); setStep(1, 'ok');
+    setStep(2, 'run'); say(`${NAME} 전용 경로에서 검증 공지를 작성하고 다시 읽습니다.`);
+    await wait(1300); setStep(2, 'ok');
+    setStep(3, 'run'); say('ALB 리스너를 새 대상 그룹으로 바꿉니다. 이미 출발한 요청은 원래 버전이 끝까지 처리합니다.');
+    live = idle; edge(idle, true); edge(prev, false);
+    await wait(1500);
+    if (bad) {
+      setStep(3, 'fail'); say(`운영 주소 재검사에서 오류를 감지했습니다. ${PREV}로 되돌립니다.`);
+      await wait(900);
+      live = prev; edge(prev, true); edge(idle, false);
+      label(idle, ver + ' 실패 · 보관'); node(idle, false);
+      await wait(1200);
+      say(`${PREV}(${versions[prev]})가 다시 모든 요청을 받습니다. 실패한 요청 ${fail}건.`);
+    } else {
+      setStep(3, 'ok');
+      versions[idle] = ver; label(idle, ver + ' 운영 중'); label(prev, versions[prev] + ' 대기 · 복귀용'); node(prev, false);
+      nextVer++;
+      say(`${NAME}(${ver})가 모든 요청을 받습니다. 배포하는 동안 실패한 요청 ${fail}건.`);
+      bDeploy.textContent = 'v1.' + nextVer + '.0 배포';
+    }
+    busy = false; bDeploy.disabled = bBad.disabled = false;
+  }
+  bDeploy.addEventListener('click', () => deploy(false));
+  bBad.addEventListener('click', () => deploy(true));
+  edge('blue', true);
+}
+</script>
+</body>
+</html>
