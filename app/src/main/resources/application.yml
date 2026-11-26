@@ -1,0 +1,66 @@
+# 해든정밀㈜ 공지·자료실 — 값은 모두 환경 변수로 덮어쓴다. 비밀값의 기본값은 두지 않는다.
+server:
+  port: ${APP_PORT:8080}
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+  shutdown: graceful          # 블루그린 축소 시 진행 중 요청을 마치고 내려간다
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: haedeun-notice
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+  servlet:
+    multipart:
+      max-file-size: ${APP_MAX_FILE_MB:20}MB
+      max-request-size: ${APP_MAX_REQUEST_MB:60}MB
+  datasource:
+    url: ${DB_URL:jdbc:h2:mem:notice;MODE=MariaDB;DB_CLOSE_DELAY=-1}
+    username: ${DB_USER:sa}
+    password: ${DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: ${DB_DDL:update}
+    open-in-view: false
+    properties:
+      hibernate.jdbc.time_zone: Asia/Seoul
+  thymeleaf:
+    cache: true
+
+app:
+  version: ${APP_VERSION:@project.version@}
+  commit: ${GIT_COMMIT:}
+  color: ${DEPLOY_COLOR:local}
+  storage-dir: ${APP_STORAGE_DIR:./data/attachments}
+  max-file-bytes: 20971520
+  allowed-extensions: [pdf, zip, png, jpg, jpeg, xlsx, xls, docx, pptx, hwp, hwpx, txt, csv, dwg, step, stp]
+  check-token: ${CHECK_TOKEN:}
+  admin-username: ${ADMIN_USERNAME:admin}
+  admin-password: ${ADMIN_PASSWORD:}
+  admin-display-name: ${ADMIN_DISPLAY_NAME:관리자}
+  seed: ${APP_SEED:true}
+
+logging:
+  level:
+    root: INFO
+
+---
+# 운영: SPRING_PROFILES_ACTIVE=prod  →  MariaDB smoke_board (스키마: server/db/smoke_board.sql, 데이터 서버 → 이관 후 RDS).
+# 주소·계정은 DB_HOST · DB_USER · DB_PASSWORD 로만 받는다. 스키마는 앱이 만들지 않고 검증만 한다(DB_DDL=validate).
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:mariadb://${DB_HOST}:${DB_PORT:3306}/${DB_NAME:smoke_board}?useUnicode=true&characterEncoding=utf8&tinyInt1isBit=false
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: ${DB_DDL:validate}
+app:
+  seed: ${APP_SEED:false}

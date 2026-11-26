@@ -6,10 +6,47 @@
 
 | 이정표 | 내용 | 구현 | 실행 | 근거 |
 | --- | --- | :---: | :---: | --- |
-| CICD1 | Jenkins 테스트·WAR 빌드 | 초안 (PR) | — | [jenkins/Jenkinsfile](jenkins/Jenkinsfile) |
+| CICD1 | Jenkins 테스트·WAR 빌드 | 초안 + 빌드 대상 앱 (PR #8) | Actions에서 같은 명령 통과 · Jenkins 미실행 | [jenkins/Jenkinsfile](jenkins/Jenkinsfile) · [app/](../app/) |
 | CICD2 | Docker 이미지 · ECR 등록 | — | — | |
 | CICD3 | Ansible Green 배포 · 상태 검사 | — | — | |
 | CICD4 | 검증 후 전환 · 자동 롤백 | — | — | |
+
+---
+
+## 2026-11-26 (목) 16:30 · 앱을 이준호 DB 스키마(smoke_board)에 맞춤 (PR #8, #10)
+
+**확인한 결과**
+- 이준호 `server/db/smoke_board.sql`을 PR #10으로 올림(내용 그대로).
+- 앱 테이블·컬럼·분류 값을 이 스키마와 같게 바꾸고, 관리자 로그인을 `admin_user`(bcrypt)로 변경.
+- Actions `App build` → `mariadb` 작업(커밋 `540ee16`): MariaDB 10.11에 SQL 적용 → 분류별 2건씩 8건, 앱을 prod 프로필(스키마 검증)로 기동 → `/health` `"db":"UP"`, 샘플 글·도면 분류 조회, 검증 글 `is_check=1`로 저장되고 `v_migration_check` 건수 8 유지, 관리자 bcrypt 1건 생성 확인. 단위 테스트 10건 통과.
+
+**막힌 부분 · 확인 필요**
+- SQL의 서버 주소(`10.10.40.10`, 앱 계정 `10.10.30.%`)와 `docs/architecture/ip-plan.md`(`10.0.40.10`, `10.0.30.0/24`)가 다름 → 강민서·이준호 확인. CI는 별도 CI 전용 계정으로 확인함.
+
+**다음 작업** — 병합 순서 #10 → #8 → #9. Jenkins EC2 준비되면 CICD1 실제 실행.
+
+---
+
+## 2026-11-26 (목) 15:00 · 빌드 대상 앱(해든정밀 공지·자료실)과 CI 빌드 검사 (PR #8)
+
+**확인한 결과**
+- 수행계획서상 ㈜스모크 = 수행사(우리 팀), 고객사는 이름 미정 → 가상 고객사 **해든정밀㈜**(정밀 가공 부품 제조)로 정함.
+- `app/` 인계표 6항목이 모두 "확인 대기"였고 원본 앱 소스가 없어 CICD1이 빌드할 대상이 없었음 → Spring Boot 3.3 WAR 레퍼런스 앱을 `app/`에 작성.
+- GitHub Actions `App build`(PR #8, 커밋 `6a87d7e`)에서 Jenkinsfile과 같은 `mvn -B -ntp clean package` 통과: 테스트 8건 성공, `target/notice.war` 생성.
+- 같은 실행에서 WAR를 띄워 `/health` → `"status":"UP"`, `/notices` 200, 검증 API 작성→조회→무토큰 401→삭제 통과.
+- 이 작업 환경에서는 Maven Central·Docker Hub 접근이 막혀 로컬 빌드·이미지 빌드는 하지 못함. 빌드 확인은 Actions 결과만 근거로 씀.
+
+**막힌 부분 · 확인 필요**
+- 이준호에게 원본 공지 앱이 실제로 있는지 확인 필요. 있으면 스키마 차이 비교 후 이 앱을 바꾸거나 맞춘다.
+- Redis 캐시·S3/CloudFront 첨부 제공은 아직 없음(첨부는 NFS·EFS 경로) → 이우빈과 범위 결정.
+- `cicd/docker/Dockerfile` 초안은 미빌드.
+
+**다음 작업**
+- Jenkins EC2(이우빈 인계) 준비되면 CICD1 실제 실행 → 콘솔의 `commit=`·테스트 결과·WAR SHA-256 캡처(가린 사본).
+- CICD2: Dockerfile 빌드 → ECR push(태그 = 커밋 SHA 7자리).
+- Jenkins Credentials에 `CHECK_TOKEN` 등록 → CICD3 검증 단계에서 `/api/check/notices` 호출.
+
+**증빙** — PR #8 Actions `App build` 실행 요약(health JSON, WAR SHA-256)
 
 ---
 

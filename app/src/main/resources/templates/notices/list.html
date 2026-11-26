@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('공지사항')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header('notices')}"></header>
+<main id="main" class="wrap page">
+  <p th:if="${flash}" class="flash" role="status" th:text="${flash}"></p>
+  <div class="page-head">
+    <h1>공지사항</h1>
+    <form class="search small" th:action="@{/notices}" method="get" role="search">
+      <input type="hidden" name="category" th:if="${category}" th:value="${category}">
+      <label for="q" class="sr-only">공지 검색</label>
+      <input id="q" name="q" type="search" th:value="${q}" placeholder="제목·본문 검색">
+      <button type="submit">검색</button>
+    </form>
+  </div>
+
+  <nav class="tabs" aria-label="분류">
+    <a th:href="@{/notices(q=${q})}" th:classappend="${category == null} ? 'on'">전체</a>
+    <a th:each="c : ${categories}" th:href="@{/notices(category=${c}, q=${q})}"
+       th:classappend="${category == c} ? 'on'" th:text="${c.label}">공지</a>
+  </nav>
+
+  <table class="ledger" th:if="${page.hasContent()}">
+    <caption class="sr-only">공지 목록</caption>
+    <thead>
+      <tr><th scope="col">문서번호</th><th scope="col">분류</th><th scope="col">제목</th>
+          <th scope="col" class="hide-sm">작성 부서</th><th scope="col">게시일</th><th scope="col" class="hide-sm num">조회</th></tr>
+    </thead>
+    <tbody>
+      <tr th:each="n : ${page.content}" th:classappend="${n.pinned} ? 'pinned'">
+        <td class="docno" th:text="${n.docNo}">GN-2026-0001</td>
+        <td th:text="${n.category.label}">공지</td>
+        <td class="title-cell">
+          <a th:href="@{/notices/{id}(id=${n.id})}" th:text="${n.title}">제목</a>
+          <span th:if="${!n.attachments.isEmpty()}" class="clip" th:title="'첨부 ' + ${n.attachments.size()} + '건'" th:text="'첨부 ' + ${n.attachments.size()}">첨부 1</span>
+          <span th:if="${n.new}" class="new">새 글</span>
+        </td>
+        <td class="hide-sm" th:text="${n.writer}">팀</td>
+        <td th:text="${#temporals.format(n.createdAt, 'yyyy.MM.dd')}">2026.11.21</td>
+        <td class="hide-sm num" th:text="${n.viewCount}">0</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div th:unless="${page.hasContent()}" class="empty-block">
+    <p th:if="${q != ''}">'<span th:text="${q}"></span>'에 맞는 공지가 없습니다. 품번이나 짧은 단어로 다시 검색해 보세요.</p>
+    <p th:if="${q == ''}">이 분류에는 아직 공지가 없습니다.</p>
+    <a th:href="@{/notices}">전체 공지 보기</a>
+  </div>
+
+  <nav class="pager" th:if="${page.totalPages > 1}" aria-label="페이지">
+    <a th:if="${page.hasPrevious()}" th:href="@{/notices(category=${category}, q=${q}, page=${page.number - 1})}">이전</a>
+    <span th:text="${page.number + 1} + ' / ' + ${page.totalPages}">1 / 2</span>
+    <a th:if="${page.hasNext()}" th:href="@{/notices(category=${category}, q=${q}, page=${page.number + 1})}">다음</a>
+  </nav>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
