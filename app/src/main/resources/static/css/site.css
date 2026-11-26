@@ -25,7 +25,13 @@ body {
   color: var(--ink);
   background: var(--paper);
   font-feature-settings: "tnum" 1;
+  word-break: keep-all;          /* 한국어 어절 단위 줄바꿈 */
+  overflow-wrap: break-word;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
+body > main { flex: 1; }
 a { color: var(--blue); text-underline-offset: 3px; }
 a:hover { color: var(--ink); }
 :focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; }

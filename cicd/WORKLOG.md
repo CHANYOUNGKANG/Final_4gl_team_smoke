@@ -6,10 +6,33 @@
 
 | 이정표 | 내용 | 구현 | 실행 | 근거 |
 | --- | --- | :---: | :---: | --- |
-| CICD1 | Jenkins 테스트·WAR 빌드 | 초안 (PR) | — | [jenkins/Jenkinsfile](jenkins/Jenkinsfile) |
+| CICD1 | Jenkins 테스트·WAR 빌드 | 초안 + 빌드 대상 앱 (PR #8) | Actions에서 같은 명령 통과 · Jenkins 미실행 | [jenkins/Jenkinsfile](jenkins/Jenkinsfile) · [app/](../app/) |
 | CICD2 | Docker 이미지 · ECR 등록 | — | — | |
 | CICD3 | Ansible Green 배포 · 상태 검사 | — | — | |
 | CICD4 | 검증 후 전환 · 자동 롤백 | — | — | |
+
+---
+
+## 2026-11-26 (목) 15:00 · 빌드 대상 앱(해든정밀 공지·자료실)과 CI 빌드 검사 (PR #8)
+
+**확인한 결과**
+- 수행계획서상 ㈜스모크 = 수행사(우리 팀), 고객사는 이름 미정 → 가상 고객사 **해든정밀㈜**(정밀 가공 부품 제조)로 정함.
+- `app/` 인계표 6항목이 모두 "확인 대기"였고 원본 앱 소스가 없어 CICD1이 빌드할 대상이 없었음 → Spring Boot 3.3 WAR 레퍼런스 앱을 `app/`에 작성.
+- GitHub Actions `App build`(PR #8, 커밋 `6a87d7e`)에서 Jenkinsfile과 같은 `mvn -B -ntp clean package` 통과: 테스트 8건 성공, `target/notice.war` 생성.
+- 같은 실행에서 WAR를 띄워 `/health` → `"status":"UP"`, `/notices` 200, 검증 API 작성→조회→무토큰 401→삭제 통과.
+- 이 작업 환경에서는 Maven Central·Docker Hub 접근이 막혀 로컬 빌드·이미지 빌드는 하지 못함. 빌드 확인은 Actions 결과만 근거로 씀.
+
+**막힌 부분 · 확인 필요**
+- 이준호에게 원본 공지 앱이 실제로 있는지 확인 필요. 있으면 스키마 차이 비교 후 이 앱을 바꾸거나 맞춘다.
+- Redis 캐시·S3/CloudFront 첨부 제공은 아직 없음(첨부는 NFS·EFS 경로) → 이우빈과 범위 결정.
+- `cicd/docker/Dockerfile` 초안은 미빌드.
+
+**다음 작업**
+- Jenkins EC2(이우빈 인계) 준비되면 CICD1 실제 실행 → 콘솔의 `commit=`·테스트 결과·WAR SHA-256 캡처(가린 사본).
+- CICD2: Dockerfile 빌드 → ECR push(태그 = 커밋 SHA 7자리).
+- Jenkins Credentials에 `CHECK_TOKEN` 등록 → CICD3 검증 단계에서 `/api/check/notices` 호출.
+
+**증빙** — PR #8 Actions `App build` 실행 요약(health JSON, WAR SHA-256)
 
 ---
 
