@@ -26,3 +26,18 @@
 | 11/26 | 서버 | [1126-13-mariadb-smoke-board-masked.png](../../server/evidence/2026-11-26/1126-13-mariadb-smoke-board-masked.png) | 이관 기준 DB 가 분류별 8건으로 구성되고 대조 뷰가 본문 해시를 계산 | 이관 전후 비교 기준값 확보 | 4 |
 | 11/26 | 서버 | [1126-19-notice-health-ok-masked.png](../../server/evidence/2026-11-26/1126-19-notice-health-ok-masked.png) | web 의 Tomcat 공지 앱이 data 의 MariaDB 를 읽어 8건 응답 | 온프레미스 3-Tier 동작 | 4 |
 | 11/26 | 서버 | [1126-07-trouble-l2-loop-ping-dup-masked.png](../../server/evidence/2026-11-26/1126-07-trouble-l2-loop-ping-dup-masked.png) | GNS3 이중 연결로 생긴 L2 루프 증상(응답 중복·지연 증가) | 장애 원인 분석 사례 — 이중 경로 제거로 해결 | 4 |
+| 11/26 | AWS | [VPC 리소스맵](../../aws/evidence/1126-vpc-map-masked.png) | 두 AZ의 public/app/data 서브넷 6개와 라우팅·IGW/NAT 항목 | 서비스 계층을 두 AZ에 나눈 기반 구성. EKS 노드의 실제 AZ 배치 검증은 별도 | 2 |
+| 11/26 | AWS | [서브넷 상태](../../aws/evidence/1126-subnets-masked.png) | 서브넷 6개가 모두 Available | 네트워크 기반의 실제 콘솔 상태 확인 | 5 |
+| 11/26 | AWS | [보안 그룹 목록](../../aws/evidence/1126-security-groups-masked.png) | 서비스별 SG가 존재함 | 서비스 목적별 SG 구성. 이름만으로 규칙 전체 적용을 입증하지 않음 | 3 |
+| 11/26 | AWS | [Ansible 인바운드](../../aws/evidence/1126-ansible-ssh-rule-masked.png) | SSH/TCP 22의 출발지 SG 참조. 원본 SG 목록과 대조해 Jenkins SG임을 확인 | Jenkins에서 Ansible로 연결하는 허용 경계. SSH 성공은 팀원 로그로 별도 확인 | 6 |
+| 11/26 | AWS | [아웃바운드 규칙](../../aws/evidence/1126-outbound-rule-masked.png) | 모든 트래픽·전체 포트·0.0.0.0/0 규칙 1개 | 실제 설정과 최소 권한 목표의 차이. 화면만으로 소속 SG는 확정할 수 없음 | 8 |
+| 11/26 | AWS | [도메인 등록 실패](../../aws/evidence/1126-domain-registration-failed-masked.png) | 11/26 09:45 KST 제출 건의 실패와 AWS Support 안내 | 실패를 기록하고 초기 HTTP·추후 HTTPS 전환 기준과 연결 | 8 |
+| 11/26 | AWS | [도메인 사용 불가](../../aws/evidence/1126-domain-unavailable-masked.png) | Given domain is unavailable 오류 | 성공 자료와 실패 자료를 분리해 원인 확인 범위를 기록 | 8 |
+| 11/26 | AWS | [EKS 관찰 요약](../../aws/verification/1126-eks-observations.log) | 실제 대화 출력에서 노드 2대 Ready·시스템 Pod 6개 Running 회수 | Kubernetes 기반의 관찰 시점 상태. 원본 스크린샷·노드 AZ·업무 앱 배포 증거와 구분 | 5 |
+| 11/26 | AWS | [CLI 원문 공개용 발췌](../../aws/verification/1126-aws-cli-masked.log) | EKS 1.37 지원 조회와 NAT Gateway 1개 available | 지원 버전 조회는 클러스터 배포 증거와 다름. NAT는 실제 사용자 제출 출력 | 5 |
+
+### AWS 자료 사용 범위
+
+11/26은 자료 정리·업로드 기준일이다. 화면에 시각이 보이는 도메인 등록 실패 자료 외의 원본은 정확한 캡처 시각과 리소스 생성 시각을 단정하지 않는다. 실제 스크린샷의 민감 부분만 불투명하게 제거하고 메타데이터를 지웠으며 성공 화면을 생성하지 않았다. 실패·보류·미검증 자료를 성과 지표로 바꾸지 않는다.
+
+[AWS 상세 설명·출처](../../aws/WORKLOG.md) · [AWS 현황](../../aws/README.md)

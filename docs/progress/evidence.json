@@ -4,5 +4,11 @@
       "file": "server/verification/1126-onprem-service-check.md",
       "observed": "온프레미스 web 서버 Tomcat 10.1.61 에 공지 앱 WAR(JSP, server/onprem-notice-jsp)을 배포해 /notice/health.jsp 가 \"OK notices=8\", 목록 링크 8건 응답 — data 서버 MariaDB smoke_board 를 JDBC 로 조회. 팀 표준 app/(Spring Boot)의 온프레미스 실행은 아직 아님"
     }
+  },
+  "AWS1": {
+    "verification": {
+      "file": "aws/verification/1126-eks-observations.log",
+      "observed": "부분 실행 근거: 2026-11-26 17:16 KST의 사용자 kubectl 출력 회수 요약에서 노드 2대 Ready, 시스템 Pod 6개 Running·재시작 0을 확인. 원본 로그 전체나 실제 노드별 AZ 증빙은 없음. 두 AZ의 EKS 구현 전체를 입증하는 implementation은 등록하지 않으며 이 항목만으로 점수를 올리지 않음."
+    }
   }
 }
