@@ -13,6 +13,18 @@
 
 ---
 
+## 2026-11-26 · Poll SCM 자동 빌드 성공 및 Docker 기반 준비
+
+**확인한 결과** — 사용자 제공 Jenkins Build #2 화면: 12:14:09 KST, Started by an SCM change, revision `efd84d33bbbabfed4e114707147127468e1b489c`, SUCCESS, 소요 12초, WAR 및 해시 아티팩트, 테스트 실패 없음. Docker Engine 29.10.1, Buildx 0.39.1, 서비스 active 및 root hello-world 성공. Jenkins docker 그룹 등록, Jenkins 재시작, Jenkins 사용자 docker ps 정상.
+
+**막힌 부분** — Jenkins 사용자 hello-world 재확인 및 이미지 빌드 실행 결과 미확인. 실제 앱과 ECR URI·IAM 인계 대기.
+
+**다음 작업** — 테스트 전용 Dockerfile과 이미지 빌드/HTTP 검사 스테이지 추가. ECR에 아직 push하지 않는다. 실제 앱의 Tomcat 버전은 서버 담당자와 별도 합의. Docker 그룹은 root 수준 권한이므로 신뢰된 브랜치만 빌드하고 관리 접속 및 IAM 권한을 제한한다.
+
+**증빙** — [Build #2 화면 관찰 기록](verification/smoke-test-build-2.log).
+
+---
+
 ## 2026-11-26 · 테스트 WAR 수동 빌드 성공
 
 **확인한 결과** — 사용자 제공 Jenkins 콘솔에서 Build #1, checkout SHA `53c07cb3fb098d868e8eff0fe311e65bfcfd18a8`, Maven 13.930초, JUnit 1건 통과, WAR 1608 bytes, 아티팩트 보관 및 fingerprint, Finished: SUCCESS 확인 (12:10:11 KST). Ubuntu 24.04.5 LTS x86_64, Java 21, Maven 3.8.7, Git 2.43.0, Swap 2 GiB, Jenkins 2.580.3. 플러그인 미러 연결 시간 초과는 공식 Plugin Manager 및 대체 아카이브 서버를 이용해 필수 플러그인을 복구했다.
