@@ -47,9 +47,9 @@ jobs:
           id=$(curl -fs -X POST localhost:8080/api/check/notices -H "X-Check-Token: $CHECK_TOKEN" \
                 -H 'Content-Type: application/json' -d '{"title":"ci-check","content":"app-build workflow"}' \
                 | python3 -c 'import sys,json; print(json.load(sys.stdin)["id"])')
-          curl -fs localhost:8080/api/check/notices/$id -H "X-Check-Token: $CHECK_TOKEN" | grep -q ci-check
-          test "$(curl -s -o /dev/null -w '%{http_code}' localhost:8080/api/check/notices/$id)" = 401
-          curl -fs -X DELETE localhost:8080/api/check/notices/$id -H "X-Check-Token: $CHECK_TOKEN"
+          curl -fs "localhost:8080/api/check/notices/$id" -H "X-Check-Token: $CHECK_TOKEN" | grep -q ci-check
+          test "$(curl -s -o /dev/null -w '%{http_code}' "localhost:8080/api/check/notices/$id")" = 401
+          curl -fs -X DELETE "localhost:8080/api/check/notices/$id" -H "X-Check-Token: $CHECK_TOKEN"
           set +x
           mkdir -p "$RUNNER_TEMP/shots"
           for p in "/" "/notices" "/notices/2" "/archive" "/login"; do

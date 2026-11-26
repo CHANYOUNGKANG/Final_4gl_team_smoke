@@ -28,12 +28,16 @@ public class NoticeService {
     @Transactional(readOnly = true)
     public Page<Notice> list(Category category, String q, int page) {
         String query = (q == null || q.isBlank()) ? null : q.strip();
-        return notices.search(category, query, PageRequest.of(Math.max(page, 0), PAGE_SIZE));
+        Page<Notice> result = notices.search(category, query, PageRequest.of(Math.max(page, 0), PAGE_SIZE));
+        result.forEach(n -> n.getAttachments().size()); // open-in-view=false: 화면에서 첨부 수를 쓰므로 트랜잭션 안에서 로딩
+        return result;
     }
 
     @Transactional(readOnly = true)
     public List<Notice> latest(int size) {
-        return notices.search(null, null, PageRequest.of(0, size)).getContent();
+        List<Notice> list = notices.search(null, null, PageRequest.of(0, size)).getContent();
+        list.forEach(n -> n.getAttachments().size());
+        return list;
     }
 
     @Transactional(readOnly = true)
