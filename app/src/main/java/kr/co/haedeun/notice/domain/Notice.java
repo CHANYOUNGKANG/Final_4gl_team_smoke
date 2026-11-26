@@ -22,8 +22,8 @@ public class Notice {
     @Column(nullable = false, length = 200)
     private String title;
 
-    @Lob
-    @Column(nullable = false, columnDefinition = "TEXT")
+    // @Lob(CLOB)으로 두면 검색 쿼리의 lower()가 실패한다 → TEXT 문자열 컬럼으로 매핑
+    @Column(nullable = false, length = 20000, columnDefinition = "TEXT")
     private String content;
 
     @Column(nullable = false, length = 50)

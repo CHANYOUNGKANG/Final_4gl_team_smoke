@@ -34,11 +34,12 @@ jobs:
         working-directory: app
         run: |
           # 이 실행에서만 쓰는 임시 값. 저장소·로그에 남지 않는다.
-          export CHECK_TOKEN="$(openssl rand -hex 24)"
-          export ADMIN_PASSWORD="$(openssl rand -hex 24)"
+          CHECK_TOKEN="$(openssl rand -hex 24)"
+          ADMIN_PASSWORD="$(openssl rand -hex 24)"
+          export CHECK_TOKEN ADMIN_PASSWORD
           export DEPLOY_COLOR=blue GIT_COMMIT="$GITHUB_SHA" APP_STORAGE_DIR="$RUNNER_TEMP/files"
           java -jar target/notice.war > "$RUNNER_TEMP/app.log" 2>&1 &
-          for i in $(seq 1 60); do curl -fs localhost:8080/health >/dev/null && break; sleep 1; done
+          for _ in $(seq 1 60); do curl -fs localhost:8080/health >/dev/null && break; sleep 1; done
           set -x
           curl -fs localhost:8080/health | tee health.json
           grep -q '"status":"UP"' health.json
