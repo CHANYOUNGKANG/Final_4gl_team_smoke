@@ -1,0 +1,39 @@
+---
+- name: Verify remote deployment runner without modifying infrastructure
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Verify Ansible local execution
+      ansible.builtin.ping:
+    - name: Verify deployment user
+      ansible.builtin.command: whoami
+      register: runner_user
+      changed_when: false
+    - name: Verify deployment account
+      ansible.builtin.assert:
+        that:
+          - runner_user.stdout == 'ansadmin'
+    - name: Verify AWS identity via instance role
+      ansible.builtin.command:
+        argv:
+          - aws
+          - sts
+          - get-caller-identity
+          - --region
+          - ap-northeast-2
+          - --query
+          - Arn
+          - --output
+          - text
+      register: aws_identity
+      changed_when: false
+      no_log: true
+    - name: Check expected role without printing account identifier
+      ansible.builtin.assert:
+        that:
+          - "'/smoke-ansible-role/' in aws_identity.stdout"
+      no_log: true
+    - name: Report result
+      ansible.builtin.debug:
+        msg: "ANSIBLE REMOTE CHECK OK (no EKS resources modified)"

@@ -41,6 +41,12 @@ pipeline {
         archiveArtifacts artifacts: 'cicd/test-app/target/ecr-image.txt', fingerprint: true
       }
     }
+    stage('Ansible Remote Check') {
+      when { expression { env.SMOKE_ANSIBLE_CHECK == 'true' } }
+      steps {
+        sh 'bash cicd/ansible/check-remote.sh'
+      }
+    }
     stage('Record') {
       steps {
         sh 'ls -l cicd/test-app/target/smoke-test.war && sha256sum cicd/test-app/target/smoke-test.war | tee cicd/test-app/target/war.sha256'

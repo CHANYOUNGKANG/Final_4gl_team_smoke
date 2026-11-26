@@ -13,6 +13,18 @@
 
 ---
 
+## 2026-11-26 · Ansible EC2 인계 및 Jenkins 원격 실행 검증
+
+**확인한 결과** — 사용자 제공 터미널 화면: Jenkins에서 Ansible 사설 SSH 22 통신 성공, SSH Gateway 접속 성공. Ubuntu 24.04.5 LTS x86_64, 호스트명 smoke-ansible, KST, RAM 909MiB, Swap 2GiB, 루트 파일시스템 약 14G. Ansible Core 2.16.3, Python 3.12.3, Git 2.43.0, AWS CLI 2.42.4 설치 및 localhost ping 성공. ansadmin 계정과 /opt/devops 생성, Jenkins 전용 ED25519 공개키 등록 및 호스트 지문 대조, BatchMode=yes/StrictHostKeyChecking=yes 무인 SSH 성공. Jenkins 서비스 계정에서 원격 Ansible ping SUCCESS/pong 및 AWS STS assumed-role smoke-ansible-role 확인.
+
+**막힌 부분** — eks:ListClusters AccessDenied (필수 배포 권한은 아님). 실제 클러스터명·버전, eks:DescribeCluster, Access Entry 및 RBAC 검증 대기. Jenkins Job 자체에서 원격 플레이북 실행은 아직 미검증. 실제 공지 앱 및 ALB 전환도 미검증.
+
+**다음 작업** — 테스트 전용 원격 플레이북을 추가하고 Jenkins 환경 변수 SMOKE_ANSIBLE_HOST 및 SMOKE_ANSIBLE_CHECK=true를 설정한 뒤 실행 검증한다. 기본 비활성화. EKS 리소스를 변경하지 않으며 실제 관리 주소·키·계정 식별자는 저장소에 기록하지 않는다.
+
+**증빙** — [Ansible 원격 실행 관찰 기록](verification/ansible-remote-check.log).
+
+---
+
 ## 2026-11-26 14:11 KST · ECR 자동 Push 검증 완료 및 CD 인계 설계
 
 **확인한 결과** — 사용자 제공 Build #5 전체 콘솔에서 SCM 변경 자동 실행, SHA `32233749f3ae7ebf9cbc03b1b4d58ca6bb17a4b1`, JUnit 1건 통과/실패 0건, Maven 3.799초, Tomcat HTTP 200, ECR 자동 로그인·Push 및 Digest 대조, ecr-image.txt 및 WAR·SHA-256 아티팩트 보관, 12:26:27 KST SUCCESS 확인. 별도 ECR 조회 화면에서도 동일 태그와 Digest 확인. 12:26:09~12:26:27 로그 구간 약 18초.

@@ -22,6 +22,8 @@
 
 테스트 환경: Jenkins 수동·SCM 자동 WAR 빌드, Docker 이미지 생성, Tomcat HTTP 200, ECR 자동 Push 및 Digest 검증 성공. [Build #5 증빙](verification/smoke-test-build-5-ecr.log) · [작업일지](WORKLOG.md). 실제 공지 앱 통합은 미검증이며 공식 이정표 점수와 구분한다. [Ansible/EKS 인계 및 블루그린 협의안](ansible/HANDOFF.md)은 아직 구현 전이다.
 
+Jenkins 서비스 계정 → Ansible 배포 계정 SSH 및 원격 Ansible ping/AWS STS 인증 성공. [실행 관찰 기록](verification/ansible-remote-check.log). Jenkins Job 원격 플레이북 검사는 기본 비활성 상태로 구현했으며, EKS 배포는 아직 미검증이다. 활성화하려면 Jenkins 환경 변수 `SMOKE_ANSIBLE_HOST`(실제 주소 비공개), `SMOKE_ANSIBLE_CHECK=true`를 설정한다.
+
 ## 작업 체크리스트
 
 - [ ] 이준호에게 [앱 빌드 정보](../app/README.md)를 받고 이우빈과 Jenkins EC2(퍼블릭 서브넷)·SG(실습 PC IP/32)·IAM 역할을 확인한다.
