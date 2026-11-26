@@ -43,7 +43,7 @@ jobs:
           set -x
           curl -fs localhost:8080/health | tee health.json
           grep -q '"status":"UP"' health.json
-          curl -fs localhost:8080/notices | grep -q 'IATF 16949'
+          curl -fs localhost:8080/notices | grep -q 'ISO 9001'
           id=$(curl -fs -X POST localhost:8080/api/check/notices -H "X-Check-Token: $CHECK_TOKEN" \
                 -H 'Content-Type: application/json' -d '{"title":"ci-check","content":"app-build workflow"}' \
                 | python3 -c 'import sys,json; print(json.load(sys.stdin)["id"])')
