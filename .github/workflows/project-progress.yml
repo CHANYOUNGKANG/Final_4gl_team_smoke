@@ -3,7 +3,9 @@ on:
   push:
   workflow_dispatch:
   schedule:
-    - cron: '5 15 * * *' # 매일 00:05 KST · D-day와 오늘 선을 새 날짜로 옮긴다
+    - cron: '12 15 * * *' # 매일 00:12 KST · D-day와 오늘 선을 새 날짜로 옮긴다 (정시 혼잡 회피)
+    - cron: '12 21 * * *' # 06:12 KST 예비 · 자정 실행이 밀리거나 건너뛴 날 대비 (갱신 시각이 바뀌므로 실행마다 봇 커밋 1건)
+    - cron: '42 3 * * *'  # 12:42 KST 예비
 permissions:
   contents: read
 jobs:
@@ -42,6 +44,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/progress"
           python3 tools/progress/report.py --base-url "$COMMIT_URL" --update-readme > "$RUNNER_TEMP/progress/report.md"
           python3 tools/readme/build.py
+          node tools/readme/architecture.js
           cat "$RUNNER_TEMP/progress/report.md" >> "$GITHUB_STEP_SUMMARY"
       - name: Update shared progress issue
         env:
@@ -53,7 +56,7 @@ jobs:
           gh api --method PATCH "repos/$GITHUB_REPOSITORY/issues/1" -F body=@report.md --silent || echo "이슈 #1 갱신 실패 (이슈가 없거나 권한 부족)"
       - name: Commit README and panels
         run: |
-          git add README.md docs/images/live
+          git add README.md docs/images/live docs/images/architecture.svg docs/architecture/ip-plan.md
           if git diff --cached --quiet; then echo "변경 없음"; exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'

@@ -16,6 +16,23 @@ jobs:
           BASE: ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.event.pull_request.head.sha }}
         run: python3 tools/progress/report.py --base-url "$BASE" >> "$GITHUB_STEP_SUMMARY"
 
+  docs:
+    name: 문서 · 구성도 검사
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: topology.json 검증과 구성도 생성
+        run: |
+          node tools/readme/architecture.js
+          if ! git diff --quiet -- docs/images/architecture.svg docs/architecture/ip-plan.md; then
+            echo "::notice::topology.json 변경이 구성도·IP 문서에 반영됩니다 (main 병합 때 자동 커밋)."
+            git diff --stat -- docs/images/architecture.svg docs/architecture/ip-plan.md
+          fi
+      - name: 문서 링크 · 앵커
+        run: python3 tools/docs/check_links.py
+
   lint:
     name: 설정 파일 검사
     runs-on: ubuntu-latest

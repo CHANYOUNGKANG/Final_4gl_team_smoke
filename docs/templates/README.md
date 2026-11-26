@@ -19,5 +19,7 @@
 | CI/CD | [Blue·Green 매니페스트](cicd/notice-deploy.yaml.example) | `cicd/kubernetes/` | CICD3 |
 | CI/CD | [배포·전환 측정 기록](cicd/release-measure.md) | `cicd/verification/` | CICD1–4 실행 |
 | 공통 | [일일 기록](../daily/TEMPLATE.md) | `docs/daily/MMDD.md` | — |
+| 공통 | [설계 결정 ADR](../decisions/adr-template.md) | `docs/decisions/NNNN-제목.md` | 발표 설계 판단 |
+| 공통 | [런북](../runbooks/runbook-template.md) | `docs/runbooks/<장애>.md` | NFR-06 |
 
 **넣지 말 것**　비밀번호, 개인 키(`.pem`), 액세스 키, 계정 ID 원문. 필요한 값은 이름과 위치만 적는다.

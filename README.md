@@ -19,7 +19,7 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11.21 – 12.09
 
 ## 지금 우리 팀
 
-> 아래 두 패널과 활동 표는 **main에 push할 때마다, 그리고 매일 00:05(KST)** GitHub Actions가 다시 그린다. 손으로 고치지 않는다.
+> 아래 두 패널과 활동 표는 **main에 push할 때마다, 그리고 매일 00:12(KST) 무렵** GitHub Actions가 다시 그린다. 일정 막대는 [수행계획서 일정 표](docs/delivery/README.md#수행계획서-일정--2026년)를 그대로 읽으므로, 일정이 바뀌면 그 표만 고친다.
 
 [![파트별 구축 진행률](docs/images/live/progress.svg)](docs/progress/README.md)
 
@@ -153,9 +153,9 @@ git fetch origin && git switch network/minseo-day1-topology   # 내 브랜치 �
 
 [![㈜스모크 전체 아키텍처: GNS3 본사·지사 네트워크, Linux 서버 VM, AWS, CI/CD와 흐름 6개 (IP 표시)](docs/images/architecture.svg)](docs/architecture/README.md)
 
-<sub>팀 아키텍처 대시보드의 구성도를 IP 표시 모드로 내보낸 그림이다. 점선 흐름은 움직이며, 번호는 아래 표의 흐름과 같다.</sub>
+<sub>팀 아키텍처 대시보드의 구성도 배치에 `topology.json`의 주소를 넣어 Actions가 그린다. 주소를 바꿀 때는 `topology.json`만 PR로 고친다. 번호는 아래 표의 흐름과 같다.</sub>
 
-**주소 계획**　본사 `10.0.0.0/16` · 지사 `10.1.0.0/16` · AWS VPC `10.100.0.0/16` · GNS3 공인 역할 `198.51.100.0/24`　→ [IP 대역 · 통신 허용표](docs/architecture/ip-plan.md) · [구성도 생성 스크립트](tools/readme/architecture.js) · [이전 설계 화면](docs/images/architecture.png)
+**주소 계획**　본사 `10.0.0.0/16` · 지사 `10.1.0.0/16` · AWS VPC `10.100.0.0/16` · GNS3 공인 역할 `198.51.100.0/24`　→ [IP 대역 · 통신 허용표](docs/architecture/ip-plan.md) · [주소 기준 파일 `topology.json`](docs/architecture/topology.json) · [설계 결정 기록(ADR)](docs/decisions/README.md) · [이전 설계 화면](docs/images/architecture.png)
 
 | # | 흐름 | 서비스가 동작하는 방식 |
 | :---: | --- | --- |
@@ -173,7 +173,7 @@ git fetch origin && git switch network/minseo-day1-topology   # 내 브랜치 �
 | 네트워크·보안 | GNS3, Cisco ASA, pfSense, VLAN, IPsec, Snort | 서버망 위치, 허용 경로, 허용·차단 및 탐지 기록 |
 | 서버·메일 | Rocky Linux, Nginx, Tomcat, MariaDB, Ansible, Postfix, Roundcube | 앱 소스와 빌드 버전, DB 덤프, 첨부 해시 목록, 운영 메일 수신 기록 |
 | AWS 클라우드 | VPC, EKS, ALB, RDS, S3, CloudFront, EFS, Redis, CloudWatch | 후보 검증 경로, 대상 그룹, 전환·복귀 방법, 이관 대조 결과 |
-| CI/CD | GitHub Webhook, Jenkins, Maven, Docker, ECR, Ansible, Kubernetes | 커밋별 WAR·이미지 식별자, 정상 전환·롤백 로그, 연속 조회 결과 |
+| CI/CD | GitHub(Poll SCM), Jenkins, Maven, Docker, ECR, Ansible, Kubernetes | 커밋별 WAR·이미지 식별자, 정상 전환·롤백 로그, 연속 조회 결과 |
 
 ### 팀 버전과 실행 환경
 
@@ -222,7 +222,7 @@ git fetch origin && git switch network/minseo-day1-topology   # 내 브랜치 �
 | NFR-03 | 데이터 무결성 | 이관 전후 게시글 건수·대표 본문·파일 해시가 모두 일치한 뒤 서비스 주소를 전환한다. | 이준호·이우빈 |
 | NFR-04 | 보안 | ACL·보안 그룹·IAM은 최소 권한을 적용하고 관리 접속은 Bastion과 SSH 키 인증을 사용한다. | 강민서·이우빈·이준호 |
 | NFR-05 | 성능 | 첨부 다운로드 부하 중 공지 응답을 확인하고 캐시를 거치지 않는 경로를 따로 측정한다. | 이우빈 |
-| NFR-06 | 운영성 | 보안·백업·장애·배포 알림을 한 메일함에서 확인하고 운영팀에 대응 절차를 인계한다. | 이준호 |
+| NFR-06 | 운영성 | 보안·백업·장애·배포 알림을 한 메일함에서 확인하고 운영팀에 [대응 절차](docs/runbooks/README.md)를 인계한다. | 이준호 |
 | NFR-07 | 비용 | 예상 비용과 실제 비용을 비교하고 블루·그린 동시 운영 시간과 워커 용량을 기록한다. | 이우빈·강찬영 |
 
 </details>
@@ -253,14 +253,19 @@ Final_4gl_team_smoke/
 │  ├─ templates/   파트별 기록 양식·출발점 코드 (점수 집계 제외)
 │  ├─ daily/       일일 기록 MMDD.md
 │  ├─ presentation/ 발표 자료 후보 색인 (가린 캡처 + 슬라이드 설명)
+│  ├─ decisions/   설계 결정 기록 ADR 0001–0006
+│  ├─ runbooks/    장애 대응 절차 (배포 롤백 · 워커 장애 · 알림 미수신)
 │  ├─ delivery/    일정 · 인계 · 결과 기록표
 │  ├─ progress/    진행률 기준 · evidence.json
-│  ├─ architecture/ requirements/ originals/ demo/
+│  ├─ architecture/ 구성도 설명 · ip-plan.md · topology.json (주소 단일 기준)
+│  ├─ requirements/ originals/ demo/
 │  └─ images/live/ Actions가 그리는 README 패널
 ├─ AGENTS.md      AI 도구·팀원 공통 작업 규칙 (CLAUDE.md가 참조)
 ├─ SECURITY.md    민감값 노출 대응 · 자동 검사
 ├─ tools/
 │  ├─ progress/report.py   이정표 점수 집계
-│  └─ readme/build.py      README 라이브 패널 생성
+│  ├─ readme/build.py      README 라이브 패널 생성
+│  ├─ readme/architecture.js  topology.json → 구성도 SVG · IP 표
+│  └─ docs/check_links.py  문서 링크 · 앵커 검사 (PR)
 └─ .github/        이슈 폼 4종 · PR 양식 · 라벨 · 워크플로 (진행률·비밀 스캔·PR 검사)
 ```

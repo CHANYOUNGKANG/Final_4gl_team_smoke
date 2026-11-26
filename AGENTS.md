@@ -24,6 +24,8 @@
 - 담당 파트 변경은 작업 브랜치 → PR → `main` 병합. `main`에 직접 커밋하지 않는다 (README 자동 갱신 봇만 예외).
 - 다른 파트 폴더는 수정하지 않고 인계 이슈로 요청한다.
 - `docs/images/live/`와 README의 자동 갱신 블록은 손으로 고치지 않는다.
+- **주소·포트**는 [docs/architecture/topology.json](docs/architecture/topology.json)만 고친다. 구성도 `docs/images/architecture.svg`와 `ip-plan.md`의 자동 표는 main 병합 때 Actions가 다시 만든다. 대역이 겹치면 PR 검사가 실패한다.
+- **설계 결정**(선택지 비교가 필요한 것)은 [docs/decisions/](docs/decisions/README.md)에 ADR로 남기고, **장애 대응 절차**는 [docs/runbooks/](docs/runbooks/README.md)에 쓴다.
 
 ## 3. 작업일지
 

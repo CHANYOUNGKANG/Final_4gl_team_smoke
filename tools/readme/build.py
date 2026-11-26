@@ -4,7 +4,7 @@ docs/images/live/progress.svg  · 파트별 이정표 진행률 (tools/progress/
 docs/images/live/schedule.svg  · 수행계획서 일정 + 오늘 선 + D-day
 README.md <!-- smoke-activity --> 블록 · 최근 커밋, 열린 이슈·PR, 작업 브랜치
 
-GitHub Actions(main push · 매일 00:05 KST)에서 실행한다. 로컬에서도 미리 볼 수 있다.
+GitHub Actions(main push · 매일 00:12 KST 무렵)에서 실행한다. 로컬에서도 미리 볼 수 있다.
     python3 tools/readme/build.py            # gh CLI가 있으면 활동 블록까지 갱신
     python3 tools/readme/build.py --offline  # SVG만 갱신
 """
@@ -33,21 +33,41 @@ PARTS = [
 ]
 COLOR = {p[0]: p[3] for p in PARTS}
 
-# docs/delivery/README.md 의 수행계획서 일정과 같게 유지한다.
-SCHEDULE = [
-    ("SRS·RFP 검토, 통합 아키텍처", "이준호 주관 · 전원", "server", "2026-11-21", "2026-11-26"),
-    ("본사·지사 네트워크 · 보안 통제 검증", "강민서", "network", "2026-11-26", "2026-12-03"),
-    ("Linux·메일 서버 정비 · 이관 원본 준비", "이준호", "server", "2026-11-26", "2026-12-03"),
-    ("AWS·EKS · 데이터 이관 기반", "이우빈", "aws", "2026-11-26", "2026-12-05"),
-    ("CI/CD · 후보 검증 · 트래픽 전환", "강찬영", "cicd", "2026-11-26", "2026-12-05"),
-    ("통합 테스트 · 장애 조치 검증", "강찬영 주관 · 각 파트", "cicd", "2026-11-30", "2026-12-07"),
-    ("최종 보고서 · 발표 자료", "이준호 주관 · 강찬영 협업", "server", "2026-12-07", "2026-12-09"),
-]
+# 일정은 docs/delivery/README.md 의 "수행계획서 일정" 표를 그대로 읽는다 (단일 기준).
+YEAR = 2026
+OWNER = {"강민서": "network", "이준호": "server", "이우빈": "aws", "강찬영": "cicd"}
+
+
+def load_schedule():
+    text = (ROOT / "docs/delivery/README.md").read_text()
+    m = re.search(r"^## 수행계획서 일정.*?\n(\|.*?)(?:\n\n|\Z)", text, re.S | re.M)
+    if not m:
+        raise SystemExit("docs/delivery/README.md 에서 '수행계획서 일정' 표를 찾지 못함")
+    rows = []
+    for line in m.group(1).splitlines()[2:]:
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) < 3:
+            continue
+        period, task, who = cells[:3]
+        d = re.findall(r"(\d{1,2})/(\d{1,2})", period)
+        if len(d) != 2:
+            raise SystemExit(f"기간 형식 오류: {period} (예: 11/26–12/03)")
+        s_, e_ = (date(YEAR + (int(mo) < 11), int(mo), int(dy)) for mo, dy in d)
+        role = next((OWNER[n] for n in OWNER if who.startswith(n)), "server")
+        title = re.sub(r"\s+", " ", task)
+        rows.append((title if len(title) <= 24 else title[:23] + "…", who, role, s_.isoformat(), e_.isoformat()))
+    if not rows:
+        raise SystemExit("수행계획서 일정 표가 비어 있음")
+    return rows
+
+
+SCHEDULE = load_schedule()
 SHORT = {"NET1": "VLAN·라우팅", "NET2": "방화벽 통제", "NET3": "본사·지사 VPN", "NET4": "IDS·로그 연동",
          "SRV1": "SSH·로그", "SRV2": "DB·파일 백업", "SRV3": "공지 앱 빌드", "SRV4": "운영 알림 메일",
          "AWS1": "2AZ EKS", "AWS2": "ALB HTTPS·전환", "AWS3": "RDS·S3 이관", "AWS4": "워커 교체·관찰",
          "CICD1": "Jenkins·WAR", "CICD2": "Docker·ECR", "CICD3": "Green 배포·검사", "CICD4": "전환·자동 롤백"}
-START, END, FINAL = date(2026, 11, 21), date(2026, 12, 9), date(2026, 12, 9)
+START = min(date.fromisoformat(r[3]) for r in SCHEDULE)
+END = FINAL = max(date.fromisoformat(r[4]) for r in SCHEDULE)
 WEEKDAY = "월화수목금토일"
 
 
@@ -203,7 +223,7 @@ def activity_md(now):
         lines[-1] += "없음"
     work = [b["name"] for b in branches if b["name"] != "main"]
     lines += ["", f"**작업 브랜치 {len(work)}개**　" + ("　".join(f"[`{cell(n)}`]({base}/tree/{n})" for n in work[:12]) if work else "아직 없음 · 아래 ‘작업 시작하기’ 참고")]
-    lines += ["", f"<sub>{now.month}/{now.day} {now:%H:%M} KST 기준 · main push와 매일 00:05에 갱신</sub>"]
+    lines += ["", f"<sub>{now.month}/{now.day} {now:%H:%M} KST 기준 · main push와 매일 00:12 무렵 갱신</sub>"]
     return "\n".join(lines)
 
 
