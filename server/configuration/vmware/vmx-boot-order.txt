@@ -1,0 +1,8 @@
+# VMware .vmx 끝에 추가 (VM 전원을 끈 상태에서) — 11/26 트러블슈팅 결과
+# 디스크(SCSI)·랜카드(NAT)를 추가할 때마다 BIOS 부팅 순서가 바뀌어
+# 설치 화면(ISO) 또는 PXE 네트워크 부팅으로 넘어가는 문제를 막는다.
+# OS 디스크는 NVMe(nvme0:0), 데이터 디스크는 SCSI 로 분리했다.
+bios.bootOrder = "hdd"
+bios.hddOrder = "nvme0:0"
+
+# GNS3 VMware VM 노드로 한 번 넣었던 VM 에 남는 시리얼 포트는 삭제 (serial0.* 다섯 줄)

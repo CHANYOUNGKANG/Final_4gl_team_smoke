@@ -8,9 +8,37 @@
 
 | 작업 위치 | 올릴 내용 |
 | --- | --- |
-| [configuration/](configuration/) | Linux 계정·SSH·로그 및 NFS 구성 |
+| [configuration/](configuration/) | Linux 계정·SSH·로그 및 NFS 구성 · [Ansible](configuration/ansible/) · [web](configuration/web/) · [data](configuration/data/) · [VMware](configuration/vmware/) |
+| [db/](db/) | 공지·자료실 DB `smoke_board` 스키마와 이관 대조 뷰 |
+| [onprem-notice-jsp/](onprem-notice-jsp/) | 온프레미스 Tomcat 에 실제 배포한 임시 JSP 공지 앱 (팀 표준 앱은 [app/](../app/)) |
 | [backup/](backup/) | 백업 절차, 게시글 건수와 첨부파일 해시 대조 양식 |
 | [mail/](mail/) | Postfix·Roundcube 운영 절차와 알림 수신 결과 |
+| [WORKLOG.md](WORKLOG.md) · [verification/](verification/) · [evidence/](evidence/) | 작업일지 · 검증 기록 · 가린 캡처 |
+
+## 현재 구축 현황 (11/26)
+
+| 서버 | 구축 완료 (실행 확인) | 다음 |
+| --- | --- | --- |
+| mgmt | Rocky Linux 10.3 · SSH 키 배포 · Ansible 공통 플레이북 3대 failed=0 | sshd 정책 · rsyslog 중앙 수집 · 백업 · 모니터링 |
+| web | Java 21 · Tomcat 10.1.61(systemd) · NFS 마운트 · 공지 앱 `health` OK(8건) · nginx 설치 | Nginx 프록시 적용 · 8080 내부 전용 · 메일 |
+| data | LVM(첨부 5G·DB 4G·예비 10G) · NFS 공유 · MariaDB `smoke_board` 8건 · 대조 뷰 | 첨부 업로드 후 기준값 · 덤프·해시 백업 |
+
+```
+브라우저 → web: Nginx(80, 적용 예정) → Tomcat(8080) 공지 앱
+                                         ├─ JDBC 3306 → data: MariaDB smoke_board
+                                         └─ NFS 2049  → data: /share/attach (LVM)
+mgmt: Ansible(SSH 키) → web·data 표준화
+```
+
+**대표 결과** — 상세 설명은 [작업일지](WORKLOG.md)
+
+| LVM 저장소 분리 | Ansible 3대 표준화 |
+| --- | --- |
+| ![LVM](evidence/2026-11-26/1126-12-data-lvm-mount-masked.png) | ![Ansible](evidence/2026-11-26/1126-11-ansible-common-playbook-masked.png) |
+| **DB 이관 기준 (8건)** | **Tomcat → DB 연결** |
+| ![smoke_board](evidence/2026-11-26/1126-13-mariadb-smoke-board-masked.png) | ![health](evidence/2026-11-26/1126-19-notice-health-ok-masked.png) |
+
+서버 주소 대역은 네트워크 담당 확정안을 따르며, 공통 IP 설계표와의 차이는 [이슈 #11](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11)에서 확정한다. 공개 자료의 관리 주소는 `MGMT_HOST`·`WEB_HOST`·`DATA_HOST` 로 표기한다.
 
 ## 작업 체크리스트
 

@@ -1,0 +1,5 @@
+# data 서버 /etc/exports — 첨부파일 원본 공유 (11/26 적용)
+# all_squash + anonuid/anongid=1500: 어느 클라이언트 계정이 써도 소유자가 smokefile(1500)로 통일된다.
+# SERVICE_SUBNET : 서비스망(web) 대역 — 이슈 #11 에서 확정
+# TEMP_NAT_SUBNET: GNS3 연동 전 임시 작업 대역 — 연동 후 제거
+/share/attach SERVICE_SUBNET(rw,sync,all_squash,anonuid=1500,anongid=1500) TEMP_NAT_SUBNET(rw,sync,all_squash,anonuid=1500,anongid=1500)

@@ -21,4 +21,8 @@
 
 | 날짜 | 파트 | 파일 (가린 사본) | 이 화면이 증명하는 것 | 슬라이드 설명 문구 | 장 |
 | --- | --- | --- | --- | --- | ---: |
-| | | | | | |
+| 11/26 | 서버 | [1126-11-ansible-common-playbook-masked.png](../../server/evidence/2026-11-26/1126-11-ansible-common-playbook-masked.png) | mgmt 한 곳에서 3대 서버 기본 설정을 코드로 일괄 적용(failed=0) | 서버 표준화 자동화 — 손으로 하던 설정을 플레이북 한 번으로 | 4 |
+| 11/26 | 서버 | [1126-12-data-lvm-mount-masked.png](../../server/evidence/2026-11-26/1126-12-data-lvm-mount-masked.png) | 데이터 디스크를 LVM 으로 첨부(5G)·DB(4G)로 나누고 확장용 디스크를 남김 | 디스크 부족 문제를 볼륨 분리와 무중단 확장으로 대비 | 4 |
+| 11/26 | 서버 | [1126-13-mariadb-smoke-board-masked.png](../../server/evidence/2026-11-26/1126-13-mariadb-smoke-board-masked.png) | 이관 기준 DB 가 분류별 8건으로 구성되고 대조 뷰가 본문 해시를 계산 | 이관 전후 비교 기준값 확보 | 4 |
+| 11/26 | 서버 | [1126-19-notice-health-ok-masked.png](../../server/evidence/2026-11-26/1126-19-notice-health-ok-masked.png) | web 의 Tomcat 공지 앱이 data 의 MariaDB 를 읽어 8건 응답 | 온프레미스 3-Tier 동작 | 4 |
+| 11/26 | 서버 | [1126-07-trouble-l2-loop-ping-dup-masked.png](../../server/evidence/2026-11-26/1126-07-trouble-l2-loop-ping-dup-masked.png) | GNS3 이중 연결로 생긴 L2 루프 증상(응답 중복·지연 증가) | 장애 원인 분석 사례 — 이중 경로 제거로 해결 | 4 |

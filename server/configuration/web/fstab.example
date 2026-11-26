@@ -1,0 +1,2 @@
+# web 서버 /etc/fstab 추가 줄 — data 서버 NFS 첨부 폴더 (11/26 마운트 확인: nfs4 5.0G)
+DATA_HOST:/share/attach  /var/smoke/attach  nfs  defaults,_netdev  0 0
