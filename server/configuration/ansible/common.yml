@@ -1,0 +1,37 @@
+# 3대 공통 기본 설정 표준화 — 11/26 mgmt 에서 실행해 3대 모두 failed=0 확인
+# 실행: cd ~/ansible && ansible-playbook common.yml
+# 공개본: hosts 블록의 주소는 자리표시자. 실행본에는 각 서버의 VLAN 설계 주소를 넣었다.
+# 주의: community.general.timezone 은 ansible-core 기본에 없어 실패했으므로 command 로 대체했다.
+- name: 공통 기본 설정 표준화
+  hosts: servers
+  become: true
+  tasks:
+    - name: 시간대 Asia/Seoul
+      ansible.builtin.command: timedatectl set-timezone Asia/Seoul
+      changed_when: false
+
+    - name: 기본 패키지
+      ansible.builtin.dnf:
+        name: [chrony, vim, bash-completion, tar, rsync, wget, net-tools, bind-utils, lsof]
+        state: present
+
+    - name: chrony 실행
+      ansible.builtin.service:
+        name: chronyd
+        state: started
+        enabled: true
+
+    - name: firewalld 실행
+      ansible.builtin.service:
+        name: firewalld
+        state: started
+        enabled: true
+
+    - name: hosts 파일
+      ansible.builtin.blockinfile:
+        path: /etc/hosts
+        marker: "# {mark} SMOKE HOSTS (ansible)"
+        block: |
+          MGMT_HOST mgmt.smoke.local mgmt
+          WEB_HOST  web.smoke.local web mail.smoke.local
+          DATA_HOST data.smoke.local data

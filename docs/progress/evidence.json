@@ -1,1 +1,8 @@
-{}
+{
+  "SRV3": {
+    "verification": {
+      "file": "server/verification/1126-onprem-service-check.md",
+      "observed": "온프레미스 web 서버 Tomcat 10.1.61 에 공지 앱 WAR(JSP, server/onprem-notice-jsp)을 배포해 /notice/health.jsp 가 \"OK notices=8\", 목록 링크 8건 응답 — data 서버 MariaDB smoke_board 를 JDBC 로 조회. 팀 표준 app/(Spring Boot)의 온프레미스 실행은 아직 아님"
+    }
+  }
+}

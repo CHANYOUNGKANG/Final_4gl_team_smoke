@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>해든정밀 공지·자료실</title>
+<style>
+:root{--navy:#292C61;--mint:#16946F;--line:#E1E5EF;--soft:#F3F5FA;--sub:#5A6180}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:#1F2340;background:#fff;line-height:1.6}
+a{color:inherit}
+header{background:var(--navy);color:#fff}
+.in{width:min(980px,100% - 32px);margin:0 auto}
+header .in{display:flex;align-items:center;gap:18px;height:62px}
+header a{text-decoration:none}
+header b{font-size:1.1rem}
+header small{color:#C9CEEA}
+header nav{margin-left:auto;display:flex;gap:6px}
+.btn{display:inline-block;padding:8px 16px;border-radius:8px;background:var(--mint);color:#fff;text-decoration:none;border:0;font:inherit;font-weight:600;cursor:pointer}
+.btn.ghost{background:transparent;border:1px solid #fff}
+main{padding:28px 0 60px}
+h1{font-size:1.5rem;margin:0 0 18px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.tabs a{padding:6px 14px;border:1px solid var(--line);border-radius:999px;text-decoration:none;font-size:.92rem}
+.tabs a.on{background:var(--navy);border-color:var(--navy);color:#fff}
+table{width:100%;border-collapse:collapse;border-top:2px solid var(--navy)}
+th,td{padding:11px 10px;border-bottom:1px solid var(--line);text-align:left;font-size:.95rem}
+th{background:var(--soft);font-size:.85rem;color:var(--sub)}
+td.c{text-align:center;white-space:nowrap}
+.cat{display:inline-block;padding:2px 9px;border-radius:999px;background:var(--soft);font-size:.8rem;color:var(--navy)}
+.pin{color:#C33A3A;font-weight:700;margin-right:4px}
+.meta{color:var(--sub);font-size:.9rem;margin-bottom:18px}
+.body{white-space:pre-wrap;padding:22px 0;border-top:2px solid var(--navy);border-bottom:1px solid var(--line);min-height:120px}
+.files{margin-top:18px;padding:14px 16px;background:var(--soft);border-radius:10px}
+.files li{margin:4px 0}
+.hash{font-family:ui-monospace,Menlo,monospace;font-size:.8rem;color:var(--sub)}
+form label{display:block;margin:14px 0 6px;font-weight:600}
+input[type=text],input[type=password],select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font:inherit}
+textarea{min-height:220px}
+.err{padding:14px 16px;border-radius:10px;background:#FDECEC;color:#8A1C1C}
+footer{border-top:1px solid var(--line);color:var(--sub);font-size:.82rem;padding:18px 0}
+</style>
+</head>
+<body>
+<header><div class="in">
+  <a href="<%= request.getContextPath() %>/"><b>해든정밀㈜</b> <small>공지·자료실</small></a>
+  <nav><a class="btn ghost" href="<%= request.getContextPath() %>/write.jsp">글쓰기</a></nav>
+</div></header>
+<main><div class="in">

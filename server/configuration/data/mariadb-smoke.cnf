@@ -1,0 +1,9 @@
+# data 서버 /etc/my.cnf.d/smoke.cnf — 팀 기준 utf8mb4 / utf8mb4_unicode_ci
+[mysqld]
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+# web 서버가 3306 으로 접속하므로 모든 주소에서 수신. 접근 제한은 firewalld + DB 계정 host 범위로 한다.
+bind-address = 0.0.0.0
+
+[client]
+default-character-set = utf8mb4

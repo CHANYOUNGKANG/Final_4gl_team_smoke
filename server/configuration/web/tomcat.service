@@ -1,0 +1,22 @@
+# /etc/systemd/system/tomcat.service — web 서버 (11/26 적용)
+# Tomcat 10.1.61 을 /opt/tomcat 에 풀고 tomcat 계정(nologin)으로 실행한다.
+# DB 접속값·키는 EnvironmentFile 로만 주입한다 (tomcat-smoke.env.example 참고).
+[Unit]
+Description=Apache Tomcat 10.1 (smoke notice)
+After=network-online.target remote-fs.target
+Wants=network-online.target
+
+[Service]
+Type=forking
+User=tomcat
+Group=tomcat
+Environment=JAVA_HOME=/usr/lib/jvm/java-21-openjdk
+Environment=CATALINA_HOME=/opt/tomcat
+Environment=CATALINA_PID=/opt/tomcat/temp/tomcat.pid
+EnvironmentFile=/etc/tomcat-smoke.env
+ExecStart=/opt/tomcat/bin/startup.sh
+ExecStop=/opt/tomcat/bin/shutdown.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
