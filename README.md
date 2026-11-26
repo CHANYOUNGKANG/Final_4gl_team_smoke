@@ -28,17 +28,16 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11.21 – 12.09
 <!-- smoke-activity:start -->
 | 최근 커밋 | 작성자 | 시각 (KST) |
 | --- | --- | ---: |
+| [`5522963`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/5522963bd7ba3452b85ac3a65209c9aa4efe1edd) Merge pull request #9 from CHANYOUNGKANG/docs/smoke-company-site | CHANYOUNGKANG | 11/26 16:13 |
 | [`7535980`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/7535980dadbbaca21e8a0776a955d556afa08753) Merge pull request #8 from CHANYOUNGKANG/cicd/notice-reference-app | CHANYOUNGKANG | 11/26 16:12 |
 | [`6951357`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/69513572d9af7ac92ea60fdcb44eeb8259142d4b) Merge pull request #10 from CHANYOUNGKANG/server/smoke-board-schema | CHANYOUNGKANG | 11/26 16:12 |
 | [`8a5cbdc`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/8a5cbdc080607608186b3101205b0d6fa39dbb43) cicd: 작업일지 — 앱을 smoke_board 스키마에 맞춘 결과 | claude | 11/26 16:10 |
-| [`540ee16`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/540ee16b5eb757bd0e1d6e5b14a74170e44bee71) ci: 기동 검사의 샘플 글 제목을 smoke_board 샘플로 변경 | claude | 11/26 16:07 |
-| [`d785e7b`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/d785e7b5f3b6a05014e9fce657651a0b7eaa8b5f) app: 이준호 DB 스키마(smoke_board)에 맞춰 앱 수정 | claude | 11/26 16:03 |
 
 **열린 이슈·PR**　[#1 팀 구축 진행률 · 구현 근거와 시연 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)
 
 **작업 브랜치 13개**　[`aws/woobin-day1-jenkins-ec2`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/aws/woobin-day1-jenkins-ec2)　[`chore/security-automation`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/chore/security-automation)　[`cicd/chanyoung-day1-first-build`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/chanyoung-day1-first-build)　[`cicd/notice-reference-app`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/notice-reference-app)　[`cicd/worklog-jenkins-bootstrap`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/worklog-jenkins-bootstrap)　[`dependabot/github_actions/actions/checkout-7`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/dependabot/github_actions/actions/checkout-7)　[`docs/architecture-automation`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/docs/architecture-automation)　[`docs/architecture-update`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/docs/architecture-update)　[`docs/ip-plan`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/docs/ip-plan)　[`docs/smoke-company-site`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/docs/smoke-company-site)　[`network/minseo-day1-topology`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/network/minseo-day1-topology)　[`server/junho-day1-app-handoff`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/server/junho-day1-app-handoff)
 
-<sub>11/26 16:12 KST 기준 · main push와 매일 00:05에 갱신</sub>
+<sub>11/26 16:13 KST 기준 · main push와 매일 00:05에 갱신</sub>
 <!-- smoke-activity:end -->
 
 <details>
