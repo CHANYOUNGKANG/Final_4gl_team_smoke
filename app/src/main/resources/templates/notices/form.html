@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('공지 쓰기')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header('notices')}"></header>
+<main id="main" class="wrap page narrow">
+  <h1>공지 쓰기</h1>
+  <p th:if="${flash}" class="flash error" role="alert" th:text="${flash}"></p>
+  <p th:if="${uploadError}" class="flash error" role="alert" th:text="${uploadError}"></p>
+  <form class="form" th:action="@{/notices/new}" th:object="${form}" method="post" enctype="multipart/form-data">
+    <label for="category">분류</label>
+    <select id="category" th:field="*{category}">
+      <option th:each="c : ${categories}" th:value="${c}" th:text="${c.label}">공지</option>
+    </select>
+
+    <label for="title">제목</label>
+    <input id="title" type="text" th:field="*{title}" maxlength="200" required>
+    <p class="field-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></p>
+
+    <label for="content">본문</label>
+    <textarea id="content" th:field="*{content}" rows="12" required></textarea>
+    <p class="field-error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></p>
+
+    <label for="files">첨부 자료</label>
+    <input id="files" name="files" type="file" multiple>
+    <p class="help">파일 하나당 20MB까지. PDF, 오피스 문서, 한글, 도면(DWG·STEP), 이미지, ZIP을 올릴 수 있습니다.</p>
+
+    <label class="check"><input type="checkbox" th:field="*{pinned}"> 목록 맨 위에 고정</label>
+
+    <div class="form-actions">
+      <button type="submit" class="btn">공지 게시</button>
+      <a th:href="@{/notices}">취소</a>
+    </div>
+  </form>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

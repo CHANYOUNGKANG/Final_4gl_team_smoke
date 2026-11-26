@@ -1,0 +1,79 @@
+name: App build
+# 공지·자료실 앱(app/)을 Jenkins(CICD1)와 같은 명령으로 빌드·테스트하고, WAR를 띄워 상태 검사와 공지 작성·조회 검사를 돌린다.
+# Jenkins가 준비되기 전에도 PR에서 앱이 깨졌는지 바로 알 수 있게 하는 용도다. 운영 배포는 Jenkins가 맡는다.
+on:
+  pull_request:
+    paths: ['app/**', 'cicd/docker/**', '.github/workflows/app-build.yml']
+  push:
+    branches: [main]
+    paths: ['app/**', 'cicd/docker/**']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: Test + WAR (Jenkinsfile 'Test + WAR'와 같은 명령)
+        working-directory: app
+        run: mvn -B -ntp clean package
+      - name: WAR 해시
+        working-directory: app
+        run: |
+          ls -l target/notice.war
+          sha256sum target/notice.war | tee target/war.sha256
+      - name: WAR 기동 후 검사 (상태 · 버전 · 공지 작성·조회·삭제)
+        working-directory: app
+        run: |
+          # 이 실행에서만 쓰는 임시 값. 저장소·로그에 남지 않는다.
+          export CHECK_TOKEN="$(openssl rand -hex 24)"
+          export ADMIN_PASSWORD="$(openssl rand -hex 24)"
+          export DEPLOY_COLOR=blue GIT_COMMIT="$GITHUB_SHA" APP_STORAGE_DIR="$RUNNER_TEMP/files"
+          java -jar target/notice.war > "$RUNNER_TEMP/app.log" 2>&1 &
+          for i in $(seq 1 60); do curl -fs localhost:8080/health >/dev/null && break; sleep 1; done
+          set -x
+          curl -fs localhost:8080/health | tee health.json
+          grep -q '"status":"UP"' health.json
+          curl -fs localhost:8080/notices | grep -q 'IATF 16949'
+          id=$(curl -fs -X POST localhost:8080/api/check/notices -H "X-Check-Token: $CHECK_TOKEN" \
+                -H 'Content-Type: application/json' -d '{"title":"ci-check","content":"app-build workflow"}' \
+                | python3 -c 'import sys,json; print(json.load(sys.stdin)["id"])')
+          curl -fs localhost:8080/api/check/notices/$id -H "X-Check-Token: $CHECK_TOKEN" | grep -q ci-check
+          test "$(curl -s -o /dev/null -w '%{http_code}' localhost:8080/api/check/notices/$id)" = 401
+          curl -fs -X DELETE localhost:8080/api/check/notices/$id -H "X-Check-Token: $CHECK_TOKEN"
+          set +x
+          mkdir -p "$RUNNER_TEMP/shots"
+          for p in "/" "/notices" "/notices/2" "/archive" "/login"; do
+            n=$(echo "$p" | tr '/' '_'); [ "$n" = "_" ] && n=_home
+            google-chrome --headless=new --no-sandbox --hide-scrollbars --window-size=1280,1400 \
+              --screenshot="$RUNNER_TEMP/shots/desktop$n.png" "http://localhost:8080$p" 2>/dev/null || true
+          done
+          google-chrome --headless=new --no-sandbox --hide-scrollbars --window-size=390,1500 \
+            --screenshot="$RUNNER_TEMP/shots/mobile_home.png" "http://localhost:8080/" 2>/dev/null || true
+          {
+            echo "### 공지·자료실 앱 검사"
+            echo '```json'; cat health.json; echo; echo '```'
+            echo "- WAR SHA-256: \`$(cut -d' ' -f1 target/war.sha256)\`"
+            echo "- 공지 목록 200 · 검증 글 작성→조회→무토큰 401→삭제 통과"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: 앱 로그 (실패 시)
+        if: failure()
+        run: tail -100 "$RUNNER_TEMP/app.log" || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: notice-app-${{ github.sha }}
+          path: |
+            app/target/notice.war
+            app/target/war.sha256
+            app/target/surefire-reports/*.xml
+            ${{ runner.temp }}/shots/*.png
+          retention-days: 7

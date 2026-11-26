@@ -1,0 +1,4 @@
+app:
+  check-token: test-check-token-0123456789
+  admin-password: test-admin-pass
+  storage-dir: ${java.io.tmpdir}/haedeun-notice-test

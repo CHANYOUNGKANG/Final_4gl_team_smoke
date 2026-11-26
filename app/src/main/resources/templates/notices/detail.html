@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${notice.title})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header('notices')}"></header>
+<main id="main" class="wrap page narrow">
+  <p th:if="${flash}" class="flash" role="status" th:text="${flash}"></p>
+  <a class="back" th:href="@{/notices}">공지 목록으로</a>
+  <article class="doc">
+    <header class="doc-head">
+      <h1 th:text="${notice.title}">제목</h1>
+      <dl class="tb-grid tb-inline">
+        <div><dt>문서번호</dt><dd th:text="${notice.docNo}">GN-2026-0001</dd></div>
+        <div><dt>분류</dt><dd th:text="${notice.category.label}">공지</dd></div>
+        <div><dt>작성 부서</dt><dd th:text="${notice.author}">팀</dd></div>
+        <div><dt>게시일</dt><dd th:text="${#temporals.format(notice.createdAt, 'yyyy.MM.dd HH:mm')}">2026.11.21</dd></div>
+        <div><dt>조회</dt><dd th:text="${notice.viewCount}">0</dd></div>
+      </dl>
+    </header>
+    <div class="doc-body" th:text="${notice.content}">본문</div>
+
+    <section th:if="${!notice.attachments.isEmpty()}" class="attach" aria-labelledby="attach-h">
+      <h2 id="attach-h">첨부 자료</h2>
+      <ul>
+        <li th:each="a : ${notice.attachments}">
+          <a th:href="@{/files/{id}(id=${a.id})}">
+            <span class="ext" th:text="${a.extension}">txt</span>
+            <span class="t" th:text="${a.originalName}">파일</span>
+            <span class="muted" th:text="${a.humanSize}">1 KB</span>
+          </a>
+          <details class="hash">
+            <summary>파일 무결성 확인값</summary>
+            <code th:text="'SHA-256 ' + ${a.sha256}">SHA-256</code>
+          </details>
+        </li>
+      </ul>
+    </section>
+  </article>
+
+  <form sec:authorize="hasRole('ADMIN')" class="danger-zone" method="post"
+        th:action="@{/notices/{id}/delete(id=${notice.id})}">
+    <button type="submit" class="btn-danger">이 공지 삭제</button>
+    <span class="muted">첨부파일도 함께 삭제됩니다.</span>
+  </form>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

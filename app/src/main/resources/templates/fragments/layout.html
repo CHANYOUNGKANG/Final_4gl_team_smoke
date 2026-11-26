@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${title} + ' | 해든정밀 공지·자료실'">해든정밀 공지·자료실</title>
+  <link rel="icon" th:href="@{/favicon.svg}" type="image/svg+xml">
+  <link rel="stylesheet" th:href="@{/css/site.css}">
+</head>
+<body>
+
+<header th:fragment="header(active)" class="site-header" th:classappend="'slot-' + ${build.slot()}">
+  <div class="wrap header-inner">
+    <a class="brand" th:href="@{/}">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+        <circle cx="16" cy="16" r="11" fill="none" stroke="currentColor" stroke-width="2.4"/>
+        <path d="M16 1v9M16 22v9M1 16h9M22 16h9" stroke="currentColor" stroke-width="2.4"/>
+        <circle cx="16" cy="16" r="3" fill="#F0B400"/>
+      </svg>
+      <span class="brand-name">해든정밀</span>
+      <span class="brand-sub">공지·자료실</span>
+    </a>
+    <nav class="nav" aria-label="주 메뉴">
+      <a th:href="@{/notices}" th:classappend="${active == 'notices'} ? 'on'" th:attr="aria-current=${active == 'notices'} ? 'page' : null">공지사항</a>
+      <a th:href="@{/archive}" th:classappend="${active == 'archive'} ? 'on'" th:attr="aria-current=${active == 'archive'} ? 'page' : null">자료실</a>
+      <a sec:authorize="hasRole('ADMIN')" class="nav-write" th:href="@{/notices/new}">공지 쓰기</a>
+      <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="inline">
+        <button type="submit" class="linkish">로그아웃</button>
+      </form>
+      <a sec:authorize="!isAuthenticated()" class="nav-quiet" th:href="@{/login}">직원 로그인</a>
+    </nav>
+  </div>
+</header>
+
+<footer th:fragment="footer" class="site-footer">
+  <div class="wrap footer-inner">
+    <div>
+      <strong>해든정밀㈜</strong>
+      <p>정밀 가공 샤프트·하우징 부품 제조 · 본사 공장 및 화성 2공장</p>
+      <p class="muted">이 사이트는 KDT 최종 프로젝트 시나리오의 가상 고객사 서비스입니다.</p>
+    </div>
+    <div class="deploy" th:classappend="'deploy-' + ${build.slot()}" title="지금 응답한 배포 버전">
+      <span class="deploy-dot" aria-hidden="true"></span>
+      <span>배포 버전 <b th:text="${build.version()}">1.0.0</b></span>
+      <span class="deploy-slot" th:text="${build.slot()}">local</span>
+      <code th:text="${build.shortCommit()}">local</code>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

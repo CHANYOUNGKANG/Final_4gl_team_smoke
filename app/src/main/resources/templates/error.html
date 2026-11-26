@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>요청을 처리하지 못했습니다 | 해든정밀 공지·자료실</title>
+  <link rel="stylesheet" th:href="@{/css/site.css}">
+</head>
+<body>
+<main class="wrap page narrow">
+  <h1 th:text="${status == 404} ? '찾는 페이지가 없습니다' : '요청을 처리하지 못했습니다'">찾는 페이지가 없습니다</h1>
+  <p th:if="${status == 404}">주소가 바뀌었거나 삭제된 공지입니다. 공지 목록에서 다시 찾아보세요.</p>
+  <p th:unless="${status == 404}">잠시 뒤 다시 시도하세요. 계속 같은 화면이 나오면 담당 영업에게 알려 주십시오.</p>
+  <p class="muted" th:text="'오류 코드 ' + ${status}">오류 코드 404</p>
+  <p><a href="/notices">공지 목록으로 가기</a></p>
+</main>
+</body>
+</html>

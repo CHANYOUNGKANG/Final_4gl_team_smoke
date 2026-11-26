@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('자료실')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header('archive')}"></header>
+<main id="main" class="wrap page">
+  <div class="page-head">
+    <h1>자료실</h1>
+    <p class="muted">공지에 첨부된 모든 자료입니다. 내려받은 파일은 SHA-256 값으로 원본과 같은지 확인할 수 있습니다.</p>
+  </div>
+  <table class="ledger" th:if="${!files.isEmpty()}">
+    <caption class="sr-only">자료 목록</caption>
+    <thead><tr><th scope="col">형식</th><th scope="col">파일</th><th scope="col" class="hide-sm">출처 공지</th>
+      <th scope="col" class="num">크기</th><th scope="col" class="hide-sm num">다운로드</th></tr></thead>
+    <tbody>
+      <tr th:each="f : ${files}">
+        <td><span class="ext" th:text="${f.extension}">txt</span></td>
+        <td class="title-cell"><a th:href="@{/files/{id}(id=${f.id})}" th:text="${f.originalName}">파일</a></td>
+        <td class="hide-sm"><a class="quiet" th:href="@{/notices/{id}(id=${f.notice.id})}" th:text="${f.notice.docNo}">DC-2026-0004</a></td>
+        <td class="num" th:text="${f.humanSize}">1 KB</td>
+        <td class="hide-sm num" th:text="${f.downloadCount}">0</td>
+      </tr>
+    </tbody>
+  </table>
+  <div th:if="${files.isEmpty()}" class="empty-block"><p>아직 올라온 자료가 없습니다.</p></div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
