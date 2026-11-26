@@ -13,6 +13,18 @@
 
 ---
 
+## 2026-11-26 · 테스트 WAR 수동 빌드 성공
+
+**확인한 결과** — 사용자 제공 Jenkins 콘솔에서 Build #1, checkout SHA `53c07cb3fb098d868e8eff0fe311e65bfcfd18a8`, Maven 13.930초, JUnit 1건 통과, WAR 1608 bytes, 아티팩트 보관 및 fingerprint, Finished: SUCCESS 확인 (12:10:11 KST). Ubuntu 24.04.5 LTS x86_64, Java 21, Maven 3.8.7, Git 2.43.0, Swap 2 GiB, Jenkins 2.580.3. 플러그인 미러 연결 시간 초과는 공식 Plugin Manager 및 대체 아카이브 서버를 이용해 필수 플러그인을 복구했다.
+
+**막힌 부분** — 실제 공지 앱 미인계. 마지막 요약의 commit=null은 명시적 Git SHA 환경 변수로 수정했다(실행 확인 전). 테스트 WAR 성공은 실제 공지 앱 인수 검증과 구분한다.
+
+**다음 작업** — test-v2 변경을 Poll SCM이 감지하는지 확인 후 Docker/ECR 연동. ECR 저장소 및 IAM 권한 인계 필요.
+
+**증빙** — [Build #1 발췌](verification/smoke-test-build-1.log).
+
+---
+
 ## 2026-11-25 (수) 22:30 · 저장소 문서 자동화 · 설계 결정 정리 (PR #7)
 
 **확인한 결과**

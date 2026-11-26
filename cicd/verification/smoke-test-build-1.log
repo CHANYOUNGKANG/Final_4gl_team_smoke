@@ -1,0 +1,11 @@
+User-provided Jenkins console, selected sanitized observations; test fixture only.
+12:09:54 Checking out Revision 53c07cb3fb098d868e8eff0fe311e65bfcfd18a8
+12:10:07 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+12:10:10 BUILD SUCCESS
+12:10:10 Total time: 13.930 s
+12:10:11 WAR size: 1608 bytes
+12:10:11 0d03c6fac6166b7c3629ad30a7595a8eddc37f98fb615abe97ca8f5d148b61ed  cicd/test-app/target/smoke-test.war
+12:10:11 Archiving artifacts
+12:10:11 Recording fingerprints
+12:10:11 SMOKE TEST OK: build=1 commit=null
+Finished: SUCCESS

@@ -13,6 +13,7 @@ pipeline {
     stage('Source') {
       steps {
         checkout scm
+        script { env.BUILD_COMMIT = sh(script: 'git rev-parse HEAD', returnStdout: true).trim() }
         sh 'git log -1 --format="commit=%H%nsubject=%s"'
       }
     }
@@ -36,6 +37,6 @@ pipeline {
     }
   }
   post {
-    success { echo "SMOKE TEST OK: build=${env.BUILD_NUMBER} commit=${env.GIT_COMMIT}" }
+    success { echo "SMOKE TEST OK: build=${env.BUILD_NUMBER} commit=${env.BUILD_COMMIT}" }
   }
 }
