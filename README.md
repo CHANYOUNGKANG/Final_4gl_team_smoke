@@ -28,30 +28,30 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11.21 – 12.09
 <!-- smoke-activity:start -->
 | 최근 커밋 | 작성자 | 시각 (KST) |
 | --- | --- | ---: |
+| [`8b133af`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/8b133af64e7ab538bbbd6a1619ace8cc9d02e7a1) Merge pull request #12 from CHANYOUNGKANG/cicd/chanyoung-day1-first-bu… | CHANYOUNGKANG | 11/26 16:24 |
+| [`c902a1c`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/c902a1c97712163f5937a14688cd33ab70212c53) merge: sync main and preserve both CI/CD and notice app worklogs | CHANYOUNGKANG | 11/26 16:21 |
+| [`104b6e6`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/104b6e643dea52ffa0492b17129f352d127ade85) cicd: record build 8 and prepare guarded EKS blue-green bootstrap | CHANYOUNGKANG | 11/26 16:16 |
 | [`5522963`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/5522963bd7ba3452b85ac3a65209c9aa4efe1edd) Merge pull request #9 from CHANYOUNGKANG/docs/smoke-company-site | CHANYOUNGKANG | 11/26 16:13 |
-| [`7535980`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/7535980dadbbaca21e8a0776a955d556afa08753) Merge pull request #8 from CHANYOUNGKANG/cicd/notice-reference-app | CHANYOUNGKANG | 11/26 16:12 |
-| [`6951357`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/69513572d9af7ac92ea60fdcb44eeb8259142d4b) Merge pull request #10 from CHANYOUNGKANG/server/smoke-board-schema | CHANYOUNGKANG | 11/26 16:12 |
-| [`8a5cbdc`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/8a5cbdc080607608186b3101205b0d6fa39dbb43) cicd: 작업일지 — 앱을 smoke_board 스키마에 맞춘 결과 | claude | 11/26 16:10 |
 
-**열린 이슈·PR**　[#1 팀 구축 진행률 · 구현 근거와 시연 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)
+**열린 이슈·PR**　[#11 [인계] 온프레미스 DB 주소 대역 확정 및 AWS 공지 앱 배포 조건 ](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11)　·　[#1 팀 구축 진행률 · 구현 근거와 시연 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)
 
 **작업 브랜치 13개**　[`aws/woobin-day1-jenkins-ec2`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/aws/woobin-day1-jenkins-ec2)　[`chore/security-automation`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/chore/security-automation)　[`cicd/chanyoung-day1-first-build`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/chanyoung-day1-first-build)　[`cicd/notice-reference-app`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/notice-reference-app)　[`cicd/worklog-jenkins-bootstrap`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/worklog-jenkins-bootstrap)　[`dependabot/github_actions/actions/checkout-7`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/dependabot/github_actions/actions/checkout-7)　[`docs/architecture-automation`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/docs/architecture-automation)　[`docs/architecture-update`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/docs/architecture-update)　[`docs/ip-plan`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/docs/ip-plan)　[`docs/smoke-company-site`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/docs/smoke-company-site)　[`network/minseo-day1-topology`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/network/minseo-day1-topology)　[`server/junho-day1-app-handoff`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/server/junho-day1-app-handoff)
 
-<sub>11/26 16:13 KST 기준 · main push와 매일 00:05에 갱신</sub>
+<sub>11/26 16:25 KST 기준 · main push와 매일 00:05에 갱신</sub>
 <!-- smoke-activity:end -->
 
 <details>
 <summary><b>점수표 텍스트로 보기</b> · 산정 기준과 근거 파일</summary>
 
 <!-- smoke-progress:start -->
-**전체 구축 진행률 6.2%**　·　2/32점
+**전체 구축 진행률 12.5%**　·　4/32점
 
 | 파트 | 점수 | 진행률 |
 | --- | ---: | ---: |
 | 강민서 · 네트워크 | 0/8 | 0.0% |
 | 이준호 · 서버 | 1/8 | 12.5% |
 | 이우빈 · AWS | 0/8 | 0.0% |
-| 강찬영 · CI/CD | 1/8 | 12.5% |
+| 강찬영 · CI/CD | 3/8 | 37.5% |
 <!-- smoke-progress:end -->
 
 파트마다 이정표 4개, 이정표별로 **구현 근거 1점 + 실행 근거 1점**. 업무 브랜치를 push하면 Actions 실행 요약에 그 브랜치 점수가 나오고, main 점수는 위 패널과 [이슈 #1](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)에 모인다. [산정 기준](docs/progress/README.md) · [브랜치별 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/actions/workflows/project-progress.yml)
