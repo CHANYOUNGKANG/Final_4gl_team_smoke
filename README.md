@@ -28,9 +28,11 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11.21 – 12.09
 <!-- smoke-activity:start -->
 | 최근 커밋 | 작성자 | 시각 (KST) |
 | --- | --- | ---: |
+| [`7535980`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/7535980dadbbaca21e8a0776a955d556afa08753) Merge pull request #8 from CHANYOUNGKANG/cicd/notice-reference-app | CHANYOUNGKANG | 11/26 16:12 |
 | [`6951357`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/69513572d9af7ac92ea60fdcb44eeb8259142d4b) Merge pull request #10 from CHANYOUNGKANG/server/smoke-board-schema | CHANYOUNGKANG | 11/26 16:12 |
-| [`7a7eb1b`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/7a7eb1bf6e90eb847c9a18c8d9de2588ef3cb8a7) server: 공지·자료실 DB 스키마 smoke_board.sql 추가 (이준호 작성) | claude | 11/26 15:57 |
-| [`18e86f0`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/18e86f09eb41a493199a0ba8d27faa2541204395) docs: 수업 기록 기반 팀 버전과 파트별 실행 환경 정리 | CHANYOUNGKANG | 11/26 10:39 |
+| [`8a5cbdc`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/8a5cbdc080607608186b3101205b0d6fa39dbb43) cicd: 작업일지 — 앱을 smoke_board 스키마에 맞춘 결과 | claude | 11/26 16:10 |
+| [`540ee16`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/540ee16b5eb757bd0e1d6e5b14a74170e44bee71) ci: 기동 검사의 샘플 글 제목을 smoke_board 샘플로 변경 | claude | 11/26 16:07 |
+| [`d785e7b`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/d785e7b5f3b6a05014e9fce657651a0b7eaa8b5f) app: 이준호 DB 스키마(smoke_board)에 맞춰 앱 수정 | claude | 11/26 16:03 |
 
 **열린 이슈·PR**　[#1 팀 구축 진행률 · 구현 근거와 시연 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)
 
@@ -43,12 +45,12 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11.21 – 12.09
 <summary><b>점수표 텍스트로 보기</b> · 산정 기준과 근거 파일</summary>
 
 <!-- smoke-progress:start -->
-**전체 구축 진행률 3.1%**　·　1/32점
+**전체 구축 진행률 6.2%**　·　2/32점
 
 | 파트 | 점수 | 진행률 |
 | --- | ---: | ---: |
 | 강민서 · 네트워크 | 0/8 | 0.0% |
-| 이준호 · 서버 | 0/8 | 0.0% |
+| 이준호 · 서버 | 1/8 | 12.5% |
 | 이우빈 · AWS | 0/8 | 0.0% |
 | 강찬영 · CI/CD | 1/8 | 12.5% |
 <!-- smoke-progress:end -->
