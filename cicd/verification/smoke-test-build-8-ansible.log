@@ -1,0 +1,20 @@
+Sanitized excerpt/observations from user-supplied Jenkins Build #8 console (2026-11-26 KST).
+Started by an SCM change
+16:14:10 Checking out Revision 97861a363d9ff5a483b94cd5407b21d5ebd60c3b
+16:14:16 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+16:14:17 BUILD SUCCESS; Total time: 3.465 s
+16:14:18 image=sha256:fe8f3cdccd40fb2c38830118abb3c0ed7d7f2da89ab99c8d3ca77cd3921b03b7 platform=linux/amd64
+16:14:22 SMOKE HTTP 200
+16:14:24 Login Succeeded
+16:14:26 tag=test-97861a363d9ff5a483b94cd5407b21d5ebd60c3b
+16:14:26 digest=sha256:fe8f3cdccd40fb2c38830118abb3c0ed7d7f2da89ab99c8d3ca77cd3921b03b7
+16:14:26 ECR PUSH VERIFIED
+16:14:27 bash cicd/ansible/check-remote.sh
+16:14:29 Ansible local ping, deployment user and account assertions passed.
+16:14:31 AWS identity and expected role checks passed.
+16:14:31 ANSIBLE REMOTE CHECK OK (no EKS resources modified)
+16:14:31 localhost : ok=6 changed=0 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0
+16:14:31 WAR hash=8bc6e069ce6ae169001eddfcb2dffe7132c0ac151c03a5fd0659ec14b2aeb9fc
+16:14:31 SMOKE TEST OK: build=8 commit=97861a363d9ff5a483b94cd5407b21d5ebd60c3b
+Finished: SUCCESS
+Scope: 21 s observed console interval, test app only. EKS deployment and ALB switch not executed.

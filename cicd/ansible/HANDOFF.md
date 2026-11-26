@@ -1,10 +1,10 @@
 # CICD3·4 AWS 인계 및 블루그린 협의안
 
-2026-11-26 · 상태: 제안/인계 대기. 실제 값은 팀 비공개 채널과 Jenkins 설정으로 전달. 계정 ID, 실제 관리 IP, 개인 키, 토큰을 이 문서에 기록하지 않는다.
+2026-11-26 · 상태: Ansible 인계 및 Jenkins Job 연동 완료, EKS/ALB 인계 대기. 실제 값은 팀 비공개 채널과 Jenkins 설정으로 전달. 계정 ID, 실제 관리 IP, 개인 키, 토큰을 이 문서에 기록하지 않는다.
 
 ## 현재 검증한 범위
 
-테스트 앱 GitHub 변경 → Jenkins Poll SCM → Maven/JUnit → WAR → Docker/Tomcat HTTP 200 → ECR 자동 Push 및 Digest 대조 성공. [Build #5](../verification/smoke-test-build-5-ecr.log). 실제 앱 인계 및 CD 검증은 별도다.
+테스트 앱 GitHub 변경 → Jenkins Poll SCM → Maven/JUnit → WAR → Docker/Tomcat HTTP 200 → ECR 자동 Push 및 Digest 대조 성공. [Build #5](../verification/smoke-test-build-5-ecr.log). [Build #8](../verification/smoke-test-build-8-ansible.log)에서 Jenkins → Ansible 원격 플레이북 및 IAM 역할 검사까지 성공. 실제 앱 및 EKS 배포 검증은 별도다. 초기 HTTP 검증은 도메인/ACM 보류 조건으로 진행하며 ALB 제어 방식은 미확정이다. [초기 배포 가이드](../kubernetes/README.md).
 
 ## AWS 담당 → CI/CD 담당 인계 체크리스트
 
@@ -16,7 +16,7 @@
 | 아웃바운드 | NAT Gateway 또는 필요한 VPC endpoint, 패키지 저장소 HTTPS/필요 시 HTTP, DNS, AWS API 접근 |
 | EKS | 단일 클러스터, 2개 프라이빗 앱 서브넷(10.100.11.0/24, 10.100.12.0/24), x86_64 워커 및 양쪽 버전 동시 수용량, private API endpoint |
 | IAM·RBAC | Ansible EC2 전용 역할, eks:DescribeCluster, EKS Access Entry + 배포 네임스페이스 제한 RBAC(Deployment, Service, Pod 조회·배포, 필요시 Ingress/Job 등), 노드 역할 ECR Pull |
-| ALB | HTTPS 443, HTTP 80 리다이렉트, AWS Load Balancer Controller 설치·버전, IP 대상 그룹 2개, 앱 포트 8080, 후보 검증 경로(접근 제한), ACM |
+| ALB | 초기 HTTP 80(접근 제한), 도메인/ACM 준비 후 HTTPS 443 및 HTTP 리다이렉트, AWS Load Balancer Controller 설치·버전, IP 대상 그룹 2개, 앱 포트 8080, 후보 검증 경로(접근 제한), ACM |
 | 전환 권한 | Controller가 관리하는 Ingress 가중치 변경을 우선 협의. AWS API 직접 변경 시 리스너 규칙 소유권/재조정 충돌을 먼저 해결하고 대상 리소스에만 권한 부여 |
 | 전달 값 | Ansible 사설 IP/사용자/SSH 접속 방법, IAM 역할·권한, 클러스터명·K8s 버전·네임스페이스, 노드/ASG 정보, ALB·대상 그룹/리스너 식별자, 전환 및 후보 검사 방식 |
 | 비용 | 가동 시간·예산, NAT/EKS/ALB 비용, Blue/Green 중복 용량 합의 |

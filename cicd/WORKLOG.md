@@ -8,8 +8,20 @@
 | --- | --- | :---: | :---: | --- |
 | CICD1 | Jenkins 테스트·WAR 빌드 | 테스트 파이프라인 구현 | 테스트 앱 성공 · 실제 앱 대기 | [Build #5](verification/smoke-test-build-5-ecr.log) |
 | CICD2 | Docker 이미지 · ECR 등록 | 테스트 이미지 자동 Push 구현 | 테스트 앱 성공 · 실제 앱 대기 | [Build #5](verification/smoke-test-build-5-ecr.log) |
-| CICD3 | Ansible Green 배포 · 상태 검사 | — | — | |
+| CICD3 | Ansible Green 배포 · 상태 검사 | 초기 매니페스트·플레이북 작성 | Jenkins 원격 검사 성공 · EKS 미실행 | [Build #8](verification/smoke-test-build-8-ansible.log) |
 | CICD4 | 검증 후 전환 · 자동 롤백 | — | — | |
+
+---
+
+## 2026-11-26 16:14 KST · Build #8 Ansible까지 자동 연동 성공
+
+**확인한 결과** — SCM 변경 자동 감지, Git SHA `97861a363d9ff5a483b94cd5407b21d5ebd60c3b`, Maven 3.465초, JUnit 1건 통과, WAR 및 Docker linux/amd64 이미지, HTTP 200, ECR Push 및 Digest 검증, Jenkins Job에서 원격 Ansible 플레이북 6개 작업 성공(ok=6 changed=0 failed=0 skipped=0), 배포 계정 및 IAM 역할 검사 성공. 16:14:10~16:14:31 KST 로그 구간 약 21초. Build #7에서 Ansible when 조건으로 생략된 문제는 Build #8에서 해결됨.
+
+**막힌 부분** — EKS 클러스터·버전·Access Entry/RBAC 및 실제 공지 앱 인계 대기. ALB 제어 방식 및 대상 그룹 미확정. EKS 배포/트래픽 전환 실적은 아직 없음.
+
+**이번에 작성한 것 (실행 전)** — [초기 Blue/Green 매니페스트](kubernetes/notice-slot.yaml.j2), [Ansible 초기 배포](ansible/bootstrap-smoke.yml), [변수 예시](config/bootstrap-smoke.vars.example.yml), [실행 가이드](kubernetes/README.md). 기본 server dry-run, 명시적 승인 시 create-only. 기존 자동 CI 파이프라인에 EKS 배포를 연결하지 않음. 초기 자원 수치는 제안값. ALB 전환과 후보 업데이트는 실제 트래픽 상태를 확인한 뒤 별도 구현한다.
+
+**증빙** — [Build #8 정제 로그](verification/smoke-test-build-8-ansible.log).
 
 ---
 
