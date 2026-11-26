@@ -1,0 +1,45 @@
+# 2026-11-26 AWS CLI 사용자 제출 원문 — 민감정보 제거 발췌
+# 원본: 프로젝트 첨부 「붙여넣은 텍스트(1).txt」, 총 264행.
+# 첨부 업로드: 2026-11-26 16:51:04 KST. 실제 명령 실행 시각 자체는 원문에 없음.
+# 발췌 범위: 원문 1–21행, 253–264행. 중간 표의 생략 위치를 명시했다.
+# 변경 범위: 관리 호스트명 → CONTROL_HOST, VPC/NAT의 실제 ID → VPC_ID/NAT_GATEWAY_ID.
+# 표 정렬은 원문 그대로이며 자리표시자 치환으로 길이가 달라질 수 있다.
+# EKS 조회는 지원 버전 조회다. 생성된 클러스터의 버전을 조회한 명령이 아니다.
+# NAT 조회는 사용자가 제출한 시점의 NAT Gateway 1개 available 상태를 보여 준다.
+
+[ec2-user@CONTROL_HOST tf-smoke-eks]$ aws eks describe-cluster-versions \
+  --region ap-northeast-2 \
+  --cluster-versions 1.37 \
+  --output table \
+  --no-cli-pager
+-------------------------------------------------------------
+|                  DescribeClusterVersions                  |
++-----------------------------------------------------------+
+||                     clusterVersions                     ||
+|+---------------------------+-----------------------------+|
+||  clusterType              |  eks                        ||
+||  clusterVersion           |  1.37                       ||
+||  defaultPlatformVersion   |  eks.9                      ||
+||  defaultVersion           |  True                       ||
+||  endOfExtendedSupportDate |  2028-12-01T00:00:00+00:00  ||
+||  endOfStandardSupportDate |  2027-12-01T00:00:00+00:00  ||
+||  kubernetesPatchVersion   |  1.37.1                     ||
+||  releaseDate              |  2026-10-01T00:00:00+00:00  ||
+||  status                   |  STANDARD_SUPPORT           ||
+||  versionStatus            |  STANDARD_SUPPORT           ||
+|+---------------------------+-----------------------------+|
+
+[원문 중간의 추가 버전 구성 정보 표 22–252행은 이 발췌에서 생략]
+
+[ec2-user@CONTROL_HOST tf-smoke-eks]$ aws ec2 describe-nat-gateways \
+  --region ap-northeast-2 \
+  --filter "Name=vpc-id,Values=VPC_ID" \
+  --query 'NatGateways[].{ID:NatGatewayId,State:State}' \
+  --output table
+----------------------------------------
+|          DescribeNatGateways         |
++------------------------+-------------+
+|           ID           |    State    |
++------------------------+-------------+
+|  NAT_GATEWAY_ID |  available  |
++------------------------+-------------+
