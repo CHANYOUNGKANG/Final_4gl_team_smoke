@@ -28,10 +28,10 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11.21 – 12.09
 <!-- smoke-activity:start -->
 | 최근 커밋 | 작성자 | 시각 (KST) |
 | --- | --- | ---: |
+| [`f86291f`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/f86291fd0958efd5b4c0a681436e6e4894c22038) Merge pull request #15 from CHANYOUNGKANG/aws/eks-day1-handoff-record | CHANYOUNGKANG | 11/26 17:50 |
 | [`9d4d3bb`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/9d4d3bb7e4e7b0a56c298f2b165278ff90d69cd9) Merge pull request #14 from CHANYOUNGKANG/network/minseo-day1-topology | CHANYOUNGKANG | 11/26 17:49 |
 | [`6598b4b`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/6598b4babbe9ecf46037fd0fdace3ed6717d6623) Merge PR #16: server 온프레미스 서버 3대 구축 및 Tomcat·MariaDB·NFS 연결 검증 | leejunho97 | 11/26 17:33 |
-| [`67d1c24`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/67d1c24af73b84e506eb4739020c81db42635909) server: build on-prem mgmt/web/data and verify Tomcat-MariaDB-NFS | claude | 11/26 17:31 |
-| [`8614921`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/8614921d653534f2ff6b5953379b5ee74287f909) network: document day 1 core configuration and connectivity evidence | ehdanfqnd | 11/26 16:39 |
+| [`5bce8cb`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/5bce8cbb5e961010916159397a339f2bac980e86) aws: record reported EKS provisioning and CI/CD handoff status | CHANYOUNGKANG | 11/26 17:31 |
 
 **열린 이슈·PR**　[#11 [인계] 온프레미스 DB 주소 대역 확정 및 AWS 공지 앱 배포 조건 ](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11)　·　[#1 팀 구축 진행률 · 구현 근거와 시연 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)
 
