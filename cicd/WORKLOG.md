@@ -6,10 +6,22 @@
 
 | 이정표 | 내용 | 구현 | 실행 | 근거 |
 | --- | --- | :---: | :---: | --- |
-| CICD1 | Jenkins 테스트·WAR 빌드 | 초안 (PR) | — | [jenkins/Jenkinsfile](jenkins/Jenkinsfile) |
-| CICD2 | Docker 이미지 · ECR 등록 | — | — | |
+| CICD1 | Jenkins 테스트·WAR 빌드 | 테스트 파이프라인 구현 | 테스트 앱 성공 · 실제 앱 대기 | [Build #5](verification/smoke-test-build-5-ecr.log) |
+| CICD2 | Docker 이미지 · ECR 등록 | 테스트 이미지 자동 Push 구현 | 테스트 앱 성공 · 실제 앱 대기 | [Build #5](verification/smoke-test-build-5-ecr.log) |
 | CICD3 | Ansible Green 배포 · 상태 검사 | — | — | |
 | CICD4 | 검증 후 전환 · 자동 롤백 | — | — | |
+
+---
+
+## 2026-11-26 14:11 KST · ECR 자동 Push 검증 완료 및 CD 인계 설계
+
+**확인한 결과** — 사용자 제공 Build #5 전체 콘솔에서 SCM 변경 자동 실행, SHA `32233749f3ae7ebf9cbc03b1b4d58ca6bb17a4b1`, JUnit 1건 통과/실패 0건, Maven 3.799초, Tomcat HTTP 200, ECR 자동 로그인·Push 및 Digest 대조, ecr-image.txt 및 WAR·SHA-256 아티팩트 보관, 12:26:27 KST SUCCESS 확인. 별도 ECR 조회 화면에서도 동일 태그와 Digest 확인. 12:26:09~12:26:27 로그 구간 약 18초.
+
+**막힌 부분** — 실제 공지 앱 인계표 미확정. Ansible EC2, EKS, IAM Access Entry, ALB 전환 방식은 구축 확인 전. 관리 인증 강화 및 최소 권한 검증도 남음. 테스트용 정적 WAR의 성공을 실제 앱 통합이나 무중단 배포 성공으로 간주하지 않는다.
+
+**다음 작업** — [Ansible/EKS 인계 및 블루그린 협의안](ansible/HANDOFF.md)에 우빈 씨와 합의할 EC2·SG·IAM·Kubernetes·ALB 조건을 정리했다. Ansible 접속 검증 → 후보 배포 및 상태 검사 → 전환·복귀 및 연속 요청 실측 순서로 작업. 실제 앱 인계 후 별도 검증.
+
+**증빙** — [Build #5 콘솔 발췌 및 ECR 조회](verification/smoke-test-build-5-ecr.log).
 
 ---
 
