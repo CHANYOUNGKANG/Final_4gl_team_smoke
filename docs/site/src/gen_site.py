@@ -198,5 +198,8 @@ SYMBOLS = scene_tower() + scene_racks() + scene_cloud() + scene_trails() + scene
 
 html = open(__import__('os').path.join(__import__('os').path.dirname(__file__),'template.html'), encoding='utf-8').read()
 html = html.replace('<!--SYMBOLS-->', SYMBOLS)
+_fonts = __import__('os').path.join(__import__('os').path.dirname(__file__), 'fonts.css')
+if __import__('os').path.exists(_fonts):
+    html = html.replace('/*FONTS*/', open(_fonts, encoding='utf-8').read())
 open(OUT, 'w', encoding='utf-8').write(html)
 print(OUT, len(html) // 1024, 'KB')

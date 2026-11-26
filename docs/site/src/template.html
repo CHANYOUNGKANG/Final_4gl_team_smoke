@@ -6,13 +6,14 @@
 <title>㈜스모크 | 인프라 전환 전문</title>
 <meta name="description" content="㈜스모크는 온프레미스 보안 재구축, AWS 이전, 무중단 배포를 한 흐름으로 맡습니다.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23292C61'/%3E%3Cpath d='M9 21c3-1 3-5 7-5s4 4 7 3' stroke='%233FD1A6' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Cpath d='M9 13c3-1 3-4 7-4s4 3 7 2' stroke='%23AAB5FF' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>/*FONTS*/</style>
 <style>
 /*
 VOICE   기업 홈페이지 — 차분하고 신뢰감 있게, 제품(서비스)별로 큰 장면을 넘기는 대형 슬라이더
 IDEA    제조사 제품 카탈로그 홈: 서비스 하나가 한 장의 "제품 사진"이 된다
 PICTURE 슬라이드마다 그린 장면(타워·서버 통로·구름 위 두 영역·빛 궤적), 아래 카드 줄은 같은 장면의 크롭
 COLOUR  남색 #292C61 기반, 민트 #3FD1A6 는 서비스 이름과 버튼에만, 파랑/초록은 블루그린 슬롯 의미로만
-TYPE    한국어 시스템 고딕 800/700/400, 제목 44–58px, 본문 16–17px
+TYPE    제목: Unbounded(영문·숫자) + 가석원 Gasoek One(한글) 혼합, 본문: IBM Plex Sans KR 400/500/700
 LAYOUT  흰 헤더 → 전폭 히어로 슬라이더 + 원형 배지 → 히어로에 걸친 이미지 카드 5장 → 섹션 → 남색 푸터
 */
 :root{
@@ -20,14 +21,16 @@ LAYOUT  흰 헤더 → 전폭 히어로 슬라이더 + 원형 배지 → 히어�
   --mint:#3FD1A6; --mint-d:#16946F; --peri:#AAB5FF; --sky:#A0CDDE;
   --bg:#FFFFFF; --soft:#F3F5FA; --line:#E1E5EF;
   --blue:#4060E0; --green:#14916E; --red:#C33A3A;
-  --font:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",system-ui,sans-serif;
+  --font:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;
+  --display:"Unbounded","Gasoek One","Black Han Sans","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
 }
 *{box-sizing:border-box;min-width:0}
 html{scroll-behavior:smooth;scroll-padding-top:84px}
 body{margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);font-size:16.5px;line-height:1.65;word-break:keep-all;overflow-wrap:break-word;overflow-x:clip}
 a{color:inherit}
 :focus-visible{outline:3px solid var(--mint);outline-offset:3px;border-radius:4px}
-h1,h2,h3{margin:0;letter-spacing:-.035em;line-height:1.2}
+h1,h2,h3{margin:0;letter-spacing:-.02em;line-height:1.25}
+.d{font-family:var(--display);font-weight:800;font-synthesis:none;letter-spacing:-.01em}
 p{margin:0}
 .wrap{width:min(1200px,100% - 40px);margin-inline:auto}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -38,14 +41,14 @@ svg.sym{position:absolute;width:0;height:0;overflow:hidden}
 .hd-in{display:flex;align-items:center;gap:28px;height:72px}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--navy);flex:none}
 .logo svg{width:32px;height:32px}
-.logo b{font-size:1.2rem;font-weight:800;letter-spacing:-.04em}
+.logo b{font-family:var(--display);font-size:1.3rem;font-weight:800;font-synthesis:none;letter-spacing:0}
 .logo small{font-size:.72rem;color:var(--text-2);font-weight:600;padding-left:10px;border-left:1px solid var(--line);line-height:1.2}
 .gnb{display:flex;gap:6px;margin:0 auto}
 .gnb a{position:relative;padding:24px 14px;text-decoration:none;font-weight:700;font-size:.98rem;color:var(--ink)}
 .gnb a::after{content:"";position:absolute;left:14px;right:14px;bottom:-1px;height:3px;background:var(--mint);transform:scaleX(0);transition:transform .2s}
 .gnb a:hover::after,.gnb a.on::after{transform:scaleX(1)}
 .util{display:flex;align-items:center;gap:12px;flex:none}
-.pill{display:inline-flex;align-items:center;height:36px;padding:0 18px;border-radius:999px;background:var(--mint);color:#06372A;font-weight:800;font-size:.9rem;text-decoration:none}
+.pill{display:inline-flex;align-items:center;height:36px;padding:0 18px;border-radius:999px;background:var(--mint);color:#06372A;font-weight:700;font-size:.9rem;text-decoration:none}
 .pill:hover{background:#5BE0B9}
 .lang{font-size:.82rem;font-weight:700;color:var(--text-2)}
 .burger{display:none;width:44px;height:44px;border:0;background:none;cursor:pointer;padding:10px}
@@ -61,14 +64,14 @@ svg.sym{position:absolute;width:0;height:0;overflow:hidden}
 .copy{position:relative;z-index:2;padding-top:clamp(70px,12vh,120px)}
 .tag{font-size:.86rem;font-weight:700;color:var(--mint);display:flex;gap:6px;align-items:center}
 .tag::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--mint)}
-.copy h1,.copy h2{font-size:clamp(2.1rem,4.4vw,3.5rem);font-weight:800;margin-top:14px;max-width:14em;text-wrap:balance}
+.copy h1,.copy h2{font-family:var(--display);font-weight:800;font-synthesis:none;font-size:clamp(1.95rem,3.9vw,3.15rem);line-height:1.2;letter-spacing:-.01em;margin-top:16px;max-width:15em;text-wrap:balance}
 .copy h1 em,.copy h2 em{font-style:normal;color:var(--mint)}
 .copy p{margin-top:18px;max-width:31em;color:#E3E7F6;font-size:1.04rem}
 .more{display:inline-flex;gap:8px;align-items:center;margin-top:24px;font-weight:700;font-size:.92rem;color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.5);padding-bottom:3px}
 .more:hover{border-color:var(--mint);color:var(--mint)}
 .badges{display:flex;gap:14px;margin-top:38px}
 .badge{width:96px;height:96px;border-radius:50%;background:rgba(255,255,255,.14);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25);display:grid;place-items:center;text-align:center;font-size:.78rem;font-weight:700;line-height:1.3;padding:10px}
-.badge b{display:block;font-size:1.05rem;font-weight:800;color:#fff}
+.badge b{display:block;font-family:var(--display);font-size:.98rem;font-weight:800;font-synthesis:none;color:#fff;margin-bottom:2px}
 .arrow{position:absolute;top:44%;z-index:4;width:52px;height:52px;border-radius:50%;border:1px solid rgba(255,255,255,.4);background:rgba(10,14,40,.25);color:#fff;font-size:1.4rem;cursor:pointer;display:grid;place-items:center}
 .arrow:hover{background:rgba(255,255,255,.18)}
 .arrow.prev{left:clamp(10px,2vw,28px)}.arrow.next{right:clamp(10px,2vw,28px)}
@@ -84,16 +87,16 @@ svg.sym{position:absolute;width:0;height:0;overflow:hidden}
 .quick .ph{display:block;height:150px;border-radius:10px;overflow:hidden;box-shadow:0 18px 34px -18px rgba(20,24,70,.55);position:relative}
 .quick .ph svg{width:100%;height:100%;display:block;transition:transform .5s}
 .quick a:hover .ph svg{transform:scale(1.06)}
-.quick .lb{display:flex;justify-content:space-between;align-items:center;padding:12px 2px 0;font-weight:800;font-size:.98rem}
+.quick .lb{display:flex;justify-content:space-between;align-items:center;padding:12px 2px 0;font-weight:700;font-size:.98rem}
 .quick .lb i{font-style:normal;color:var(--mint-d);font-size:1.2rem;line-height:1}
 
 /* ---------- 공통 섹션 ---------- */
 .sec{padding:clamp(64px,8vw,110px) 0}
 .sec.soft{background:var(--soft)}
 .sec-t{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:40px;flex-wrap:wrap}
-.sec-t h2{font-size:clamp(1.8rem,3.2vw,2.5rem);font-weight:800}
+.sec-t h2{font-family:var(--display);font-weight:800;font-synthesis:none;font-size:clamp(1.55rem,2.7vw,2.15rem);letter-spacing:-.01em;line-height:1.3}
 .sec-t p{color:var(--text-2);max-width:34em}
-.kicker{display:block;font-size:.9rem;font-weight:700;color:var(--mint-d);margin-bottom:10px;letter-spacing:-.01em}
+.kicker{display:block;font-size:.9rem;font-weight:700;color:var(--mint-d);margin-bottom:12px}
 
 /* 서비스: 큰 이미지 + 글, 좌우 교차 */
 .svc{display:grid;gap:clamp(48px,6vw,80px)}
@@ -102,7 +105,8 @@ svg.sym{position:absolute;width:0;height:0;overflow:hidden}
 .svc .ph{height:340px;border-radius:14px;overflow:hidden;position:relative}
 .svc .ph svg{width:100%;height:100%;display:block}
 .svc .ph .who{position:absolute;left:16px;bottom:16px;background:rgba(255,255,255,.92);color:var(--navy);font-size:.82rem;font-weight:700;padding:6px 12px;border-radius:999px}
-.svc h3{font-size:clamp(1.5rem,2.4vw,1.9rem);font-weight:800}
+.svc h3{font-size:clamp(1.35rem,2vw,1.6rem);font-weight:700}
+.svc h3 em{font-family:var(--display);font-weight:800;font-synthesis:none;display:block;font-size:.82em;margin-bottom:6px;letter-spacing:0}
 .svc h3 em{font-style:normal;color:var(--mint-d)}
 .svc .lead{margin-top:12px;color:var(--text-2)}
 .svc dl{margin:24px 0 0;display:grid;gap:0;border-top:2px solid var(--navy)}
@@ -116,7 +120,7 @@ svg.sym{position:absolute;width:0;height:0;overflow:hidden}
 .case-card .ph{height:220px}
 .case-card .ph svg{width:100%;height:100%;display:block}
 .case-card .body{padding:26px 28px 28px;display:grid;gap:18px}
-.case-card h3{font-size:1.4rem;font-weight:800}
+.case-card h3{font-size:1.35rem;font-weight:700}
 .ba{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 .ba h4{margin:0 0 8px;font-size:.88rem;color:var(--text-2)}
 .ba ul{margin:0;padding-left:1.1em;display:grid;gap:6px;font-size:.93rem}
@@ -125,7 +129,7 @@ svg.sym{position:absolute;width:0;height:0;overflow:hidden}
 .textlink{font-weight:700;color:var(--navy-2)}
 
 .switch{background:var(--navy);color:#fff;border-radius:14px;padding:24px 24px 20px;display:flex;flex-direction:column}
-.switch h3{font-size:1.25rem;font-weight:800}
+.switch h3{font-size:1.25rem;font-weight:700}
 .switch .sub{color:#C9CEEA;font-size:.9rem;margin-top:4px}
 .flow{width:100%;height:auto;display:block;margin-top:8px}
 .checks{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-size:.9rem}
@@ -138,7 +142,7 @@ svg.sym{position:absolute;width:0;height:0;overflow:hidden}
 @keyframes spin{to{transform:rotate(360deg)}}
 .meter{display:flex;gap:26px;margin-top:auto;padding-top:16px;border-top:1px solid rgba(255,255,255,.14);align-items:flex-end;flex-wrap:wrap}
 .meter div{display:grid}
-.meter b{font-size:1.6rem;font-weight:800;line-height:1.1}
+.meter b{font-family:var(--display);font-size:1.5rem;font-weight:800;line-height:1.1;font-synthesis:none}
 .meter span{font-size:.8rem;color:#C9CEEA}
 .meter .zero b{color:var(--mint)}
 .sw-btns{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
@@ -155,8 +159,8 @@ svg.sym{position:absolute;width:0;height:0;overflow:hidden}
 .steps li{padding:22px 18px 0 0;border-top:3px solid var(--line)}
 .steps li.done{border-top-color:var(--navy)}
 .steps li.now{border-top-color:var(--mint)}
-.steps .n{font-size:.85rem;font-weight:700;color:var(--text-2)}
-.steps h3{font-size:1.04rem;font-weight:800;margin:6px 0 8px}
+.steps .n{font-family:var(--display);font-size:.8rem;font-weight:600;color:var(--text-2);font-synthesis:none}
+.steps h3{font-size:1.04rem;font-weight:700;margin:6px 0 8px}
 .steps p{font-size:.9rem;color:var(--text-2)}
 .steps time{display:block;margin-top:10px;font-size:.84rem;font-weight:700;color:var(--mint-d);white-space:nowrap}
 
@@ -164,15 +168,15 @@ svg.sym{position:absolute;width:0;height:0;overflow:hidden}
 .measure{width:100%;border-collapse:collapse;background:#fff;border-top:2px solid var(--navy)}
 .measure th,.measure td{text-align:left;padding:16px 18px;border-bottom:1px solid var(--line);vertical-align:top;font-size:.96rem}
 .measure th{font-size:.84rem;color:var(--text-2);font-weight:700}
-.measure td:first-child{font-weight:800;white-space:nowrap}
+.measure td:first-child{font-weight:700;white-space:nowrap}
 .status{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.8rem;font-weight:700;background:var(--soft);color:var(--text-2);white-space:nowrap}
 .status.on{background:#DDF7EE;color:#0E6E52}
 
 /* 팀 */
 .team{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}
 .member{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px}
-.member .av{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;font-size:1.1rem;margin-bottom:14px}
-.member h3{font-size:1.15rem;font-weight:800}
+.member .av{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-synthesis:none;color:#fff;font-size:1.1rem;margin-bottom:14px}
+.member h3{font-size:1.15rem;font-weight:700}
 .member .role{color:var(--text-2);font-size:.9rem}
 .member ul{margin:14px 0 0;padding:0;list-style:none;font-size:.9rem;display:grid;gap:4px}
 .member .mail{display:block;margin-top:14px;font-size:.85rem;color:var(--navy-2);word-break:break-all}
@@ -182,7 +186,7 @@ svg.sym{position:absolute;width:0;height:0;overflow:hidden}
 .cta svg.bgimg{position:absolute;inset:0;width:100%;height:100%}
 .cta::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(12,16,48,.88),rgba(12,16,48,.55) 60%,rgba(12,16,48,.2))}
 .cta-in{position:relative;padding:44px clamp(24px,5vw,56px);display:grid;grid-template-columns:1.2fr 1fr;gap:36px;align-items:center}
-.cta h2{font-size:clamp(1.6rem,3vw,2.3rem);font-weight:800}
+.cta h2{font-family:var(--display);font-size:clamp(1.5rem,2.6vw,2.1rem);font-weight:800;font-synthesis:none;line-height:1.3}
 .cta p{color:#D9DDF2;margin-top:10px}
 .cta ol{margin:0;padding-left:1.2em;display:grid;gap:8px;color:#E9ECF9}
 .cta .pill{margin-top:22px;height:46px;padding:0 24px;font-size:.98rem}
@@ -192,7 +196,7 @@ svg.sym{position:absolute;width:0;height:0;overflow:hidden}
 .ft{background:var(--navy-3);color:#B9BEDB;font-size:.88rem;padding:48px 0 40px;margin-top:clamp(64px,8vw,110px)}
 .ft-in{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:32px}
 .ft .logo{color:#fff}.ft .logo small{color:#B9BEDB;border-color:rgba(255,255,255,.2)}
-.ft h4{margin:0 0 10px;color:#fff;font-size:.92rem}
+.ft h4{margin:0 0 10px;color:#fff;font-size:.92rem;font-weight:700}
 .ft ul{margin:0;padding:0;list-style:none;display:grid;gap:6px}
 .ft a{color:#DDE1F5;text-decoration:none}.ft a:hover{color:var(--mint)}
 .ft .copyr{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.12);padding-top:18px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
