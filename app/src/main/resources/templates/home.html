@@ -23,7 +23,7 @@
       <div class="tb-title" th:text="${n.title}">IATF 16949 인증 갱신 심사 완료</div>
       <dl class="tb-grid">
         <div><dt>분류</dt><dd th:text="${n.category.label}">품질·인증</dd></div>
-        <div><dt>작성 부서</dt><dd th:text="${n.author}">품질보증팀</dd></div>
+        <div><dt>작성 부서</dt><dd th:text="${n.writer}">품질보증팀</dd></div>
         <div><dt>게시일</dt><dd th:text="${#temporals.format(n.createdAt, 'yyyy.MM.dd')}">2026.11.21</dd></div>
         <div><dt>첨부</dt><dd th:text="${n.attachments.size()} + '건'">1건</dd></div>
       </dl>

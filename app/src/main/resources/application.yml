@@ -41,6 +41,7 @@ app:
   check-token: ${CHECK_TOKEN:}
   admin-username: ${ADMIN_USERNAME:admin}
   admin-password: ${ADMIN_PASSWORD:}
+  admin-display-name: ${ADMIN_DISPLAY_NAME:관리자}
   seed: ${APP_SEED:true}
 
 logging:
@@ -48,13 +49,14 @@ logging:
     root: INFO
 
 ---
-# 운영: SPRING_PROFILES_ACTIVE=prod  →  MariaDB(온프레미스 10.0.40.10 → 이관 후 RDS). 주소는 DB_HOST 로만 받는다.
+# 운영: SPRING_PROFILES_ACTIVE=prod  →  MariaDB smoke_board (스키마: server/db/smoke_board.sql, 데이터 서버 → 이관 후 RDS).
+# 주소·계정은 DB_HOST · DB_USER · DB_PASSWORD 로만 받는다. 스키마는 앱이 만들지 않고 검증만 한다(DB_DDL=validate).
 spring:
   config:
     activate:
       on-profile: prod
   datasource:
-    url: jdbc:mariadb://${DB_HOST}:${DB_PORT:3306}/${DB_NAME:notice}?useUnicode=true&characterEncoding=utf8
+    url: jdbc:mariadb://${DB_HOST}:${DB_PORT:3306}/${DB_NAME:smoke_board}?useUnicode=true&characterEncoding=utf8&tinyInt1isBit=false
     username: ${DB_USER}
     password: ${DB_PASSWORD}
   jpa:

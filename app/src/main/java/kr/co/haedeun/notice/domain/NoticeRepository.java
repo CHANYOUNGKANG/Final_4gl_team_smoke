@@ -6,11 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface NoticeRepository extends JpaRepository<Notice, Long> {
+public interface NoticeRepository extends JpaRepository<Notice, Integer> {
 
     @Query("""
             select n from Notice n
-            where n.hidden = false
+            where n.checkPost = false
               and (:category is null or n.category = :category)
               and (:q is null or lower(n.title) like lower(concat('%', :q, '%'))
                               or lower(n.content) like lower(concat('%', :q, '%')))
@@ -18,5 +18,5 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
             """)
     Page<Notice> search(@Param("category") Category category, @Param("q") String q, Pageable pageable);
 
-    long countByHiddenFalse();
+    long countByCheckPostFalse();
 }

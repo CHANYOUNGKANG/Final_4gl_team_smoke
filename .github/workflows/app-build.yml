@@ -3,10 +3,10 @@ name: App build
 # Jenkins가 준비되기 전에도 PR에서 앱이 깨졌는지 바로 알 수 있게 하는 용도다. 운영 배포는 Jenkins가 맡는다.
 on:
   pull_request:
-    paths: ['app/**', 'cicd/docker/**', '.github/workflows/app-build.yml']
+    paths: ['app/**', 'server/db/**', 'cicd/docker/**', '.github/workflows/app-build.yml']
   push:
     branches: [main]
-    paths: ['app/**', 'cicd/docker/**']
+    paths: ['app/**', 'server/db/**', 'cicd/docker/**']
   workflow_dispatch:
 permissions:
   contents: read
@@ -78,3 +78,79 @@ jobs:
             app/target/surefire-reports/*.xml
             ${{ runner.temp }}/shots/*.png
           retention-days: 7
+
+  # 이준호의 server/db/smoke_board.sql 을 실제 MariaDB 10.11 에 넣고, 앱을 운영 프로필(prod, 스키마 검증)로 붙여 본다.
+  mariadb:
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: ci-${{ github.run_id }}-root   # 이 실행에서만 쓰는 임시 컨테이너 값
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=5s --health-retries=24
+    env:
+      MYSQL_PWD: ci-${{ github.run_id }}-root
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: WAR 빌드 (테스트는 build 작업에서)
+        working-directory: app
+        run: mvn -B -ntp -DskipTests clean package
+      - name: smoke_board.sql 적용
+        run: |
+          APP_DB_PW="$(openssl rand -hex 16)"
+          echo "::add-mask::$APP_DB_PW"
+          echo "APP_DB_PW=$APP_DB_PW" >> "$GITHUB_ENV"
+          # 파일의 '비밀번호' 자리표시자를 이 실행의 임시 값으로 바꿔 넣는다 (원본 파일은 그대로)
+          sed "s/'비밀번호'/'$APP_DB_PW'/g" server/db/smoke_board.sql > "$RUNNER_TEMP/init.sql"
+          mysql -h 127.0.0.1 -uroot --default-character-set=utf8mb4 < "$RUNNER_TEMP/init.sql"
+          # CI 러너는 10.10.30.% 대역이 아니므로 같은 권한의 계정을 하나 더 만든다 (CI 전용)
+          mysql -h 127.0.0.1 -uroot -e "CREATE USER 'smoke'@'%' IDENTIFIED BY '$APP_DB_PW'; GRANT SELECT, INSERT, UPDATE, DELETE ON smoke_board.* TO 'smoke'@'%';"
+          mysql -h 127.0.0.1 -uroot --default-character-set=utf8mb4 -t -e "SELECT category, COUNT(*) cnt FROM smoke_board.notice GROUP BY category; SELECT notice_count, file_count FROM smoke_board.v_migration_check;"
+      - name: 앱을 prod 프로필로 기동 (DB_DDL=validate → 스키마가 앱과 다르면 여기서 실패)
+        working-directory: app
+        run: |
+          CHECK_TOKEN="$(openssl rand -hex 24)"
+          ADMIN_PASSWORD="$(openssl rand -hex 24)"
+          echo "::add-mask::$CHECK_TOKEN"; echo "::add-mask::$ADMIN_PASSWORD"
+          echo "CHECK_TOKEN=$CHECK_TOKEN" >> "$GITHUB_ENV"
+          SPRING_PROFILES_ACTIVE=prod DB_HOST=127.0.0.1 DB_USER=smoke DB_PASSWORD="$APP_DB_PW" \
+          CHECK_TOKEN="$CHECK_TOKEN" ADMIN_PASSWORD="$ADMIN_PASSWORD" DEPLOY_COLOR=green \
+          APP_STORAGE_DIR="$RUNNER_TEMP/files" GIT_COMMIT="$GITHUB_SHA" \
+            nohup java -jar target/notice.war > "$RUNNER_TEMP/app.log" 2>&1 &
+          for _ in $(seq 1 90); do curl -fs localhost:8080/health >/dev/null && break; sleep 1; done
+          curl -fs localhost:8080/health | tee health.json; echo
+          grep -q '"db":"UP"' health.json
+      - name: 공지 조회 · 분류 · 검증 글 · 이관 대조 뷰
+        working-directory: app
+        run: |
+          set -x
+          curl -fs localhost:8080/notices | grep -q 'ISO 9001 인증서 갱신본 게시'
+          curl -fs 'localhost:8080/notices?category=DRAWING' | grep -q 'B-207 플랜지 도면 Rev.C'
+          id=$(curl -fs -X POST localhost:8080/api/check/notices -H "X-Check-Token: $CHECK_TOKEN" \
+                -H 'Content-Type: application/json' -d '{"title":"ci-check","content":"mariadb"}' \
+                | python3 -c 'import sys,json; print(json.load(sys.stdin)["id"])')
+          test "$(mysql -h 127.0.0.1 -uroot -N -e "SELECT is_check FROM smoke_board.notice WHERE notice_id=$id")" = 1
+          test "$(mysql -h 127.0.0.1 -uroot -N -e 'SELECT notice_count FROM smoke_board.v_migration_check')" = 8
+          if curl -fs localhost:8080/notices | grep -q ci-check; then echo '검증 글이 공개 목록에 보임'; exit 1; fi
+          curl -fs -X DELETE "localhost:8080/api/check/notices/$id" -H "X-Check-Token: $CHECK_TOKEN"
+          test "$(mysql -h 127.0.0.1 -uroot -N -e "SELECT COUNT(*) FROM smoke_board.admin_user WHERE password_hash LIKE '\$2%'")" = 1
+          set +x
+          {
+            echo "### MariaDB 10.11 + smoke_board.sql 연동"
+            echo '```json'; cat health.json; echo; echo '```'
+            echo '```'; mysql -h 127.0.0.1 -uroot -t -e 'SELECT notice_count, file_count FROM smoke_board.v_migration_check'; echo '```'
+            echo "- prod 프로필 스키마 검증 통과 · 샘플 8건 조회 · 도면 분류 · 검증 글 is_check=1(대조 건수 8 유지) · 관리자 bcrypt 1건"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: 앱 로그 (실패 시)
+        if: failure()
+        run: tail -120 "$RUNNER_TEMP/app.log" || true

@@ -18,7 +18,7 @@
 | --- | --- | --- |
 | `DEPLOY_COLOR` | ConfigMap | `blue` / `green` — 화면 상단 막대와 하단 배지 색, `/version` 응답 |
 | `APP_VERSION` | ConfigMap | 비우면 `pom.xml` 버전 |
-| `DB_HOST` `DB_PORT` `DB_NAME` `DB_USER` | ConfigMap | `db.smoke.internal` 등 내부 이름 |
+| `DB_HOST` `DB_PORT` `DB_NAME`(기본 `smoke_board`) `DB_USER` | ConfigMap | `db.smoke.internal` 등 내부 이름 · 스키마는 `server/db/smoke_board.sql` |
 | `DB_PASSWORD` | **Secret** | |
 | `CHECK_TOKEN` | **Secret** | 16자 이상. Jenkins Credentials 의 같은 값으로 검증 API 호출 |
 | `ADMIN_PASSWORD` | **Secret** | 없으면 공지 쓰기 로그인이 꺼진다 |

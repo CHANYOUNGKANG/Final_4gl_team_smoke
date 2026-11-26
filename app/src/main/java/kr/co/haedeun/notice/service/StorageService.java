@@ -47,11 +47,14 @@ public class StorageService {
         return name;
     }
 
-    public Stored save(InputStream in, long declaredSize) throws IOException {
+    /** 저장 이름 = UUID(32자).확장자 — smoke_board.attachment.stored_name 규칙 */
+    public Stored save(InputStream in, long declaredSize, String originalName) throws IOException {
         if (declaredSize > props.maxFileBytes()) {
             throw new UploadRejectedException("파일이 너무 큽니다. 한 파일당 " + (props.maxFileBytes() / 1024 / 1024) + "MB까지 올릴 수 있습니다.");
         }
-        String storedName = UUID.randomUUID().toString().replace("-", "");
+        int dot = originalName == null ? -1 : originalName.lastIndexOf('.');
+        String ext = dot < 0 ? "" : originalName.substring(dot + 1).toLowerCase();
+        String storedName = UUID.randomUUID().toString().replace("-", "") + (ext.isEmpty() ? "" : "." + ext);
         Path target = root.resolve(storedName);
         MessageDigest md = sha256();
         long size;
@@ -66,7 +69,7 @@ public class StorageService {
     }
 
     public Path resolve(String storedName) {
-        if (!storedName.matches("[0-9a-f]{32}")) {
+        if (!storedName.matches("[0-9a-f]{32}(\\.[a-z0-9]{1,10})?")) {
             throw new IllegalArgumentException("잘못된 저장 이름");
         }
         return root.resolve(storedName);

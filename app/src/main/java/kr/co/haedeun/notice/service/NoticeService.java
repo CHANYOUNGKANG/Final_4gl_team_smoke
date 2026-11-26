@@ -47,8 +47,8 @@ public class NoticeService {
 
     /** 공개 화면용 조회. 검증용 숨김 글은 404. */
     @Transactional
-    public Notice read(long id) {
-        Notice n = notices.findById(id).filter(x -> !x.isHidden())
+    public Notice read(int id) {
+        Notice n = notices.findById(id).filter(x -> !x.isCheckPost())
                 .orElseThrow(() -> new NotFoundException("공지 " + id + "번이 없습니다."));
         n.increaseView();
         n.getAttachments().size();
@@ -57,22 +57,22 @@ public class NoticeService {
 
     /** 검증 API용 조회. 숨김 글 포함, 조회수는 올리지 않는다. */
     @Transactional(readOnly = true)
-    public Notice readForCheck(long id) {
+    public Notice readForCheck(int id) {
         Notice n = notices.findById(id).orElseThrow(() -> new NotFoundException("공지 " + id + "번이 없습니다."));
         n.getAttachments().size();
         return n;
     }
 
     @Transactional
-    public Notice create(Category category, String title, String content, String author,
-                         boolean pinned, boolean hidden, List<MultipartFile> files) throws IOException {
-        Notice n = new Notice(category, title.strip(), content.strip(), author, pinned, hidden);
+    public Notice create(Category category, String title, String content, String writer,
+                         boolean pinned, boolean checkPost, List<MultipartFile> files) throws IOException {
+        Notice n = new Notice(category, title.strip(), content.strip(), writer, pinned, checkPost);
         if (files != null) {
             for (MultipartFile f : files) {
                 if (f == null || f.isEmpty()) continue;
                 String name = storage.validateName(f.getOriginalFilename());
                 try (InputStream in = f.getInputStream()) {
-                    StorageService.Stored s = storage.save(in, f.getSize());
+                    StorageService.Stored s = storage.save(in, f.getSize(), name);
                     n.addAttachment(new Attachment(name, s.storedName(), f.getContentType(), s.size(), s.sha256()));
                 }
             }
@@ -81,23 +81,22 @@ public class NoticeService {
     }
 
     @Transactional
-    public void delete(long id) {
+    public void delete(int id) {
         Notice n = notices.findById(id).orElseThrow(() -> new NotFoundException("공지 " + id + "번이 없습니다."));
         n.getAttachments().forEach(a -> storage.delete(a.getStoredName()));
         notices.delete(n);
     }
 
-    @Transactional
-    public Attachment download(long attachmentId) {
+    @Transactional(readOnly = true)
+    public Attachment download(int attachmentId) {
         Attachment a = attachments.findById(attachmentId)
-                .filter(x -> !x.getNotice().isHidden())
+                .filter(x -> !x.getNotice().isCheckPost())
                 .orElseThrow(() -> new NotFoundException("첨부파일 " + attachmentId + "번이 없습니다."));
-        a.increaseDownload();
         return a;
     }
 
     @Transactional(readOnly = true)
     public long publicCount() {
-        return notices.countByHiddenFalse();
+        return notices.countByCheckPostFalse();
     }
 }

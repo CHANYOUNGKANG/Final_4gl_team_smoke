@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * 배포 검증 API (CICD3·4 "공지 작성·조회 검사").
  * Jenkins 가 Credentials 의 CHECK_TOKEN 을 X-Check-Token 헤더로 보낸다. 토큰이 설정되지 않으면 API 전체가 404.
- * 검증 글은 hidden=true 로 저장돼 고객 화면에는 보이지 않고, 검사 끝에 DELETE 로 지운다.
+ * 검증 글은 is_check=1 로 저장돼(이관 건수 v_migration_check 에서도 빠진다) 고객 화면에는 보이지 않고, 검사 끝에 DELETE 로 지운다.
  */
 @RestController
 @RequestMapping("/api/check/notices")
@@ -47,17 +47,17 @@ public class CheckApiController {
 
     @GetMapping("/{id}")
     public Map<String, Object> read(@RequestHeader(value = "X-Check-Token", required = false) String token,
-                                    @PathVariable long id) {
+                                    @PathVariable int id) {
         guard(token);
         return view(service.readForCheck(id));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@RequestHeader(value = "X-Check-Token", required = false) String token,
-                                       @PathVariable long id) {
+                                       @PathVariable int id) {
         guard(token);
         Notice n = service.readForCheck(id);
-        if (!n.isHidden()) {
+        if (!n.isCheckPost()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 고객 공지는 검증 API로 지우지 않는다
         }
         service.delete(id);

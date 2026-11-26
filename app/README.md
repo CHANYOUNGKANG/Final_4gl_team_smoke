@@ -36,9 +36,9 @@
 | --- | --- |
 | NFR-02 무중단 배포 | `/health` 가 DB·저장소까지 확인 → 준비 안 된 Pod는 대상 그룹에 안 들어감. `server.shutdown=graceful` 로 축소 시 진행 중 요청 처리 |
 | SRS-REQ-03 공지 작성·조회 검사 | 검증 API가 응답에 `servedBy.version/color` 를 담아 “어느 버전이 처리했는지”를 로그로 남김 |
-| NFR-03 데이터 무결성 | 첨부 업로드 시 SHA-256 저장 · 다운로드 응답 헤더 `X-Content-SHA256` · [스키마와 대조 쿼리](db/schema-mariadb.sql) |
-| NFR-04 보안 | 관리자 비밀번호 환경 변수 주입(기본값 없음), CSRF, CSP·X-Frame-Options, 업로드 확장자 허용 목록, UUID 저장 이름(경로 조작 차단) |
-| 운영 데이터 보존 | `APP_SEED=false`(prod 기본) → 샘플 글을 넣지 않음, `DB_DDL=validate` |
+| NFR-03 데이터 무결성 | 첨부 업로드 시 SHA-256 저장 · 다운로드 응답 헤더 `X-Content-SHA256` · 대조 뷰 `v_migration_check` ([smoke_board.sql](../server/db/smoke_board.sql)) |
+| NFR-04 보안 | 관리자 로그인은 `admin_user`의 bcrypt 해시로 확인, CSRF, CSP·X-Frame-Options, 업로드 확장자 허용 목록, UUID 저장 이름(경로 조작 차단) |
+| 운영 데이터 보존 | `APP_SEED=false`(prod 기본) → 샘플 글을 넣지 않음, `DB_DDL=validate` → 앱이 테이블을 만들거나 바꾸지 않음 |
 
 ## 로컬 실행
 
@@ -50,7 +50,28 @@ ADMIN_PASSWORD='로컬에서만-쓸-값' CHECK_TOKEN="$(openssl rand -hex 24)" D
 curl -s localhost:8080/health
 ```
 
-운영(MariaDB·RDS): `SPRING_PROFILES_ACTIVE=prod DB_HOST=… DB_USER=… DB_PASSWORD=…` — 첫 배포 전에 [db/schema-mariadb.sql](db/schema-mariadb.sql) 적용.
+## 데이터베이스 — `smoke_board` (이준호 작성 · [server/db/smoke_board.sql](../server/db/smoke_board.sql))
+
+앱은 이 스키마를 **그대로** 쓴다. 테이블·컬럼 이름과 분류 값(공지·납품일정·품질인증·도면)이 같고, 앱이 스키마를 바꾸지 않는다(`DB_DDL=validate`).
+
+| 테이블 | 앱에서 쓰는 곳 |
+| --- | --- |
+| `notice` | 공지 목록·상세·작성. `is_check=1` 검증 글은 화면과 `v_migration_check` 건수에서 빠진다 |
+| `attachment` | 첨부. `stored_name` = `UUID.확장자`, 실제 파일은 `APP_STORAGE_DIR`(NFS → 이관 후 S3) |
+| `admin_user` | 직원 로그인 (bcrypt 해시) |
+
+```bash
+# 1) 데이터 서버에서 스키마 적용 ('비밀번호' 자리는 실행할 때만 바꾼다)
+sudo mysql -u root -p < server/db/smoke_board.sql
+# 2) 앱 실행 (운영 프로필)
+SPRING_PROFILES_ACTIVE=prod DB_HOST=<데이터 서버> DB_USER=smoke DB_PASSWORD=<앱 계정 비밀번호> \
+  ADMIN_PASSWORD=<첫 관리자 비밀번호> CHECK_TOKEN=<검증 토큰> java -jar target/notice.war
+# 3) 확인
+curl -s localhost:8080/health          # "db":"UP"
+```
+
+- 첫 관리자: `ADMIN_PASSWORD`를 주고 처음 켜면 `admin_user`에 `ADMIN_USERNAME`(기본 `admin`) 한 줄을 bcrypt 해시로 만든다. 이미 있으면 건드리지 않는다.
+- CI(`App build` → `mariadb` 작업)가 매 PR마다 이 SQL을 MariaDB 10.11에 넣고 앱을 prod 프로필로 붙여 확인한다.
 
 ## 아직 안 한 것
 

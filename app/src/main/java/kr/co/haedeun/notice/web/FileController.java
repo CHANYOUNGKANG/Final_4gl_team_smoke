@@ -26,7 +26,7 @@ public class FileController {
     }
 
     @GetMapping("/files/{id}")
-    public ResponseEntity<Resource> download(@PathVariable long id) {
+    public ResponseEntity<Resource> download(@PathVariable int id) {
         Attachment a = service.download(id);
         FileSystemResource file = new FileSystemResource(storage.resolve(a.getStoredName()));
         if (!file.exists()) {

@@ -11,14 +11,14 @@
   <table class="ledger" th:if="${!files.isEmpty()}">
     <caption class="sr-only">자료 목록</caption>
     <thead><tr><th scope="col">형식</th><th scope="col">파일</th><th scope="col" class="hide-sm">출처 공지</th>
-      <th scope="col" class="num">크기</th><th scope="col" class="hide-sm num">다운로드</th></tr></thead>
+      <th scope="col" class="num">크기</th><th scope="col" class="hide-sm">올린 날</th></tr></thead>
     <tbody>
       <tr th:each="f : ${files}">
         <td><span class="ext" th:text="${f.extension}">txt</span></td>
         <td class="title-cell"><a th:href="@{/files/{id}(id=${f.id})}" th:text="${f.originalName}">파일</a></td>
         <td class="hide-sm"><a class="quiet" th:href="@{/notices/{id}(id=${f.notice.id})}" th:text="${f.notice.docNo}">DC-2026-0004</a></td>
         <td class="num" th:text="${f.humanSize}">1 KB</td>
-        <td class="hide-sm num" th:text="${f.downloadCount}">0</td>
+        <td class="hide-sm" th:text="${#temporals.format(f.uploadedAt, 'yyyy.MM.dd')}">2026.11.21</td>
       </tr>
     </tbody>
   </table>

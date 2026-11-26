@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * 모든 운영 값은 환경 변수로 주입한다 (README 팀 보안 규칙).
+ * 관리자 로그인은 DB(admin_user, bcrypt)로 한다. ADMIN_PASSWORD 는 첫 관리자 계정을 만들 때만 쓴다.
  * 비밀값(관리자 비밀번호, 검증 토큰, DB 비밀번호)은 Jenkins Credentials · Kubernetes Secret 에서만 넣는다.
  */
 @ConfigurationProperties(prefix = "app")
@@ -18,6 +19,7 @@ public record AppProperties(
         String checkToken,
         String adminUsername,
         String adminPassword,
+        String adminDisplayName,
         boolean seed) {
 
     public boolean checkApiEnabled() {

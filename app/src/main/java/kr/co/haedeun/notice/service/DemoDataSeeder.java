@@ -10,14 +10,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 시연용 샘플 공지. APP_SEED=true 이고 공지 테이블이 비어 있을 때만 넣는다.
- * 운영(이관 대상 RDS)에서는 APP_SEED=false — 원본 데이터 건수 대조(NFR-03)가 틀어지지 않게 한다.
+ * 로컬(H2) 시연용 샘플. 글 8건은 server/db/smoke_board.sql 의 샘플과 같다.
+ * 로컬에서는 자료실이 비지 않도록 첨부 샘플 파일 몇 개를 더 붙인다.
+ * APP_SEED=true 이고 notice 테이블이 비어 있을 때만 넣는다. 운영(prod)은 APP_SEED=false.
  */
 @Component
+@Order(2)
 public class DemoDataSeeder implements ApplicationRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DemoDataSeeder.class);
@@ -36,82 +39,46 @@ public class DemoDataSeeder implements ApplicationRunner {
     @Transactional
     public void run(ApplicationArguments args) throws IOException {
         if (!props.seed() || notices.count() > 0) return;
-        LocalDateTime now = LocalDateTime.now();
 
-        add(Category.NOTICE, true, now.minusDays(2), "경영지원팀",
-            "설 연휴 출하·고객지원 운영 일정 안내",
-            """
-            설 연휴 기간 출하와 고객지원 일정을 안내드립니다.
-
-            - 마지막 출하: 연휴 시작 전날 15시 출고분까지
-            - 연휴 중 긴급 품질 문의: 품질보증팀 당직 메일로 접수 (평일 기준 다음 영업일 회신)
-            - 연휴 후 첫 출하: 연휴 종료 다음 날 오전 정상 출고
-
-            납기가 걸린 발주는 영업 담당자와 미리 일정을 맞춰 주십시오.
-            """, null, null);
-
-        add(Category.QUALITY, true, now.minusDays(5), "품질보증팀",
-            "IATF 16949 인증 갱신 심사 완료 및 인증서 게시",
-            """
-            본사 공장의 IATF 16949 갱신 심사가 부적합 사항 없이 완료되었습니다.
-            고객사 협력업체 등록 서류에 첨부할 수 있도록 인증서 사본을 게시합니다.
-
-            인증서 원본 대조가 필요하면 품질보증팀으로 요청해 주십시오.
-            """, "IATF16949_인증서_사본_안내.txt",
-            "해든정밀㈜ IATF 16949 인증서 사본 (시연용 샘플 파일)\n인증 범위: 정밀 가공 샤프트·하우징 부품의 제조\n");
-
-        add(Category.DELIVERY, false, now.minusDays(8), "물류팀",
-            "화성 2공장 출하장 이전에 따른 입차 경로 변경",
-            """
-            화성 2공장 출하장이 B동 후면으로 이전됩니다.
-            납품 차량은 정문이 아니라 후문(물류 전용 게이트)으로 입차해 주십시오.
-
-            - 적용: 다음 달 첫 영업일부터
-            - 입차 가능 시간: 평일 08:00–17:00
-            - 하차 대기: B동 후면 대기선(4대)
-            """, "2공장_입차경로_안내.txt", "2공장 물류 게이트 → B동 후면 출하장 (시연용 샘플)\n");
-
-        add(Category.ARCHIVE, false, now.minusDays(12), "기술영업팀",
-            "2026 정밀 샤프트 제품 카탈로그 (Rev.C)",
-            """
-            샤프트 전 품목의 공차 등급, 표면 처리, 최소 발주 수량을 정리한 카탈로그입니다.
-            Rev.B 대비 변경점: HS-2400 시리즈 추가, 열처리 사양 표기 통일.
-            """, "HS_샤프트_카탈로그_RevC.csv",
-            "품번,외경(mm),공차,표면처리,MOQ\nHS-2410,10,h6,무전해니켈,500\nHS-2420,20,h6,흑색산화,300\nHS-2440,40,g6,경질크롬,200\n");
-
-        add(Category.ARCHIVE, false, now.minusDays(20), "환경안전팀",
-            "절삭유 MSDS 개정판 게시",
-            """
-            공급사 변경에 따라 가공 라인 절삭유의 물질안전보건자료(MSDS)를 개정해 게시합니다.
-            협력사 작업자 교육 자료로 사용해 주십시오.
-            """, "절삭유_MSDS_개정판.txt", "MSDS 개정 요약 (시연용 샘플)\n- 취급 시 보호장갑 착용\n- 환기 설비 가동 중 사용\n");
-
-        add(Category.QUALITY, false, now.minusDays(27), "품질보증팀",
-            "4분기 협력사 품질 평가 결과 회신 일정",
-            """
-            4분기 협력사 품질 평가 결과를 다음 주 금요일까지 개별 메일로 회신합니다.
-            평가 항목: 납입 불량률(PPM), 시정조치 회신 기한 준수율, 변경점 사전 신고 여부.
-            """, null, null);
-
-        add(Category.NOTICE, false, now.minusDays(35), "경영지원팀",
-            "고객 공지·자료실 서비스 이전 안내",
-            """
-            공지·자료실을 새 서비스 환경으로 이전합니다.
-            주소는 바뀌지 않으며, 기존 게시글과 첨부파일은 그대로 옮겨집니다.
-
-            이전 작업 중 짧은 시간 동안 글 등록과 파일 업로드만 일시 중지되며, 공지 조회와 다운로드는 계속 가능합니다.
-            """, null, null);
+        add(Category.NOTICE, "공지·자료실 이용 안내",
+            "해든정밀㈜ 고객사·협력사 전용 공지·자료실입니다. 납품 일정, 품질 인증서, 도면은 각 분류에서 확인해 주세요.",
+            "관리자", true, "2026-11-02T09:00:00", null, null);
+        add(Category.NOTICE, "시스템 점검 안내 (12/06 02:00~04:00)",
+            "서비스 이전 작업으로 12월 6일 02:00부터 04:00까지 자료 업로드가 중지됩니다. 조회는 계속 가능합니다.",
+            "관리자", true, "2026-11-20T10:30:00", null, null);
+        add(Category.DELIVERY, "12월 1주차 납품 일정",
+            "A-1024 샤프트 400EA 12/02 출고, B-207 플랜지 150EA 12/04 출고 예정입니다.",
+            "생산관리팀", false, "2026-11-24T14:00:00", "12월1주차_납품일정.csv",
+            "품번,품명,수량,출고일\nA-1024,샤프트,400,12/02\nB-207,플랜지,150,12/04\n");
+        add(Category.DELIVERY, "연말 출하 마감 일정 안내",
+            "12월 마지막 출하는 12/26(금)입니다. 추가 발주는 12/19까지 요청해 주세요.",
+            "생산관리팀", false, "2026-11-25T11:20:00", null, null);
+        add(Category.QUALITY, "ISO 9001 인증서 갱신본 게시",
+            "2026년 ISO 9001 갱신 인증서를 첨부합니다. 협력사 등록 서류로 사용하실 수 있습니다.",
+            "품질보증팀", false, "2026-11-10T16:45:00", "ISO9001_인증서_2026.txt",
+            "해든정밀㈜ ISO 9001 인증서 사본 (시연용 샘플 파일)\n");
+        add(Category.QUALITY, "A-1024 샤프트 성적서 (LOT 2611-03)",
+            "치수 검사와 경도 시험 결과입니다. 측정 장비 교정 기록을 함께 첨부합니다.",
+            "품질보증팀", false, "2026-11-21T13:10:00", "A-1024_성적서_LOT2611-03.csv",
+            "항목,규격,측정값,판정\n외경(mm),20.000±0.013,20.004,합격\n경도(HRC),58~62,60,합격\n");
+        add(Category.DRAWING, "B-207 플랜지 도면 Rev.C",
+            "볼트 구멍 위치 변경이 반영된 Rev.C 도면입니다. Rev.B 는 더 이상 사용하지 마세요.",
+            "설계팀", false, "2026-11-18T09:40:00", "B-207_플랜지_RevC_도면안내.txt",
+            "B-207 플랜지 Rev.C — 볼트 구멍 PCD 변경 (시연용 샘플 파일)\n");
+        add(Category.DRAWING, "C-55 브래킷 신규 도면",
+            "신규 부품 C-55 브래킷 도면입니다. 시제품 검토 의견은 메일로 보내 주세요.",
+            "설계팀", false, "2026-11-23T15:05:00", null, null);
 
         log.info("시연용 공지 {}건을 넣었습니다 (APP_SEED=true).", notices.count());
     }
 
-    private void add(Category c, boolean pinned, LocalDateTime at, String author, String title, String body,
+    private void add(Category c, String title, String body, String writer, boolean pinned, String at,
                      String fileName, String fileBody) throws IOException {
-        Notice n = new Notice(c, title, body.strip(), author, pinned, false);
-        n.backdate(at);
+        Notice n = new Notice(c, title, body, writer, pinned, false);
+        n.backdate(LocalDateTime.parse(at));
         if (fileName != null) {
             byte[] bytes = fileBody.getBytes(StandardCharsets.UTF_8);
-            StorageService.Stored s = storage.save(new ByteArrayInputStream(bytes), bytes.length);
+            StorageService.Stored s = storage.save(new ByteArrayInputStream(bytes), bytes.length, fileName);
             String type = fileName.endsWith(".csv") ? "text/csv" : "text/plain";
             n.addAttachment(new Attachment(fileName, s.storedName(), type, s.size(), s.sha256()));
         }

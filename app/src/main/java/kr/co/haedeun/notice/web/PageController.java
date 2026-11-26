@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
+import kr.co.haedeun.notice.domain.AdminUserRepository;
 import kr.co.haedeun.notice.domain.Category;
 import kr.co.haedeun.notice.domain.Notice;
 import kr.co.haedeun.notice.service.NoticeService;
@@ -20,9 +21,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class PageController {
 
     private final NoticeService service;
+    private final AdminUserRepository admins;
 
-    public PageController(NoticeService service) {
+    public PageController(NoticeService service, AdminUserRepository admins) {
         this.service = service;
+        this.admins = admins;
     }
 
     @GetMapping("/")
@@ -47,7 +50,7 @@ public class PageController {
     }
 
     @GetMapping("/notices/{id}")
-    public String detail(@PathVariable long id, Model model) {
+    public String detail(@PathVariable int id, Model model) {
         model.addAttribute("notice", service.read(id));
         return "notices/detail";
     }
@@ -71,8 +74,10 @@ public class PageController {
                          Principal principal, Model model, RedirectAttributes ra) throws IOException {
         if (!binding.hasErrors()) {
             try {
+                // writer = 관리자 표시 이름(admin_user.display_name)
+                String writer = admins.findByUsername(principal.getName()).map(a -> a.getDisplayName()).orElse(principal.getName());
                 Notice saved = service.create(form.getCategory(), form.getTitle(), form.getContent(),
-                        principal.getName(), form.isPinned(), false, files);
+                        writer, form.isPinned(), false, files);
                 ra.addFlashAttribute("flash", "공지를 게시했습니다. 문서번호 " + saved.getDocNo());
                 return "redirect:/notices/" + saved.getId();
             } catch (UploadRejectedException e) {
@@ -84,7 +89,7 @@ public class PageController {
     }
 
     @PostMapping("/notices/{id}/delete")
-    public String delete(@PathVariable long id, RedirectAttributes ra) {
+    public String delete(@PathVariable int id, RedirectAttributes ra) {
         service.delete(id);
         ra.addFlashAttribute("flash", "공지를 삭제했습니다.");
         return "redirect:/notices";

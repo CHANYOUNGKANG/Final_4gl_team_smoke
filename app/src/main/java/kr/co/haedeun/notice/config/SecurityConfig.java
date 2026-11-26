@@ -1,38 +1,32 @@
 package kr.co.haedeun.notice.config;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
+import kr.co.haedeun.notice.domain.AdminUserRepository;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 
 @Configuration
 public class SecurityConfig {
 
+    /** admin_user.password_hash 는 bcrypt($2a$/$2b$/$2y$) 해시만 저장한다 (smoke_board.sql 규칙). */
     @Bean
     PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        return new BCryptPasswordEncoder();
     }
 
-    /** ADMIN_PASSWORD 가 없으면 관리자 계정을 만들지 않는다 → 글쓰기 화면은 로그인 불가 상태로 남는다. */
+    /** 관리자 로그인 = smoke_board.admin_user 조회. */
     @Bean
-    UserDetailsService users(AppProperties props, PasswordEncoder encoder) {
-        List<UserDetails> list = new ArrayList<>();
-        if (props.adminEnabled()) {
-            list.add(User.withUsername(props.adminUsername())
-                    .password(encoder.encode(props.adminPassword()))
-                    .roles("ADMIN")
-                    .build());
-        }
-        return new InMemoryUserDetailsManager(list);
+    UserDetailsService users(AdminUserRepository admins) {
+        return username -> admins.findByUsername(username)
+                .map(a -> User.withUsername(a.getUsername()).password(a.getPasswordHash()).roles("ADMIN").build())
+                .orElseThrow(() -> new UsernameNotFoundException("관리자 계정이 없습니다"));
     }
 
     @Bean

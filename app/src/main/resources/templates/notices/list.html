@@ -36,7 +36,7 @@
           <span th:if="${!n.attachments.isEmpty()}" class="clip" th:title="'첨부 ' + ${n.attachments.size()} + '건'" th:text="'첨부 ' + ${n.attachments.size()}">첨부 1</span>
           <span th:if="${n.new}" class="new">새 글</span>
         </td>
-        <td class="hide-sm" th:text="${n.author}">팀</td>
+        <td class="hide-sm" th:text="${n.writer}">팀</td>
         <td th:text="${#temporals.format(n.createdAt, 'yyyy.MM.dd')}">2026.11.21</td>
         <td class="hide-sm num" th:text="${n.viewCount}">0</td>
       </tr>
