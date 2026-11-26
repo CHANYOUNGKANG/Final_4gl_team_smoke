@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('홈')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header('home')}"></header>
+<main id="main">
+  <section class="hero wrap">
+    <div class="hero-copy">
+      <h1>납품 일정, 품질 인증서, 기술 자료를 한곳에서 확인하세요</h1>
+      <p class="lead">해든정밀 고객사와 협력사를 위한 공지·자료실입니다. 로그인 없이 공지를 읽고 첨부 자료를 내려받을 수 있습니다.</p>
+      <form class="search" th:action="@{/notices}" method="get" role="search">
+        <label for="hq" class="sr-only">공지 검색</label>
+        <input id="hq" name="q" type="search" placeholder="품번, 인증, 출하 일정으로 검색">
+        <button type="submit">검색</button>
+      </form>
+    </div>
+
+    <a th:if="${!latest.isEmpty()}" th:with="n=${latest[0]}" class="titleblock" th:href="@{/notices/{id}(id=${n.id})}">
+      <div class="tb-row tb-head">
+        <span>최신 문서</span>
+        <span th:text="${n.docNo}">QA-2026-0002</span>
+      </div>
+      <div class="tb-title" th:text="${n.title}">IATF 16949 인증 갱신 심사 완료</div>
+      <dl class="tb-grid">
+        <div><dt>분류</dt><dd th:text="${n.category.label}">품질·인증</dd></div>
+        <div><dt>작성 부서</dt><dd th:text="${n.writer}">품질보증팀</dd></div>
+        <div><dt>게시일</dt><dd th:text="${#temporals.format(n.createdAt, 'yyyy.MM.dd')}">2026.11.21</dd></div>
+        <div><dt>첨부</dt><dd th:text="${n.attachments.size()} + '건'">1건</dd></div>
+      </dl>
+    </a>
+  </section>
+
+  <section class="wrap two-col">
+    <div>
+      <div class="sec-head">
+        <h2>최근 공지</h2>
+        <a th:href="@{/notices}">전체 공지 <span th:text="${total}">7</span>건 보기</a>
+      </div>
+      <ul class="notice-lines">
+        <li th:each="n : ${latest}">
+          <a th:href="@{/notices/{id}(id=${n.id})}">
+            <span class="docno" th:text="${n.docNo}">GN-2026-0001</span>
+            <span class="t"><span th:if="${n.pinned}" class="pin">고정</span><span th:text="${n.title}">제목</span></span>
+            <time th:text="${#temporals.format(n.createdAt, 'MM.dd')}">11.24</time>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div>
+      <div class="sec-head">
+        <h2>새 자료</h2>
+        <a th:href="@{/archive}">자료실 열기</a>
+      </div>
+      <ul class="file-lines">
+        <li th:each="f : ${files}">
+          <a th:href="@{/files/{id}(id=${f.id})}">
+            <span class="ext" th:text="${f.extension}">pdf</span>
+            <span class="t" th:text="${f.originalName}">파일명</span>
+            <span class="muted" th:text="${f.humanSize}">12 KB</span>
+          </a>
+        </li>
+        <li th:if="${files.isEmpty()}" class="empty">아직 올라온 자료가 없습니다.</li>
+      </ul>
+      <p class="help">급한 품질 문의는 담당 영업 또는 품질보증팀 메일로 보내 주십시오.</p>
+    </div>
+  </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

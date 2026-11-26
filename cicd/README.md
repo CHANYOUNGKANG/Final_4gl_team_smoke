@@ -26,6 +26,10 @@ Jenkins 서비스 계정 → Ansible 배포 계정 SSH 및 원격 Ansible ping/A
 
 초기 Blue/Green 배포 코드는 [Kubernetes 실행 가이드](kubernetes/README.md) 및 [초기 배포 플레이북](ansible/bootstrap-smoke.yml)에 작성했다. 기본값은 서버 dry-run이며 실제 EKS 배포 및 ALB 전환은 자동 실행하지 않는다.
 
+## 실제 공지 앱 연동
+
+`main`의 [레퍼런스 공지 앱](../app/README.md)은 Java 17 / Spring Boot 3.3.5 / `notice.war`, MariaDB 10.11 연동 검사 성공 상태다. 기존 `smoke-cicd` 테스트 Job과 분리해 실제 앱 Jenkins 빌드부터 검증한다. 실제 DB 주소 및 RDS/EFS 인계는 [#11](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11)에서 확정한다. 테스트 이미지의 `/`와 실제 앱의 `/health`를 구분한다.
+
 ## 작업 체크리스트
 
 - [ ] 이준호에게 [앱 빌드 정보](../app/README.md)를 받고 이우빈과 Jenkins EC2(퍼블릭 서브넷)·SG(실습 PC IP/32)·IAM 역할을 확인한다.
