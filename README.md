@@ -175,6 +175,33 @@ git fetch origin && git switch network/minseo-day1-topology   # 내 브랜치 �
 | AWS 클라우드 | VPC, EKS, ALB, RDS, S3, CloudFront, EFS, Redis, CloudWatch | 후보 검증 경로, 대상 그룹, 전환·복귀 방법, 이관 대조 결과 |
 | CI/CD | GitHub Webhook, Jenkins, Maven, Docker, ECR, Ansible, Kubernetes | 커밋별 WAR·이미지 식별자, 정상 전환·롤백 로그, 연속 조회 결과 |
 
+### 팀 버전과 실행 환경
+
+2026-11-26 기준. **기준안**은 수업 기록에서 고른 첫 통합 빌드의 출발점이다. **저장소 설정**은 현재 파일에 적힌 값이고, **확인 대기**는 담당자가 실제 앱·인프라에서 확인할 값이다.
+
+| 담당 | 항목 | 기준안 · 저장소 설정 | 확정할 때 확인할 것 |
+| --- | --- | --- | --- |
+| 서버 · CI/CD | Java / Maven | Jenkins JDK **21**, Maven **3.9.16** 기준안. 11/16 실습은 Amazon Corretto 21 사용 | Jenkins 에이전트에서 `mvn -version`으로 Maven과 JVM을 함께 확인. 앱의 Java 컴파일 대상은 준호가 전달한 POM 기준 |
+| 서버 · CI/CD | Tomcat / WAR | 컨테이너 기준안 **Tomcat 11.0.29**. 11/24 실습 산출물은 `4glapp-1.0-SNAPSHOT.war`. 10/30 게시판 실습은 **Tomcat 10.1.61** 사용 | 최종 공지 앱의 Tomcat 호환 버전·WAR 이름·공지 조회 경로는 확인 대기. Jenkins는 `target/*.war`와 SHA-256을 보관 |
+| 서버 · AWS | MariaDB / RDS | **MariaDB 10.11 계열** 기준안. 10/30 RDS 실습 엔진 **10.11.19**, 앱 JDBC 드라이버 **3.3.2** | 준호가 원본 DB의 `SELECT VERSION()` 결과를 전달하고 우빈이 RDS의 실제 엔진 버전과 대조 |
+| 서버 · AWS | DB 문자셋 / 정렬 규칙 | **`utf8mb4` / `utf8mb4_unicode_ci`** 기준안. 수업 게시판 DB와 테이블에 사용 | 이관 전후 `SHOW CREATE TABLE` 결과 및 한글 공지 본문 대조 |
+| AWS · CI/CD | EKS / kubectl | 11/20 EKS **워커 1.37.1 계열**, 강사 kubectl **1.36.2-eks**. 11/24 **1.37.2**는 kubeadm 실습 기록 | 팀 EKS 버전은 확인 대기. 우빈이 제어 영역·워커 버전을 전달하면 찬영이 같은 마이너의 kubectl을 기준으로 설치 |
+| AWS · CI/CD | AWS Load Balancer Controller | 팀 Helm 차트 버전과 컨트롤러 이미지 태그 **확인 대기** | 우빈이 설치 후 차트 버전과 실제 이미지 태그를 각각 기록하고 찬영과 ALB 대상 그룹 상태 확인 |
+| AWS · CI/CD | ECR / CPU | 서울 리전 `ap-northeast-2`, 이미지 플랫폼 **`linux/amd64`** 기준안. ECR에는 앱 이미지를 Git 커밋 SHA 태그로 등록할 계획 | 우빈이 워커의 `kubernetes.io/arch`를 확인하고 찬영이 같은 플랫폼으로 빌드. 배포 기록에 ECR 이미지 digest를 남김 |
+
+**서비스 포트와 환경 변수**
+
+| 연결 | 팀에서 맞출 값 |
+| --- | --- |
+| 사용자 → ALB → 공지 앱 | HTTPS **443** → Tomcat **8080** (`APP_PORT`). 11/24의 Service **80**·NodePort **31000**은 수업 구성. 팀 Service 포트와 헬스 체크 경로는 매니페스트 작성 시 확정 |
+| Jenkins 관리 / 배포 SSH / DB | Jenkins UI **8080**, SSH **22** (`DEPLOY_PORT`), MariaDB **3306**. Jenkins와 Tomcat은 서로 다른 서비스 |
+| 빌드·배포 설정 | `APP_DIR`, `APP_PORT`, `AWS_REGION`, `AWS_ACCOUNT_ID`, `ECR_REPO`, `EKS_CLUSTER`, `K8S_NAMESPACE`, `EKS_ASG`, `DEPLOY_HOST`, `DEPLOY_PORT` |
+| 앱·검증·알림 연결 | 배포 예시의 이름은 `DB_HOST`, `CACHE_HOST`, `NOTICE_URL`, `GREEN_CHECK_URL`, `SNS_TOPIC_ARN`. 앱이 실제로 읽는 DB 인증 변수명은 서버 인계 때 확정. 실제 값은 저장소 밖에서 주입 |
+
+**인계 순서** — 준호가 앱 커밋·POM·WAR 이름·조회 경로를 전달하면 찬영이 첫 Jenkins 빌드에서 확인한다. 우빈은 RDS 엔진, EKS 버전·CPU, 컨트롤러 버전을 전달한다. [앱 인계표](app/README.md) · [Jenkins 빌드 기준](cicd/jenkins/README.md) · [배포 환경 변수 예시](cicd/config/deploy.env.example)
+
+수업 근거는 10/30 Java 3-Tier·RDS, 11/16 Jenkins·Maven, 11/18 Docker·JDBC, 11/20 EKS, 11/24 Kubernetes CI/CD 실습 일지다.
+
 ## 요구사항과 인수 기준
 
 | ID | 요구사항 | 주 담당 / 협업 | 인수 기준 |
