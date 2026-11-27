@@ -1,0 +1,98 @@
+---
+- name: Verify or update the isolated Green test candidate (never changes ALB)
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    cd_mode: VERIFY
+    candidate_digest: ""
+    green_offline_confirmed: "false"
+  tasks:
+    - name: Validate private configuration and requested mode
+      ansible.builtin.assert:
+        that:
+          - expected_context is match('^arn:aws:eks:ap-northeast-2:[0-9]{12}:cluster/smoke-eks$')
+          - ecr_repository_uri is match('^[0-9]{12}[.]dkr[.]ecr[.]ap-northeast-2[.]amazonaws[.]com/smoke-notice$')
+          - ecr_repository_uri.split('.')[0] == expected_context.split(':')[4]
+          - blue_digest == 'sha256:89cbb9d7197385f7a77bec308ef85826d86e54180a5c7ffb5aec0af76b290cea'
+          - green_digest == 'sha256:c310410ef3f7449678920ea39699772c9a31be67fa06a9e0a46ab5a392123568'
+          - cd_mode in ['VERIFY', 'PLAN', 'DEPLOY']
+          - cd_mode == 'VERIFY' or candidate_digest is match('^sha256:[a-f0-9]{64}$')
+          - cd_mode == 'VERIFY' or candidate_digest not in [blue_digest, green_digest]
+          - cd_mode != 'DEPLOY' or green_offline_confirmed | bool
+        quiet: true
+    - name: Check initial slots and optionally update only Green
+      ansible.builtin.shell: |
+        set -euo pipefail
+        k() { kubectl --context "$CTX" -n notice "$@"; }
+        [[ "$(kubectl config current-context)" == "$CTX" ]]
+        image() { k get deployment "notice-$1" -o jsonpath='{.spec.template.spec.containers[?(@.name=="notice")].image}'; }
+        check() (
+          slot=$1; expected=$2; port=$3
+          k rollout status "deployment/notice-$slot" --timeout=300s >/dev/null
+          [[ "$(k get deployment "notice-$slot" -o jsonpath='{.status.readyReplicas}')" == 2 ]]
+          log=$(mktemp)
+          k port-forward --address 127.0.0.1 "svc/notice-$slot-svc" "$port:8080" >"$log" 2>&1 &
+          pid=$!
+          trap 'kill "$pid" 2>/dev/null || true; wait "$pid" 2>/dev/null || true; rm -f "$log"' EXIT
+          for i in $(seq 1 30); do
+            if grep -q 'Forwarding from 127.0.0.1:' "$log"; then break; fi
+            kill -0 "$pid" 2>/dev/null || exit 1
+            sleep 1
+          done
+          grep -q 'Forwarding from 127.0.0.1:' "$log"
+          body=$(curl -fsS --max-time 10 -w '\n%{http_code}' "http://127.0.0.1:$port/")
+          [[ "${body##*$'\n'}" == 200 ]]
+          grep -Fq "<p id=\"version\">$expected</p>" <<<"$body"
+          echo "SLOT $slot READY=2 HTTP=200 VERSION=$expected"
+        )
+        old_blue="$REPO@$BLUE"
+        old_green="$REPO@$GREEN"
+        [[ "$(image blue)" == "$old_blue" ]]
+        [[ "$(image green)" == "$old_green" ]]
+        check blue test-v2 18080
+        check green test-v3 18081
+        if [[ "$MODE" == VERIFY ]]; then
+          echo "CD VERIFY OK: no workload or ALB mutation"
+          exit 0
+        fi
+        # The fixture has exactly one container; refuse a changed manifest.
+        [[ "$(k get deployment notice-green -o jsonpath='{.spec.template.spec.containers[0].name}')" == notice ]]
+        [[ "$(k get deployment notice-green -o jsonpath='{.spec.template.spec.containers[*].name}')" == notice ]]
+        patch=$(printf '[{"op":"test","path":"/spec/template/spec/containers/0/image","value":"%s"},{"op":"replace","path":"/spec/template/spec/containers/0/image","value":"%s"}]' "$old_green" "$REPO@$CANDIDATE")
+        k patch deployment notice-green --type=json -p "$patch" --dry-run=server >/dev/null
+        echo "CD GREEN PATCH DRY RUN OK"
+        if [[ "$MODE" == PLAN ]]; then
+          echo "CD PLAN OK: no workload or ALB mutation"
+          exit 0
+        fi
+        [[ "$OFFLINE" == true ]]
+        [[ "$(image blue)" == "$old_blue" ]]
+        k patch deployment notice-green --type=json -p "$patch" >/dev/null
+        echo "CD GREEN PATCH APPLIED"
+        check green test-v4 18081
+        [[ "$(image green)" == "$REPO@$CANDIDATE" ]]
+        [[ "$(image blue)" == "$old_blue" ]]
+        check blue test-v2 18080
+        echo "CD GREEN CANDIDATE VERIFIED: digest=$CANDIDATE; Blue unchanged; ALB untouched"
+      args:
+        executable: /bin/bash
+      environment:
+        CTX: "{{ expected_context }}"
+        REPO: "{{ ecr_repository_uri }}"
+        BLUE: "{{ blue_digest }}"
+        GREEN: "{{ green_digest }}"
+        MODE: "{{ cd_mode }}"
+        CANDIDATE: "{{ candidate_digest }}"
+        OFFLINE: "{{ 'true' if green_offline_confirmed | bool else 'false' }}"
+      register: cd_result
+      no_log: true
+      failed_when: false
+      changed_when: "'CD GREEN PATCH APPLIED' in cd_result.stdout"
+    - name: Report non-sensitive verification output
+      ansible.builtin.debug:
+        msg: "{{ cd_result.stdout_lines }}"
+    - name: Require success
+      ansible.builtin.assert:
+        that: cd_result.rc == 0
+        fail_msg: "CD failed; inspect slot state locally before retrying. If Green patch was applied it may still be present. No ALB change was attempted."
