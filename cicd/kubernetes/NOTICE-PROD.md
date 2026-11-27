@@ -58,3 +58,14 @@ AWS 담당자와 논의된 방향: RDS MariaDB 10.11 / smoke_board / 3306, EFS R
 `cicd/ansible/test-notice-app-check.py`는 6개 오프라인 단위 테스트를 제공한다. `cicd/docker/check-notice-local.sh`는 이전 CI의 로컬 이미지 ID와 digest를 비교하고, 랜덤 포트 127.0.0.1 바인딩 및 일회용 검증 토큰으로 폐기 가능한 H2 컨테이너를 실행한다. 이미지 재빌드/Push/Pull을 하지 않는다. 기존 Plan Job에서 RUN_ISOLATED_APP_CHECK=true와 정확한 기존 CI commit/tag/digest를 입력해 실행할 수 있다. 정상 종료 및 일반 오류에서 컨테이너와 익명 볼륨 삭제 시도. 강제 종료나 Docker 오류 시 수동 잔여 리소스 확인 필요. 테스트 이미지가 로컬에 없거나 ID 표현이 다르면 실패하도록 설계했으며 자동 Pull하지 않는다.
 
 권장 시험 입력은 handoff #2에서 확인된 commit acfb0a8e91da202a6fb3859ee955c4ff8bf1e0b5, tag notice-acfb0a8e91da202a6fb3859ee955c4ff8bf1e0b5-2, digest sha256:331728a6bb5f30c8e045d4cdb59a25d8010a9bdc4da44b34f895edeae85705ac. 이전 parent #2/child #3 자동 호출 실측 성공 기록은 verification/1127-notice-handoff-build-2.log 및 1127-notice-plan-build-3-upstream.log. 이번 추가 기능은 코드 작성 단계이며 Jenkins 실측은 아직 대기. 자동 호출 기본값은 RUN_ISOLATED_APP_CHECK=false. 실제 RDS/EFS 연동과 Pod port-forward 검사 및 운영용 롤백 통합은 별도 작업.
+
+## 11/27 오후 — 최종 앱 PR #21 병합 및 EFS 인계 (이 절이 이전 초안보다 우선)
+
+- 최종 팀 앱: main의 PR #21 병합 커밋 056377985e44314d5dbf83bb24380c5ba7086ddd, JSP 일반 WAR, Java 17/Tomcat 10.1, DB boarddb. 기존 Spring Boot는 app-reference/에 보존. PR head b21719bf19daf2d51ffd8b0d3039445ba8e0c0af에 대해 Jenkins 호스트에서 기존 H2/CRUD 검증기 성공. [시험 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pull/21#issuecomment-7211447802).
+- AWS 담당자 인계 보고: notice namespace, smoke-attachments-pvc, smoke-attachments-pv, RWX Bound, Retain, /var/smoke/attach, POSIX UID/GID 1500/1500, 0770. 서로 다른 AZ 테스트 Pod의 파일 생성/조회/수정/해시 일치 보고. 테스트 파일/Pod 삭제, 실제 PV/PVC 보존. 이 PR에서는 담당자 보고를 기록한 것이며 원본 로그 및 실제 앱 접근은 별도 검증한다.
+- 렌더러와 예제는 동일 PVC 이름을 강제하고 두 슬롯 모두 APP_STORAGE_DIR 및 UPLOAD_DIR=/var/smoke/attach, DB_NAME=boarddb, DB_DDL=validate, APP_SEED=false, Secret 키 DB_PASSWORD/CHECK_TOKEN/ADMIN_KEY를 사용한다. 기존 ADMIN_PASSWORD는 새 앱에서 인증에 쓰이지 않는다.
+- Dockerfile UID/GID 고정 1500:1500, Pod runAsUser/runAsGroup 1500, non-root, seccomp RuntimeDefault. EFS 권한을 변경하거나 재귀 chown/fsGroup을 임의 적용하지 않는다. 실제 이미지 빌드 및 실제 EFS 접근 검증은 미실행.
+- FILE_BASE_URL은 EFS에 생성한 신규 첨부가 S3에도 존재하는 방식이 확정되기 전까지 설정하지 않는다.
+- PR #20은 PR #21 병합 이후 main과 충돌 상태로 확인됨. 기존 브랜치의 app/은 최신 JSP가 아닐 수 있으므로 이 브랜치에서 업무용 이미지를 빌드/Push하거나 그대로 병합하지 않는다. main 기준으로 충돌을 해결한 뒤 최신 앱과 수정 Dockerfile을 함께 격리 검증한다. 기존 정적 슬롯은 유지한다.
+- RDS endpoint/전용 DML 사용자/Secret, boarddb 복원 및 v_migration_check, 실제 EFS 파일 읽기/쓰기, ALB health 경로와 운영 HTTPS 확인, 동적 실제 CD/Release 통합이 남음. DB_HOST 및 필수 Secret은 비어 있으면 배포 차단해야 하며 H2 fallback은 운영 금지. 운영 관리자 키/토큰은 외부 HTTP로 보내지 않는다.
+- 현재는 코드 준비 단계. 새 렌더러 테스트 6개 및 Dockerfile 재검증 필요. 서버 dry-run/apply, PVC 재생성, ECR Push, ALB 변경은 하지 않았다.
