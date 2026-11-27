@@ -1,0 +1,105 @@
+// Manual integration test: real CI artifact -> automatic read-only Plan Job.
+// No Poll SCM, no deployment, no listener changes. Not the permanent CI job.
+pipeline {
+  agent none
+  options {
+    timestamps()
+    disableConcurrentBuilds()
+    skipDefaultCheckout()
+    timeout(time: 20, unit: 'MINUTES')
+    buildDiscarder(logRotator(numToKeepStr: '5'))
+  }
+  parameters {
+    booleanParam(name: 'CONFIRM_TEST_ECR_PUSH', defaultValue: false, description: 'Allow one real test image push and automatic read-only Plan invocation')
+  }
+  stages {
+    stage('Build and publish') {
+      agent any
+      stages {
+        stage('Trusted source') {
+          steps {
+            script {
+              if (!params.CONFIRM_TEST_ECR_PUSH || env.JOB_NAME != 'smoke-notice-handoff-test') {
+                error('Manual integration test confirmation and exact job name required')
+              }
+              def info = checkout scm
+              def branch = (info.GIT_BRANCH ?: env.GIT_BRANCH ?: '').replaceFirst('^refs/remotes/', '').replaceFirst('^origin/', '')
+              if (branch != 'cicd/notice-prod-integration') {
+                error('Expected reviewed integration branch')
+              }
+              env.BUILD_COMMIT = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+            }
+          }
+        }
+        stage('Maven WAR') {
+          steps {
+            dir('app') {
+              sh '''
+                set -eu
+                export JAVA_HOME="${NOTICE_JAVA_HOME:-/usr/lib/jvm/java-17-openjdk-amd64}"
+                export PATH="$JAVA_HOME/bin:$PATH"
+                mvn -B -ntp clean package
+                test -s target/notice.war
+                sha256sum target/notice.war > target/war.sha256
+              '''
+            }
+          }
+          post {
+            always {
+              junit testResults: 'app/target/surefire-reports/*.xml', allowEmptyResults: false
+            }
+          }
+        }
+        stage('Docker H2 and ECR') {
+          steps {
+            sh '''
+              set -eu
+              test "$SMOKE_AWS_REGION" = ap-northeast-2
+              test "$SMOKE_ECR_REPO" = smoke-notice
+              bash cicd/docker/build-notice-ci.sh
+              bash cicd/docker/push-notice-ci.sh
+            '''
+            archiveArtifacts artifacts: 'app/target/notice.war,app/target/war.sha256,app/target/notice-ecr-image.txt', fingerprint: true
+            script {
+              def fields = [:]
+              readFile('app/target/notice-ecr-image.txt').readLines().each { line ->
+                def pair = line.split('=', 2)
+                if (pair.size() != 2 || fields.containsKey(pair[0])) {
+                  error('Malformed or duplicate CI image metadata')
+                }
+                fields[pair[0]] = pair[1]
+              }
+              if (fields.keySet() != (['commit', 'tag', 'digest'] as Set) ||
+                  fields.commit != env.BUILD_COMMIT ||
+                  !(fields.commit ==~ /[a-f0-9]{40}/) ||
+                  fields.tag != "notice-${env.BUILD_COMMIT}-${env.BUILD_NUMBER}" ||
+                  !(fields.digest ==~ /sha256:[a-f0-9]{64}/)) {
+                error('CI image provenance mismatch')
+              }
+              env.HANDOFF_COMMIT = fields.commit
+              env.HANDOFF_TAG = fields.tag
+              env.HANDOFF_DIGEST = fields.digest
+            }
+          }
+        }
+      }
+    }
+    stage('Automatic downstream Plan') {
+      // No executor held while waiting for downstream (also works with one executor).
+      steps {
+        script {
+          echo 'NOTICE HANDOFF: invoking smoke-notice-plan'
+          def result = build job: 'smoke-notice-plan', wait: true, propagate: true, parameters: [
+            string(name: 'CANDIDATE_COMMIT', value: env.HANDOFF_COMMIT),
+            string(name: 'CANDIDATE_TAG', value: env.HANDOFF_TAG),
+            string(name: 'CANDIDATE_DIGEST', value: env.HANDOFF_DIGEST)
+          ]
+          echo "NOTICE HANDOFF VERIFIED: downstream build=${result.number} result=${result.result}"
+        }
+      }
+    }
+  }
+  post {
+    success { echo 'NOTICE CI TO PLAN INTEGRATION SUCCESS: no live deployment or traffic change' }
+  }
+}
