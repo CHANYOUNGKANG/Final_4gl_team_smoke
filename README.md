@@ -32,7 +32,6 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11.21 – 12.09
 | [`7640be4`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/7640be4521a7cc36de5d3d7e0cf5be2e254eb135) Merge pull request #18 from CHANYOUNGKANG/cicd/notice-cd-integration | CHANYOUNGKANG | 11/27 15:28 |
 | [`0563779`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/056377985e44314d5dbf83bb24380c5ba7086ddd) Merge pull request #21 from CHANYOUNGKANG/server/app-smoke-website | CHANYOUNGKANG | 11/27 15:21 |
 | [`b21719b`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/b21719bf19daf2d51ffd8b0d3039445ba8e0c0af) server: 리뷰 반영 - 운영 쓰기 잠금, health 스키마 확인, /notices/{id} | claude | 11/27 15:07 |
-| [`56748d9`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/56748d94e9b231d565e7c227825a8a076f3366ec) server: 검증 API forward 후 원래 주소 사용, MariaDB 검사 제목을 1쪽 고정 공지로 | claude | 11/27 14:57 |
 
 **열린 이슈·PR**　[#11 [인계] 온프레미스 DB 주소 대역 확정 및 AWS 공지 앱 배포 조건 ](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11)　·　[#1 팀 구축 진행률 · 구현 근거와 시연 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)
 
