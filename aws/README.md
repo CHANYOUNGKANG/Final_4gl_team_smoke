@@ -12,7 +12,11 @@
 | [migration/](migration/) | RDS·S3 이관 절차와 원본 대조 결과 |
 | [operations/](operations/) | 전환·복귀 스크립트, 복구 시간과 실제 비용 기록 |
 
-## 현재 구축 현황 (2026-11-26)
+## 최신 현황 (2026-11-27)
+
+[DAY 2 작업일지](WORKLOG.md) · [ECR 조회 원문 발췌](verification/1127-ecr-images-masked.log). 팀 Ansible EKS 접근 및 정적 ALB 전환/복귀 검증 성공. RDS/EFS/S3 이관 일치 결과는 대화 회수 요약이며 실제 앱 통합 및 HTTPS/CloudFront 검증은 별도. 아래는 전날 기록이다.
+
+## 현재 구축 현황 (2026-11-26 당시)
 
 [팀 공유 인계 PR #15](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pull/15)의 AWS 담당자 보고 기준으로 Terraform EKS 및 Managed Node Group 구축 완료: 두 프라이빗 앱 서브넷의 t3.medium 워커 2대, Private Only API, 워커 2/2 Ready 및 시스템 Pod 6/6 Running, 재시작 0회. 실제 Terraform 원본·검증 화면 및 로그는 추가 제출 대기 중이다.
 

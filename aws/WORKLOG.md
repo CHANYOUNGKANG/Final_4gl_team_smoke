@@ -8,6 +8,20 @@
 
 ---
 
+## 2026-11-27 — DAY 2 AWS (부분 수집)
+
+수집 기준 17:25 KST. 프로젝트 「261127 2일차」 검색 결과와 실제 첨부 ECR CLI 및 팀원 저장소 기록을 대조했다. 대화 전체 및 신규 이미지 원본은 미확보. 이번 작업은 문서화이며 AWS 환경을 변경하지 않았다.
+
+- 10:18 KST 첨부 ECR 조회에서 10:10:43 KST 등록된 이미지 태그와 digest를 확인했다. [CLI 발췌](verification/1127-ecr-images-masked.log). 팀 CI Build #3와 일치하며 CI 구현 자체는 팀원 성과다.
+- [팀 오전 검증](../cicd/verification/1127-day2-midpoint.md): Ansible 역할 DescribeCluster 및 private API 접근, kubectl 1.37.3, notice Deployment/Service 작업 권한, Pod 조회/로그 확인. kube-system Deployment 생성 및 Node list 제한. Port Forward 권한 부족 후 get/create pods/portforward 재검증 성공. Blue/Green 각각 2/2 Ready, 총 4 Pod Running, 재시작 0.
+- [CD #4](../cicd/verification/1127-notice-cd-build-4-deploy.log): 정적 Green test-v4 갱신, Blue test-v2 유지. [Release #5](../cicd/verification/1127-notice-release-build-5-rollback.log): 각 대상 그룹 healthy 2개, 전환 확인 20.23초, 의도적 검사 실패 후 복귀 확인 21.56초, 최종 Blue 100/Green 0. AWS 담당의 ELBv2 권한 추가는 팀원 보고이며 정책 원본 미확보.
+- [연속 조회](../cicd/verification/1127-alb-continuity-summary.md): 341/341 성공, 실패 0, Blue 301/Green 40. 정적 테스트와 합성 assertion 실패이며 실제 장애 복구·HTTPS·업무 앱 무중단 보장은 아님. CSV 원본 미확보.
+- 14:46 사용자 인계 요구: MariaDB 10.11 boarddb, RWX PVC, /var/smoke/attach, UID/GID 1500, UPLOAD_DIR, FILE_BASE_URL. 16:19~16:35 검색 회수 요약: RDS 10.11.19 복원 후 공지 14/첨부 1/문의 6 및 비교 digest 일치, 두 AZ EFS 테스트 Pod에서 189525 bytes 파일 해시 일치, S3 AES256 및 다운로드 해시 일치. 17:08 검색 회수 요약: Public Access Block 네 설정 true, Versioning Enabled, 비인증 직접 접근 403. 원문 전체 미확보이므로 요약으로만 기록.
+- [팀 이미지 검증](../cicd/verification/1127-production-image-1500.log): 로컬 볼륨/H2 검사 성공, 실제 RDS/EFS 사용 아님. 특정 PVC get Forbidden, Secret get no. 필요한 PVC 조회만 협의하고 Secret 값은 공개하지 않는다.
+- 다음: 실제 업무 앱 RDS/EFS 연결, CloudFront/OAC 및 FILE_BASE_URL, HTTPS, 워커 장애/비용 검증. Terraform, IAM/RBAC, PV/PVC, ALB 설정 및 원문 CLI/CSV 확보. 기존 [Issue #11](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11) 참조. 신규 캡처 0장, 기존 7장 보존. 전체 이정표 근거 부족으로 점수 등록 변경 없음.
+
+---
+
 ## 2026-11-26 — AWS 기반 현황 정리와 EKS 실행 상태 확인
 
 ### 1. 작업 목적과 이번 기록의 범위
