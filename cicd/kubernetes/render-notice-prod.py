@@ -28,15 +28,16 @@ def render(c):
     for field in ("secret_name", "pvc_name"):
         require(re.fullmatch(r"[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?", c[field]), "invalid " + field)
         require(not c[field].startswith("example-"), "replace " + field)
+    require(c["pvc_name"] == "smoke-attachments-pvc", "use the agreed shared EFS PVC")
     labels = {"app": "notice", "slot": slot}
     variables = [env(k, v) for k, v in {
         "SPRING_PROFILES_ACTIVE": "prod", "DB_HOST": c["db_host"],
-        "DB_PORT": "3306", "DB_NAME": "smoke_board", "DB_USER": c["db_user"],
-        "DB_DDL": "validate", "APP_SEED": "false", "APP_STORAGE_DIR": "/data/attachments",
+        "DB_PORT": "3306", "DB_NAME": "boarddb", "DB_USER": c["db_user"],
+        "DB_DDL": "validate", "APP_SEED": "false", "APP_STORAGE_DIR": "/var/smoke/attach", "UPLOAD_DIR": "/var/smoke/attach",
         "APP_PORT": "8080", "DEPLOY_COLOR": slot, "GIT_COMMIT": c["commit"],
         "JAVA_OPTS": "-Xms128m -Xmx384m -Djava.security.egd=file:/dev/./urandom",
     }.items()]
-    variables += [secret(k, c["secret_name"]) for k in ("DB_PASSWORD", "CHECK_TOKEN", "ADMIN_PASSWORD")]
+    variables += [secret(k, c["secret_name"]) for k in ("DB_PASSWORD", "CHECK_TOKEN", "ADMIN_KEY")]
     def probe(path, period, failures, timeout=3):
         return {"httpGet": {"path": path, "port": "http"}, "periodSeconds": period,
                 "failureThreshold": failures, "timeoutSeconds": timeout}
@@ -51,6 +52,8 @@ def render(c):
                 "metadata": {"labels": labels},
                 "spec": {
                     "automountServiceAccountToken": False,
+                    "securityContext": {"runAsNonRoot": True, "runAsUser": 1500, "runAsGroup": 1500,
+                                        "seccompProfile": {"type": "RuntimeDefault"}},
                     "terminationGracePeriodSeconds": 45,
                     "nodeSelector": {"kubernetes.io/os": "linux", "kubernetes.io/arch": "amd64"},
                     "topologySpreadConstraints": [{
@@ -69,7 +72,7 @@ def render(c):
                         "readinessProbe": probe("/health", 5, 3),
                         "livenessProbe": {"tcpSocket": {"port": "http"}, "periodSeconds": 10,
                                           "timeoutSeconds": 2, "failureThreshold": 3},
-                        "volumeMounts": [{"name": "attachments", "mountPath": "/data/attachments"}]
+                        "volumeMounts": [{"name": "attachments", "mountPath": "/var/smoke/attach"}]
                     }],
                     "volumes": [{"name": "attachments", "persistentVolumeClaim": {"claimName": c["pvc_name"]}}]
                 }
