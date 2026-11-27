@@ -1,0 +1,32 @@
+// Initial test-only CD. No real notice image, no ALB operations, no SCM trigger.
+pipeline {
+  agent any
+  options {
+    timestamps()
+    disableConcurrentBuilds()
+    skipDefaultCheckout()
+    buildDiscarder(logRotator(numToKeepStr: '15'))
+    timeout(time: 15, unit: 'MINUTES')
+  }
+  parameters {
+    choice(name: 'CD_MODE', choices: ['VERIFY', 'PLAN', 'DEPLOY'], description: 'VERIFY read-only; PLAN dry-run Green; DEPLOY isolated Green test-v4 only')
+    string(name: 'CANDIDATE_TAG', defaultValue: '', description: 'For PLAN/DEPLOY: previously verified test-v4 test-SHA ECR tag, never a notice-* tag')
+    booleanParam(name: 'CONFIRM_GREEN_OFFLINE', defaultValue: false, description: 'DEPLOY only: AWS owner confirmed Green is not receiving traffic and capacity is available')
+  }
+  stages {
+    stage('Source') {
+      steps {
+        checkout scm
+        sh 'git rev-parse HEAD'
+      }
+    }
+    stage('Ansible CD') {
+      steps {
+        sh 'bash cicd/ansible/run-notice-cd.sh'
+      }
+    }
+  }
+  post {
+    success { echo "NOTICE CD OK: mode=${params.CD_MODE}; build=${env.BUILD_NUMBER}" }
+  }
+}
