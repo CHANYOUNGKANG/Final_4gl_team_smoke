@@ -5,5 +5,5 @@
   "db_host": "db.example.invalid",
   "db_user": "example",
   "secret_name": "example-notice-secret",
-  "pvc_name": "example-notice-attachments"
+  "pvc_name": "smoke-attachments-pvc"
 }
