@@ -8,7 +8,7 @@ jobs:
     name: 진행률 근거 검증
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - name: evidence.json 형식과 점수
@@ -20,7 +20,7 @@ jobs:
     name: 설정 파일 검사
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - name: GitHub 워크플로 (actionlint)
