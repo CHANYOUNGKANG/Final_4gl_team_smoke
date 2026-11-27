@@ -1,4 +1,4 @@
-# 실제 공지 앱 CI · smoke-notice-ci (작성본, Jenkins 미실행)
+# 실제 공지 앱 CI · smoke-notice-ci (수동 CI 및 SCM WAR 검증 완료)
 
 기존 `smoke-cicd` Job은 그대로 둔다. 새 Job은 공지 레퍼런스 앱(`app/`) 전용이며 EKS/ALB를 변경하지 않는다.
 
@@ -25,6 +25,14 @@ Jenkins 서비스 Java 21 및 기본 java alternatives는 유지한다. 파이�
 | Poll SCM | H/2 * * * * (Jenkinsfile에 선언) |
 
 첫 실행은 WAR 및 JUnit 검증만 수행한다. Docker/ECR 파라미터 기본값은 false. 다음 실행에 `NOTICE_DOCKER_CHECK=true`로 격리된 H2 기동 검사, 그 성공 확인 후 두 파라미터를 true로 실행하면 ECR 등록까지 진행한다. 기존 SMOKE_AWS_REGION/SMOKE_ECR_REPO 사용. 태그는 notice-전체SHA-빌드번호로 test-SHA와 분리. Jenkins가 main을 감시하도록 바꾼 뒤에만 이 작업 브랜치를 정리한다.
+
+## 2026-11-27 Build #5 · 자동 실행 확인
+
+사용자 제공 Jenkins 상태 화면: 10:41:11 KST, Started by an SCM change, SUCCESS, 31초, revision `2f15d724a9067c8af348867a2861f50c45dfa83a`, notice.war 56.38 MiB 및 war.sha256 보관, 테스트 실패 없음. Docker/ECR 아티팩트는 확인되지 않아 자동 ECR 성공으로 판정하지 않는다.
+
+## 자동 ECR 등록 옵션 (코드 반영, 실행 검증 대기)
+
+Jenkins 관리 → System → Global properties → Environment variables에 `NOTICE_AUTO_PUBLISH=true`를 추가하면 SCM 변경으로 시작된 smoke-notice-ci Job에서 Docker H2 검사와 ECR 등록을 활성화한다. 기본 미설정/false는 기존 WAR-only 자동 실행 유지. 허용 브랜치는 main 및 cicd/notice-ci-integration이며 수동 빌드의 기존 두 체크박스는 유지한다. 실제 배포나 ALB 변경은 수행하지 않는다. 로그 `NOTICE CI MODE: scm=true autoPublish=true docker=true ecr=true` 및 `NOTICE ECR PUSH VERIFIED`, notice-ecr-image.txt 아티팩트로 확인한다. 매 SCM 변경(문서 변경 포함) 시 이미지가 생성될 수 있어 실습 종료 시 false로 변경하거나 main의 빌드 대상 경로 필터를 별도 설계한다.
 
 ## 완료 기준
 
