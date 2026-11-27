@@ -1,0 +1,3 @@
+# 실제 파일: mgmt ~/ansible/group_vars/data.yml (저장소에 올리지 않음). 예시 inventory 처럼 그룹 이름이 다르면 host_vars/data.yml 로 둔다.
+mail_relay_host: MAIL_RELAY_HOST     # web 메일 서버(Postfix) 사내 주소
+backup_mail_to: smoke@smoke.local    # 운영 알림 메일함

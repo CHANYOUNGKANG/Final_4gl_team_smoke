@@ -2,14 +2,45 @@
 
 최신 항목이 맨 위. 항목마다 **확인한 결과(직접 실행·관찰한 것만) · 막힌 부분 · 다음 작업 · 증빙**을 남긴다. 캡처는 민감값(관리 주소·MAC·키)을 가린 사본만 [evidence/](evidence/)에 둔다. 🎤 표시는 발표 후보.
 
-## 이정표 현황 (11/26 기준)
+## 이정표 현황 (11/27 기준)
 
 | 이정표 | 내용 | 구현 | 실행 확인 | 근거 |
 | --- | --- | :---: | :---: | --- |
-| SRV1 | SSH·로그 관리 | — | — | 키 배포·Ansible 접속만 확인. sshd 정책·rsyslog 중앙 수집 미적용 |
-| SRV2 | DB·파일 백업과 원본 목록 | — | — | 스키마·대조 뷰만 준비. 덤프·해시 목록 미실행 |
-| SRV3 | 공지 앱 빌드·실행 정보 | ✅ app/ (팀 레퍼런스 앱) | ✅ 온프레미스 Tomcat 에서 JSP 공지 앱 실행 | [검증 기록 §6](verification/1126-onprem-service-check.md#6-공지-앱-tomcat--mariadb-동작) |
-| SRV4 | 운영 알림 메일 | — | — | 미착수 |
+| SRV1 | SSH·로그 관리 | ✅ sshd 정책·rsyslog 중앙 수집 | ✅ 3대 `sshd -T`, root 접속 차단, mgmt 중앙 로그 | [확인 기록 §2·§3](verification/1127-ops-check.md#2-ssh-정책-srv1) |
+| SRV2 | DB·파일 백업과 원본 목록 | ✅ [backup.yml](configuration/ansible/backup.yml) | ✅ 덤프·해시 목록·mgmt 복제·복구 시험 | [확인 기록 §6](verification/1127-ops-check.md#6-백업복구-srv2) |
+| SRV3 | 공지 앱 빌드·실행 정보 | ✅ app/ (팀 표준 앱, PR #21) | ✅ 온프레미스 Tomcat 실행 | [검증 기록 §6](verification/1126-onprem-service-check.md#6-공지-앱-tomcat--mariadb-동작) |
+| SRV4 | 운영 알림 메일 | ✅ Postfix·Dovecot·Roundcube | 🟡 문의·백업 알림 수신. 배포·AWS·탐지 알림은 대기 | [확인 기록 §7·§8](verification/1127-ops-check.md#7-사내-메일-srv4) |
+
+---
+
+## 2026-11-27 (금) · SSH·중앙 로그·백업·메일·모니터링 구축과 운영 알림
+
+**실제로 확인한 결과** (상세: [확인 기록](verification/1127-ops-check.md), 캡처 30장: [evidence/2026-11-27](evidence/2026-11-27/))
+- SSH: Ansible 로 3대 `PermitRootLogin no`·`AllowUsers rocky`·`MaxAuthTries 3` 적용, `sshd -T` 3대 동일. root 원격 접속 `Permission denied` 와 실패 기록이 mgmt 중앙 로그에 남음
+- 중앙 로그: web·data → mgmt TCP 514, `/var/log/remote/<호스트>/` 에 시험 로그 각 1줄
+- 백업: data 덤프·기준값·첨부 해시·첨부 압축·SHA256SUMS 생성, mgmt 03:00 복제, 임시 DB 복구 시험 건수·해시 일치
+- 백업 결과 메일: 래퍼를 Ansible 로 배포(`changed=2 failed=0`), 직접 실행 `rc=0`, smoke@ 에 `[백업] data 성공` 수신 (16:20)
+- 메일: Postfix 배달 `status=sent`, Dovecot IMAP, Roundcube 로그인·user1→user2 송수신, 홈페이지 문의 #7 → smoke@ 알림 수신
+- 모니터링: node_exporter 3대 → Prometheus `3 / 3 up` → Grafana 대시보드 (web, data 디스크별)
+
+**막힌 부분과 해결**
+- `PermitRootLogin` 이 yes 로 남음 → 설치 시 생긴 `01-permitrootlogin.conf` 가 먼저 읽힘 (`sshd -T` 로 확인) → 제거
+- sudo rsync 호스트 키 확인 실패 → root known_hosts 를 찾는 것이 원인 → `UserKnownHostsFile` 지정
+- Roundcube 로그인 실패 → Dovecot 이 `user@domain` 을 시스템 계정으로 못 찾음 → `auth_username_format = %Ln`
+- 재부팅 후 web 부팅 지연 → data 보다 먼저 켜져 NFS 대기 → fstab `_netdev,nofail`
+- 백업 래퍼 첫 배포 실패 → mgmt 에 `templates/` 파일이 없었음 → 생성 후 재실행 성공
+
+**결정**
+- 운영 알림 메일함은 `smoke@smoke.local` 하나로 통일 (구성도의 `ops@` 표기 → smoke@)
+- AWS 알림(배포·롤백·CloudWatch)은 VPN 전까지 SNS → SQS → mgmt 수신 → smoke@ ([mail/](mail/README.md)). 강찬영 PR #23 은 SNS 발행으로 수정, SQS `RawMessageDelivery=false`
+
+**다음 작업**
+- 이우빈: SNS 토픽·SQS 대기열·온프레미스 수신 전용 최소 권한 키 (값은 개인 메시지로)
+- 이준호: mgmt SQS 수신 스크립트·플레이북, Grafana 장애 알림 규칙, 백업 실패 메일 시험, sshd·rsyslog·monitoring 플레이북 원본을 mgmt 에서 옮겨 올리기
+- 이우빈·이준호: RDS 이관 후 `v_migration_check` 대조표
+- 강민서: VPN 연결 시 web 메일 서버 경로 (Jenkins 직접 SMTP 대안)
+
+**증빙** — [evidence/2026-11-27](evidence/2026-11-27/) · [확인 기록](verification/1127-ops-check.md) · PR #21 (팀 표준 앱) · CI/CD PR #23 (알림)
 
 ---
 

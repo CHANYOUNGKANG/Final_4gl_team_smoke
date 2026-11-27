@@ -15,20 +15,24 @@
 | [mail/](mail/) | Postfix·Roundcube 운영 절차와 알림 수신 결과 |
 | [WORKLOG.md](WORKLOG.md) · [verification/](verification/) · [evidence/](evidence/) | 작업일지 · 검증 기록 · 가린 캡처 |
 
-## 현재 구축 현황 (11/26)
+## 현재 구축 현황 (11/27)
 
 | 서버 | 구축 완료 (실행 확인) | 다음 |
 | --- | --- | --- |
-| mgmt | Rocky Linux 10.3 · SSH 키 배포 · Ansible 공통 플레이북 3대 failed=0 | sshd 정책 · rsyslog 중앙 수집 · 백업 · 모니터링 |
-| web | Java 21 · Tomcat 10.1.61(systemd) · NFS 마운트 · 공지 앱 `health` OK(8건) · nginx 설치 | Nginx 프록시 적용 · 8080 내부 전용 · 메일 |
-| data | LVM(첨부 5G·DB 4G·예비 10G) · NFS 공유 · MariaDB `smoke_board` 8건 · 대조 뷰 | 첨부 업로드 후 기준값 · 덤프·해시 백업 |
+| mgmt | Ansible 3대 관리 · SSH 정책 · 중앙 로그 수신 · 백업 사본 03:00 · Prometheus/Grafana 3/3 UP | SQS 알림 수신 · Grafana 장애 알림 |
+| web | Nginx → Tomcat 회사 사이트·공지 자료실(팀 표준 앱) · NFS 첨부 · Postfix/Dovecot/Roundcube · 문의 → 메일 | VPN 후 AWS 직접 SMTP |
+| data | LVM(첨부 5G·DB 4G·예비 10G) · NFS · MariaDB `boarddb` · 백업 02:00 + 결과 메일 · 복구 시험 | RDS 이관 대조 |
 
 ```
-브라우저 → web: Nginx(80, 적용 예정) → Tomcat(8080) 공지 앱
-                                         ├─ JDBC 3306 → data: MariaDB smoke_board
+브라우저 → web: Nginx(80) ─ / ─────→ Tomcat(127.0.0.1:8080) 회사 사이트·공지
+                         └ /webmail → Roundcube → Dovecot·Postfix (smoke.local)
+                                         ├─ JDBC 3306 → data: MariaDB boarddb
                                          └─ NFS 2049  → data: /share/attach (LVM)
-mgmt: Ansible(SSH 키) → web·data 표준화
+mgmt: Ansible · rsyslog(514 수신) · 백업 복제 · Prometheus(9100 수집) · Grafana
+운영 알림 → smoke@smoke.local (문의 ✅ · 백업 ✅ · 배포/AWS/탐지 ⏳)
 ```
+
+상세: [11/27 확인 기록](verification/1127-ops-check.md) · [백업](backup/README.md) · [메일·알림](mail/README.md)
 
 **대표 결과** — 상세 설명은 [작업일지](WORKLOG.md)
 
@@ -43,7 +47,7 @@ mgmt: Ansible(SSH 키) → web·data 표준화
 ## 작업 체크리스트
 
 - [ ] [공지 앱 인계표](../app/README.md)에 소스 위치·실행 버전·조회 경로를 적어 강찬영에게 전달한다.
-- [ ] 계정·SSH·로그를 정비하고 백업 시각, 원본 게시글 건수·대표 본문·첨부파일 해시를 [백업 폴더](backup/)에 정리한다.
+- [x] 계정·SSH·로그를 정비하고 백업 시각, 원본 게시글 건수·대표 본문·첨부파일 해시를 [백업 폴더](backup/)에 정리한다.
 - [ ] 최종 이관 전 쓰기 중지 시점을 맞추고 이우빈과 원본·대상 데이터를 대조한다.
 - [ ] 보안 탐지·백업·장애·배포 알림이 운영 메일함에 도착하는지 확인하고 수신 기록을 [메일 폴더](mail/)에 남긴다.
 
