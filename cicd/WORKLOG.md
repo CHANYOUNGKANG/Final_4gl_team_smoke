@@ -6,10 +6,20 @@
 
 | 이정표 | 내용 | 구현 | 실행 | 근거 |
 | --- | --- | :---: | :---: | --- |
-| CICD1 | Jenkins 테스트·WAR 빌드 | 테스트 파이프라인 및 레퍼런스 앱 | 테스트 Jenkins 성공 · 공지 앱 Actions 성공 / Jenkins 대기 | [Build #5](verification/smoke-test-build-5-ecr.log) · [App build](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/actions/runs/45773618799) |
-| CICD2 | Docker 이미지 · ECR 등록 | 테스트 이미지 자동 Push 구현 | 테스트 앱 성공 · 실제 앱 대기 | [Build #5](verification/smoke-test-build-5-ecr.log) |
-| CICD3 | Ansible Green 배포 · 상태 검사 | 초기 매니페스트·플레이북 작성 | Jenkins 원격 검사 성공 · EKS 미실행 | [Build #8](verification/smoke-test-build-8-ansible.log) |
+| CICD1 | Jenkins 테스트·WAR 빌드 | 테스트 파이프라인 및 레퍼런스 앱 | 실제 공지 앱 Jenkins 수동 #1~3 성공 · SCM 자동 실행 검증 대기 | [Build #5](verification/smoke-test-build-5-ecr.log) · [App build](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/actions/runs/45773618799) |
+| CICD2 | Docker 이미지 · ECR 등록 | 테스트 이미지 자동 Push 구현 | 실제 앱 Docker H2/ECR Push 검증 성공 | [Build #5](verification/smoke-test-build-5-ecr.log) |
+| CICD3 | Ansible Green 배포 · 상태 검사 | 초기 매니페스트·플레이북 작성 | 정적 앱 EKS 초기 배포·HTTP 200·Jenkins 원격 조회 성공; 실제 후보 CD 대기 | [Build #8](verification/smoke-test-build-8-ansible.log) |
 | CICD4 | 검증 후 전환 · 자동 롤백 | — | — | |
+
+---
+
+## 2026-11-27 10:35 KST · DAY 2 중간 저장
+
+**확인한 결과** — 실제 공지 앱 Jenkins #1~3 수동 실행 SUCCESS, Java 17, JUnit 10/10, Docker H2 및 ECR Push/Digest 검증. Ansible → EKS Private API, namespace RBAC, 정적 테스트 앱 Blue/Green create-only 배포(2 Deployment, 2 Service, 4 Pod Running, 두 워커 분산), Port Forward 권한 수정 후 HTTP 200 test-v2/test-v3, Jenkins 서비스 계정 원격 조회 성공.
+
+**막힌 부분** — 실제 업무 앱의 SCM 자동 실행 및 ECR 자동 실행 검증, RDS/EFS, 실제 후보 업데이트 CD, ALB 전환·자동 복귀 미검증. AZ 라벨 별도 확인. 기존 리소스 재생성 금지. PR #13은 중간 저장 Draft로 유지한다.
+
+**증빙** — [DAY 2 상세 관찰 기록](verification/1127-day2-midpoint.md) · [Build #1](verification/1127-notice-ci-build-1.log) · [Build #2](verification/1127-notice-ci-build-2.log) · [Build #3](verification/1127-notice-ci-build-3.log). 마스킹 캡처 PDF/ZIP 별도 준비, 바이너리 업로드 대기.
 
 ---
 
