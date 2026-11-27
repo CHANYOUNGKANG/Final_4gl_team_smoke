@@ -1,0 +1,20 @@
+// Manual SNS notification test only; no deployment, SMTP or ALB actions.
+pipeline {
+  agent any
+  options { timestamps(); disableConcurrentBuilds(); skipDefaultCheckout(); timeout(time: 5, unit: 'MINUTES') }
+  parameters {
+    booleanParam(name: 'CONFIRM_SNS_TEST', defaultValue: false, description: 'Publish one labelled test event to the approved internal topic')
+  }
+  stages {
+    stage('Source') { steps { checkout scm } }
+    stage('SNS test') {
+      steps {
+        script {
+          if (!params.CONFIRM_SNS_TEST) { error('Explicit notification test confirmation required') }
+          sh 'python3 cicd/jenkins/test-publish-release-sns.py'
+          sh 'python3 cicd/jenkins/publish-release-sns.py SMTP_RELAY_TEST'
+        }
+      }
+    }
+  }
+}
