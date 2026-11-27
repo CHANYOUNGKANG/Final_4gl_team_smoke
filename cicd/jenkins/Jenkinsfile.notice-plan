@@ -8,6 +8,7 @@ pipeline {
     timeout(time: 10, unit: 'MINUTES')
   }
   parameters {
+    booleanParam(name: 'RUN_ISOLATED_APP_CHECK', defaultValue: false, description: 'Run hidden CRUD on local disposable H2 container only; no live app changes')
     string(name: 'CANDIDATE_COMMIT', defaultValue: '', description: 'Full SHA from successful notice CI; leave all three blank for discovery')
     string(name: 'CANDIDATE_TAG', defaultValue: '', description: 'Immutable notice CI tag')
     string(name: 'CANDIDATE_DIGEST', defaultValue: '', description: 'ECR SHA-256 digest from CI artifact')
@@ -20,6 +21,7 @@ pipeline {
           set -eu
           python3 cicd/ansible/test-notice-dynamic-plan.py
           python3 cicd/kubernetes/test-render-notice-prod.py
+          python3 cicd/ansible/test-notice-app-check.py
         '''
       }
     }
@@ -48,6 +50,12 @@ pipeline {
           fi
           ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=10 -i /var/lib/jenkins/.ssh/smoke-deploy "ansadmin@$SMOKE_ANSIBLE_HOST" "flock -n /opt/devops/.notice-cd.lock python3 - $remote_args" < cicd/ansible/notice-dynamic-plan.py
         '''
+      }
+    }
+    stage('Optional isolated application functional check') {
+      when { expression { params.RUN_ISOLATED_APP_CHECK } }
+      steps {
+        sh 'bash cicd/docker/check-notice-local.sh'
       }
     }
   }
