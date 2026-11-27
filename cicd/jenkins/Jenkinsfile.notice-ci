@@ -19,6 +19,7 @@ pipeline {
         script {
           def gitInfo = checkout scm
           env.BUILD_COMMIT = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+          env.NOTICE_CHECKOUT_BRANCH = (gitInfo.GIT_BRANCH ?: env.GIT_BRANCH ?: '').replaceFirst('^refs/remotes/', '').replaceFirst('^origin/', '')
           if (params.NOTICE_ECR_PUSH && !params.NOTICE_DOCKER_CHECK) {
             error('ECR push requires NOTICE_DOCKER_CHECK')
           }
@@ -75,6 +76,37 @@ pipeline {
       steps {
         sh 'bash cicd/docker/push-notice-ci.sh'
         archiveArtifacts artifacts: 'app/target/notice-ecr-image.txt', fingerprint: true
+      }
+    }
+
+    stage('Optional downstream read-only plan') {
+      when { expression { env.NOTICE_RUN_ECR == 'true' && env.NOTICE_AUTO_PLAN == 'true' } }
+      steps {
+        script {
+          if (env.JOB_NAME != 'smoke-notice-ci' || env.NOTICE_CHECKOUT_BRANCH != 'main') {
+            error('Downstream plan restricted to trusted main CI job')
+          }
+          def fields = [:]
+          readFile('app/target/notice-ecr-image.txt').readLines().each { line ->
+            def pair = line.split('=', 2)
+            if (pair.size() != 2 || fields.containsKey(pair[0])) {
+              error('Malformed or duplicate CI image metadata')
+            }
+            fields[pair[0]] = pair[1]
+          }
+          if (fields.keySet() != (['commit', 'tag', 'digest'] as Set) ||
+              fields.commit != env.BUILD_COMMIT ||
+              !(fields.commit ==~ /[a-f0-9]{40}/) ||
+              fields.tag != "notice-${env.BUILD_COMMIT}-${env.BUILD_NUMBER}" ||
+              !(fields.digest ==~ /sha256:[a-f0-9]{64}/)) {
+            error('CI image provenance mismatch')
+          }
+          build job: 'smoke-notice-plan', wait: true, propagate: true, parameters: [
+            string(name: 'CANDIDATE_COMMIT', value: fields.commit),
+            string(name: 'CANDIDATE_TAG', value: fields.tag),
+            string(name: 'CANDIDATE_DIGEST', value: fields.digest)
+          ]
+        }
       }
     }
   }
