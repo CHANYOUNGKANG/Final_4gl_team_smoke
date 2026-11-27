@@ -1,0 +1,19 @@
+# User-provided Jenkins console excerpt, normalized; management URLs omitted.
+2026-11-27 KST
+12:28:25 Source and offline tests
+12:28:26 Checking out Revision fecd31d00ce1d121e2c4c3166781f897a53ae235
+12:28:26 python3 cicd/ansible/test-notice-dynamic-plan.py
+Ran 8 tests in 0.001s
+OK
+12:28:26 python3 cicd/kubernetes/test-render-notice-prod.py
+Ran 5 tests in 0.001s
+OK
+12:28:28 NOTICE CI IMAGE TAG/DIGEST VERIFIED
+12:28:38 SLOT blue READY=2 HEALTHY=2 TARGETS_MATCH=2
+12:28:40 SLOT green READY=2 HEALTHY=2 TARGETS_MATCH=2
+12:28:41 ACTIVE_SLOT=blue CANDIDATE_SLOT=green
+12:28:41 NEXT_ACTION=PLAN_UPDATE_INACTIVE
+12:28:41 NOTICE DYNAMIC PLAN OK: read-only; not authorization to deploy or switch
+12:28:41 NOTICE PLAN SUCCESS: no deployment or traffic change
+Finished: SUCCESS
+# Observed elapsed 16 seconds. Parameterized candidate ECR tag/digest verification succeeded; supplied parameters are not echoed by this console. Prior CI build #6 is the intended input, not independently re-identified from this log. No workload or listener mutation. Automatic downstream invocation and actual application deployment remain pending.
