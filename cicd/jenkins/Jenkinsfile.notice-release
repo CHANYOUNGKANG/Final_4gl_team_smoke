@@ -8,6 +8,14 @@ pipeline {
   }
   stages {
     stage('Source') { steps { checkout scm; sh 'git rev-parse HEAD' } }
+    stage('Python syntax check') {
+      steps {
+        sh '''
+          python3 -c 'from pathlib import Path; p = Path("cicd/ansible/alb-release-verify.py"); compile(p.read_bytes(), str(p), "exec")'
+          echo "RELEASE PYTHON SYNTAX OK"
+        '''
+      }
+    }
     stage('ALB preflight on Ansible host') {
       steps {
         sh '''
