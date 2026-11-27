@@ -73,3 +73,11 @@ AWS 담당자와 논의된 방향: RDS MariaDB 10.11 / smoke_board / 3306, EFS R
 ## 저장소 통합 정리 (최신 main 기반)
 
 PR #18/#19는 main에 병합됐다. 기존 정적 CD/Release Job은 역사적 실험용이며 현재의 Green v4 상태에서 반복 배포하지 않는다. PR #20은 최종 JSP 앱 main의 파일을 보존한 상태로 동기화했다. `cicd/docker/Dockerfile.prod-draft`는 UID/GID 1500 및 EFS 경로 변경 제안으로, 기존 CI가 참조하는 `cicd/docker/Dockerfile`은 변경하지 않는다. 신규 Dockerfile은 실제 빌드 및 EFS 검증 이후 정식 채택한다. 이 PR은 기존 CI의 자동 downstream 호출도 활성화하지 않는다. 단일 executor 대기 교착을 방지하는 통합 실행기와 실제 앱 동적 CD/Release는 별도 후속 작업이다. 기존 성공 로그의 실행 커밋은 변경하지 않았다. 새 renderer는 로컬 전용이며 배포 허가가 아니다.
+
+## 11/27 15:42 — 운영 이미지 로컬 검증 및 RDS 인계
+
+- [실측 기록](../verification/1127-production-image-1500.log): 최종 JSP main c880a58, Maven 6.021초, Dockerfile.prod-draft 7.0초, UID/GID 1500, 로컬 첨부 볼륨 파일 생성/읽기/해시/삭제, H2 실제 기능 검증 성공. 로컬 볼륨 mode 0755와 EFS 보고 mode 0770은 별도이며 실제 EFS 접근은 미검증.
+- 검증한 Dockerfile 내용을 정식 CI Dockerfile에 반영하는 PR. 병합 시 기존 main Poll SCM 설정에 따라 ECR Push 가능, 자동 배포/ALB 전환은 없음.
+- AWS 담당자 보고: RDS MariaDB 10.11.19, boarddb/3306, boarduser DML-only, 필수 테이블 및 v_migration_check 구축 완료, 두 AZ Pod 접속 시험 중. 원본 데이터 이관 및 Secret 생성 확인 대기. Secret 이름 smoke-notice-secret 및 DB_PASSWORD/ADMIN_KEY/CHECK_TOKEN 합의.
+- Ansible 계정의 PVC get 금지, Secret get 권한 없음 확인. PVC smoke-attachments-pvc에 한정한 get 권한을 요청하고 Secret 원문 조회 권한은 요청하지 않는다. Secret 존재 및 키/비어 있지 않음은 AWS 담당자가 별도 확인, 토큰은 승인된 비공개 전달/주입 방식 사용.
+- 운영 실제 이미지 ECR digest, RDS 접속 및 데이터 이관, EFS 마운트, 동적 CD/Release 및 실제 업무 앱 두 버전 검증은 남음. 기존 정적 Pod 4개 Running, Restart 0.
