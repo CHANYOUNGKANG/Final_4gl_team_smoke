@@ -29,6 +29,7 @@ def build_message(env, outcome):
         commit = "unavailable"
     subject = "[배포] " + LABELS[outcome]
     body = "\n".join([
+        subject,
         "결과: " + LABELS[outcome],
         "Job: " + job,
         "Build: " + number,
