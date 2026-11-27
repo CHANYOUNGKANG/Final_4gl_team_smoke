@@ -1,0 +1,10 @@
+# web: /etc/postfix/main.cf 중 바꾼 값 (11/27 `postconf` 출력으로 확인한 값)
+myhostname = mail.smoke.local
+mydomain = smoke.local
+mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain
+home_mailbox = Maildir/
+message_size_limit = 20971520
+# 발송 허용: 루프백 + 사내 서버 대역만 (스팸 중계 방지). 실제 대역은 서버에만 둔다.
+mynetworks = 127.0.0.0/8, <사내 서버 대역>
+# 다른 서버(data 백업 래퍼 등)에서 오는 메일을 받으려면 localhost 가 아니라 all
+inet_interfaces = all

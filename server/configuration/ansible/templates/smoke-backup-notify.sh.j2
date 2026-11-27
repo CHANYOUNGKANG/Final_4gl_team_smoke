@@ -1,0 +1,28 @@
+#!/bin/bash
+# smoke-backup.sh 실행 후 결과를 메일로 알림 (Ansible 배포)
+export LANG=C.UTF-8
+MAIL_TO="{{ backup_mail_to }}"
+MAIL_HOST="{{ mail_relay_host }}"
+HOST=$(hostname -s)
+START=$(date '+%F %T')
+OUT=$(mktemp)
+
+/usr/local/bin/smoke-backup.sh >"$OUT" 2>&1
+RC=$?
+[ $RC -eq 0 ] && STATUS="성공" || STATUS="실패(rc=$RC)"
+LATEST=$(ls -1d /backup/2* 2>/dev/null | tail -1)
+
+{
+  echo "서버: $HOST"
+  echo "시작: $START / 종료: $(date '+%F %T')"
+  echo "결과: $STATUS"
+  echo "백업 폴더: ${LATEST:-없음}"
+  [ -n "$LATEST" ] && du -sh "$LATEST" && ls -l "$LATEST"
+  echo; echo "--- 실행 로그 마지막 20줄 ---"
+  tail -20 "$OUT"
+} | mail -S ttycharset=utf-8 -S sendcharsets=utf-8 \
+         -S mta="smtp://$MAIL_HOST:25" \
+         -r "backup@smoke.local" -s "[백업] $HOST $STATUS" "$MAIL_TO"
+
+rm -f "$OUT"
+exit $RC

@@ -1,0 +1,5 @@
+# web: /etc/dovecot/local.conf — Dovecot 2.3.21 (IMAP)
+# 11/27 Roundcube 로그인 실패 원인: Roundcube 가 user@smoke.local 형태로 로그인 → 시스템 계정 user 와 불일치
+# 해결: 도메인을 떼고 소문자 계정 이름으로 인증
+auth_username_format = %Ln
+# 메일 저장은 Postfix home_mailbox = Maildir/ 와 같은 ~/Maildir 를 읽는다 (doveconf -n 으로 확인)
