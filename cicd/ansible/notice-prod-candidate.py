@@ -49,6 +49,8 @@ def plan(account, digest, expected):
     require("ACTIVE_SLOT=blue CANDIDATE_SLOT=green" in out.splitlines(), "Blue no longer active; stop")
     require("NEXT_ACTION=" + expected in out.splitlines(), "unexpected plan action")
     print(out.strip(), flush=True)
+def valid_db_host(host):
+    return bool(re.fullmatch(r"[a-z0-9.-]+\.ap-northeast-2\.rds\.amazonaws\.com", host))
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--mode", choices=("DRY_RUN", "DEPLOY"), default="DRY_RUN")
@@ -60,7 +62,7 @@ def main():
     require(a.mode == "DRY_RUN" or a.confirm_inactive_green, "explicit Green approval required")
     require(re.fullmatch(r"[a-f0-9]{40}", a.commit), "invalid commit")
     require(re.fullmatch(r"sha256:[a-f0-9]{64}", a.digest), "invalid digest")
-    require(re.fullmatch(r"[a-z0-9.-]+\\.ap-northeast-2\\.rds\\.amazonaws\\.com", a.db_host), "expected private RDS endpoint")
+    require(valid_db_host(a.db_host), "expected private RDS endpoint")
     os.umask(0o077)
     account = run(["aws", "sts", "get-caller-identity", "--query", "Account", "--output", "text"], "identity").strip()
     require(re.fullmatch(r"[0-9]{12}", account), "invalid account")
