@@ -1,0 +1,9 @@
+{
+  "slot": "green",
+  "image": "000000000000.dkr.ecr.ap-northeast-2.amazonaws.com/smoke-notice@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "commit": "0000000000000000000000000000000000000000",
+  "db_host": "db.example.invalid",
+  "db_user": "example",
+  "secret_name": "example-notice-secret",
+  "pvc_name": "smoke-attachments-pvc"
+}

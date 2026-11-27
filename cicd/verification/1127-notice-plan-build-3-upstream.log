@@ -1,0 +1,21 @@
+# User-provided Jenkins console excerpt, normalized; management URLs omitted.
+2026-11-27 KST
+Started by upstream project smoke-notice-handoff-test build number 2
+12:33:28 Source and offline tests
+12:33:29 Checking out Revision acfb0a8e91da202a6fb3859ee955c4ff8bf1e0b5
+12:33:29 python3 cicd/ansible/test-notice-dynamic-plan.py
+Ran 8 tests in 0.001s
+OK
+12:33:29 python3 cicd/kubernetes/test-render-notice-prod.py
+Ran 5 tests in 0.002s
+OK
+12:33:32 NOTICE CI IMAGE TAG/DIGEST VERIFIED
+12:33:41 SLOT blue READY=2 HEALTHY=2 TARGETS_MATCH=2
+12:33:43 SLOT green READY=2 HEALTHY=2 TARGETS_MATCH=2
+12:33:44 ACTIVE_SLOT=blue CANDIDATE_SLOT=green
+12:33:44 NEXT_ACTION=PLAN_UPDATE_INACTIVE
+12:33:44 NOTICE DYNAMIC PLAN OK: read-only; not authorization to deploy or switch
+12:33:44 NOTICE PLAN SUCCESS: no deployment or traffic change
+Finished: SUCCESS
+
+# Parent build evidence: 1127-notice-handoff-build-2.log. Parent started 12:32:06, completed 12:33:45 (99s); downstream scheduling 12:33:17, start 12:33:27, parent observed completion 12:33:45 (18s). Child console confirms upstream cause and candidate plan. Parent Maven/JUnit 10/10 and child Python 13/13. Actual production CD, permanent main CI trigger, reverse live-slot detection and RDS/EFS integration remain pending. No workload or listener modification.

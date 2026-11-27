@@ -1,0 +1,22 @@
+# User-provided console excerpt, normalized. Management URLs and temporary credential directory omitted.
+2026-11-27 KST
+12:32:06 Timeout set to expire in 20 min
+12:32:08 Checking out Revision acfb0a8e91da202a6fb3859ee955c4ff8bf1e0b5
+12:32:35 Tests run: 10, Failures: 0, Errors: 0, Skipped: 0
+12:32:39 BUILD SUCCESS
+12:32:39 Maven Total time: 29.096 s
+12:32:51 image=sha256:331728a6bb5f30c8e045d4cdb59a25d8010a9bdc4da44b34f895edeae85705ac platform=linux/amd64 user=app
+12:33:09 NOTICE DOCKER H2 HEALTH VERIFIED: notice-ci:acfb0a8e91da202a6fb3859ee955c4ff8bf1e0b5-2
+12:33:16 commit=acfb0a8e91da202a6fb3859ee955c4ff8bf1e0b5
+12:33:16 tag=notice-acfb0a8e91da202a6fb3859ee955c4ff8bf1e0b5-2
+12:33:16 digest=sha256:331728a6bb5f30c8e045d4cdb59a25d8010a9bdc4da44b34f895edeae85705ac
+12:33:16 NOTICE ECR PUSH VERIFIED
+12:33:17 NOTICE HANDOFF: invoking smoke-notice-plan
+12:33:17 Scheduling project: smoke-notice-plan
+12:33:27 Starting building: smoke-notice-plan #3
+12:33:45 Build smoke-notice-plan #3 completed: SUCCESS
+12:33:45 NOTICE HANDOFF VERIFIED: downstream build=3 result=SUCCESS
+12:33:45 NOTICE CI TO PLAN INTEGRATION SUCCESS: no live deployment or traffic change
+Finished: SUCCESS
+
+# Handoff build number 2 inferred from generated image tag and reviewed Jenkinsfile. Observed total 99s, downstream execution 18s, queue wait 10s. The parent confirms downstream success, but the child console itself was not supplied. Permanent main CI automatic invocation has not been enabled or verified. No EKS mutation or listener switch in this run; actual RDS/EFS application integration pending.

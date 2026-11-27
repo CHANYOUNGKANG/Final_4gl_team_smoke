@@ -1,0 +1,18 @@
+# User-provided Jenkins console excerpt, normalized; management URLs omitted.
+2026-11-27 KST
+12:25:15 Source and offline tests
+12:25:16 Checking out Revision 49ea0db05e8b32218f385a2976ef7b8358a57758
+12:25:16 python3 cicd/ansible/test-notice-dynamic-plan.py
+Ran 8 tests in 0.001s
+OK
+12:25:16 python3 cicd/kubernetes/test-render-notice-prod.py
+Ran 5 tests in 0.001s
+OK
+12:25:26 SLOT blue READY=2 HEALTHY=2 TARGETS_MATCH=2
+12:25:28 SLOT green READY=2 HEALTHY=2 TARGETS_MATCH=2
+12:25:29 ACTIVE_SLOT=blue CANDIDATE_SLOT=green
+12:25:29 NEXT_ACTION=DISCOVER_ONLY
+12:25:29 NOTICE DYNAMIC PLAN OK: read-only; not authorization to deploy or switch
+12:25:29 NOTICE PLAN SUCCESS: no deployment or traffic change
+Finished: SUCCESS
+# Observed 14 seconds, 13 unit tests passed. Reverse slot direction covered only by unit tests. Candidate ECR metadata input, downstream trigger, dynamic deployment and actual app integration remain unverified.

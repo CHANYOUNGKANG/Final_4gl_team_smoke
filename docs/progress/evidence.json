@@ -10,5 +10,17 @@
       "file": "aws/verification/1126-eks-observations.log",
       "observed": "부분 실행 근거: 2026-11-26 17:16 KST의 사용자 kubectl 출력 회수 요약에서 노드 2대 Ready, 시스템 Pod 6개 Running·재시작 0을 확인. 원본 로그 전체나 실제 노드별 AZ 증빙은 없음. 두 AZ의 EKS 구현 전체를 입증하는 implementation은 등록하지 않으며 이 항목만으로 점수를 올리지 않음."
     }
+  },
+  "CICD1": {
+    "verification": {
+      "file": "cicd/verification/1127-notice-ci-build-6-auto.log",
+      "observed": "레퍼런스 공지 앱 SCM 자동 감지, Maven/JUnit 10/10, WAR 생성과 자동 ECR 등록 성공. 최종 JSP 호환 시험은 1127-pr21-final-compatibility.log 별도."
+    }
+  },
+  "CICD2": {
+    "verification": {
+      "file": "cicd/verification/1127-notice-ci-build-6-auto.log",
+      "observed": "레퍼런스 앱 Docker H2 검사, ECR push 및 digest 검증 성공. 최종 JSP 이미지의 main 자동 ECR 실행 증빙은 대기."
+    }
   }
 }
