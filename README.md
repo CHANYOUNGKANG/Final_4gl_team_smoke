@@ -28,15 +28,18 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11.21 – 12.09
 <!-- smoke-activity:start -->
 | 최근 커밋 | 작성자 | 시각 (KST) |
 | --- | --- | ---: |
-| [`b7c399e`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/b7c399eaa982ab7d86ef06b8bfb3bbe1e1722b3c) Merge PR #17: AWS 11/26 작업 기록 및 실제 증빙 | woobin6318-dot | 11/26 17:56 |
-| [`6ba0231`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/6ba0231831e239a20e5be83b4bf9dcfdb35d812e) Merge latest main and preserve AWS handoff from PR #15 | woobin6318-dot | 11/26 17:53 |
-| [`f86291f`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/f86291fd0958efd5b4c0a681436e6e4894c22038) Merge pull request #15 from CHANYOUNGKANG/aws/eks-day1-handoff-record | CHANYOUNGKANG | 11/26 17:50 |
+| [`e5515cc`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/e5515cca16ef0e2cf528ea98219403d7f71b6525) Merge pull request #13 from CHANYOUNGKANG/cicd/notice-ci-integration | CHANYOUNGKANG | 11/27 11:07 |
+| [`ce7e613`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/ce7e61333b613b26f207c1f4071674b4e5dc56f1) docs(cicd): archive SCM automatic Docker and ECR build 6 evidence | CHANYOUNGKANG | 11/27 11:05 |
+| [`aff033c`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/aff033cb9ddef109a972416a65bbfd53e64a8bab) test(cicd): trigger SCM auto-publish verification after opt-in | CHANYOUNGKANG | 11/27 11:02 |
+| [`cbc41c1`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/cbc41c1a40e944bf9076875aac8a3747fa3bb1b0) docs(cicd): record SCM build 5 and auto-publish opt-in | CHANYOUNGKANG | 11/27 11:01 |
+| [`8b625f9`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/8b625f997b08488a760b2c772456868a32d552c6) feat(cicd): opt in to notice image publishing on trusted SCM builds | CHANYOUNGKANG | 11/27 11:01 |
+| [`2f15d72`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/2f15d724a9067c8af348867a2861f50c45dfa83a) docs(cicd): update DAY 2 worklog with verified results | CHANYOUNGKANG | 11/27 10:39 |
 
 **열린 이슈·PR**　[#11 [인계] 온프레미스 DB 주소 대역 확정 및 AWS 공지 앱 배포 조건 ](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11)　·　[#1 팀 구축 진행률 · 구현 근거와 시연 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)
 
 **작업 브랜치 16개**　[`aws/eks-day1-handoff-record`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/aws/eks-day1-handoff-record)　[`aws/woobin-day1-jenkins-ec2`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/aws/woobin-day1-jenkins-ec2)　[`chore/security-automation`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/chore/security-automation)　[`cicd/chanyoung-day1-first-build`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/chanyoung-day1-first-build)　[`cicd/notice-ci-integration`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/notice-ci-integration)　[`cicd/notice-reference-app`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/notice-reference-app)　[`cicd/worklog-jenkins-bootstrap`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/worklog-jenkins-bootstrap)　[`dependabot/github_actions/actions/checkout-7`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/dependabot/github_actions/actions/checkout-7)　[`docs/architecture-automation`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/docs/architecture-automation)　[`docs/architecture-update`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/docs/architecture-update)　[`docs/ip-plan`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/docs/ip-plan)　[`docs/smoke-company-site`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/docs/smoke-company-site)
 
-<sub>11/27 08:41 KST 기준 · main push와 매일 00:05에 갱신</sub>
+<sub>11/27 11:07 KST 기준 · main push와 매일 00:05에 갱신</sub>
 <!-- smoke-activity:end -->
 
 <details>
