@@ -243,5 +243,5 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as exc:
-        print("RELEASE FAILED:  + (str(exc) if isinstance(exc, CheckError) else type(exc).__name__), flush=True)
+        print("RELEASE FAILED: " + (str(exc) if isinstance(exc, CheckError) else type(exc).__name__), flush=True)
         sys.exit(1)
