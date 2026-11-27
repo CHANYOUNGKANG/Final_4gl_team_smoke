@@ -1,0 +1,275 @@
+<%@ page import="java.sql.*, java.util.*, java.io.*, java.text.SimpleDateFormat, kr.smoke.site.SiteUtil" %><%!
+    /* ==================================================================
+       공통 설정 · 헬퍼
+       - 모든 값은 환경 변수(또는 -D 시스템 속성)로 바꿔요. 저장소에는 실제 주소·비밀번호를 두지 않아요.
+       - DB:  DB_URL 을 주거나, DB_HOST(+DB_PORT, DB_NAME, DB_USER, DB_PASSWORD) 를 주면 MariaDB/RDS.
+              둘 다 없으면 H2 메모리 DB (CI·로컬 확인용, 재시작하면 사라짐).
+       - 블루그린: DEPLOY_COLOR · APP_VERSION · GIT_COMMIT · CHECK_TOKEN (CI/CD 규격, app/README.md)
+       ================================================================== */
+    static String env(String key, String def) {
+        String v = System.getenv(key);
+        if (v == null || v.trim().isEmpty()) v = System.getProperty(key);
+        return (v == null || v.trim().isEmpty()) ? def : v.trim();
+    }
+
+    // ---- 회사 정보 (사이트 전체에 쓰여요) ----
+    static final String COMPANY_KO   = env("COMPANY_KO", "㈜스모크");
+    static final String COMPANY_EN   = env("COMPANY_EN", "SMOKE Co., Ltd.");
+    static final String COMPANY_TEL  = env("COMPANY_TEL", "02-000-0000");
+    static final String COMPANY_MAIL = env("COMPANY_MAIL", "smoke@smoke.local");
+    static final String COMPANY_ADDR = env("COMPANY_ADDR", "서울특별시 본사 · 지사 운영");
+
+    // ---- DB ----
+    static String dbUrl() {
+        String u = env("DB_URL", "");
+        if (!u.isEmpty()) return u;
+        String host = env("DB_HOST", "");
+        if (!host.isEmpty())
+            return "jdbc:mariadb://" + host + ":" + env("DB_PORT", "3306") + "/" + env("DB_NAME", "boarddb")
+                 + "?useUnicode=true&characterEncoding=utf8";
+        return "jdbc:h2:mem:notice;MODE=MariaDB;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1";
+    }
+    static final String  DB_URL  = dbUrl();
+    static final boolean IS_H2   = DB_URL.startsWith("jdbc:h2:");
+    static final String  DB_USER = env("DB_USER", IS_H2 ? "sa" : "");
+    static final String  DB_PASS = env("DB_PASSWORD", env("DB_PASS", ""));
+    static final boolean APP_SEED = "true".equalsIgnoreCase(env("APP_SEED", IS_H2 ? "true" : "false"));
+    /** update: 앱이 테이블을 만듦(H2 기본) · validate: 만들지 않고 확인만(운영 기본, 앱 계정은 DML 권한만) */
+    static final String  DB_DDL  = env("DB_DDL", IS_H2 ? "update" : "validate");
+
+    // ---- 첨부파일 (NFS 마운트 경로 · EFS · S3/CloudFront 주소) ----
+    static final String UPLOAD_DIR    = env("APP_STORAGE_DIR", env("UPLOAD_DIR", "/data/attachments"));
+    static final String FILE_BASE_URL = env("FILE_BASE_URL", "");   // 예: https://files.도메인 (설정 시 CloudFront로 바로 내려받기)
+    static final String ADMIN_KEY     = env("ADMIN_KEY", "");       // 공지 쓰기 관리자 키
+    /** 운영(MariaDB)에서 ADMIN_KEY 가 없으면 공지 쓰기를 막음. H2(CI·로컬)만 키 없이 허용 */
+    static final boolean WRITE_ENABLED = !ADMIN_KEY.isEmpty() || IS_H2;
+
+    // ---- 문의 메일 알림 (사내 메일 서버 Postfix) ----
+    static final String MAIL_TO   = env("MAIL_TO", "");                   // 비어 있으면 메일 알림 끔 (예: smoke@smoke.local)
+    static final String MAIL_FROM = env("MAIL_FROM", "noreply@smoke.local");
+    static final String SMTP_HOST = env("SMTP_HOST", "127.0.0.1");
+    static final int    SMTP_PORT = Integer.parseInt(env("SMTP_PORT", "25"));
+
+    // ---- 배포 정보 (블루그린: 화면 하단 · /health · /version · 검증 API servedBy) ----
+    static final String APP_VERSION  = env("APP_VERSION", "1.1.0");
+    static final String DEPLOY_COLOR = env("DEPLOY_COLOR", "local");
+    static final String GIT_COMMIT   = SiteUtil.shortCommit(env("GIT_COMMIT", ""));
+    static final String CHECK_TOKEN  = env("CHECK_TOKEN", "");          // 비어 있으면 검증 API 전체가 404
+
+    static final String[] CATEGORIES = {"공지", "자료", "보안", "점검"};
+    static final String[] ALLOWED_EXT = {"pdf","hwp","hwpx","doc","docx","xls","xlsx","ppt","pptx","txt","csv","zip","png","jpg","jpeg","gif"};
+
+    static volatile boolean schemaReady = false;
+
+    static Connection getConn() throws Exception {
+        Class.forName(IS_H2 ? "org.h2.Driver" : "org.mariadb.jdbc.Driver");
+        Connection c = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+        ensureSchema(c);
+        return c;
+    }
+
+    /** 앱이 쓰는 테이블·컬럼 (없으면 SELECT 가 실패 → /health 503) */
+    static final String[] SCHEMA_CHECK = {
+        "SELECT id, title, writer, content, reg_date, category, hit, is_pinned, is_check FROM board WHERE 1=0",
+        "SELECT id, board_id, orig_name, stored_name, file_size, content_type, reg_date, sha256 FROM board_file WHERE 1=0",
+        "SELECT id, company, name, email, phone, topic, message, status, reg_date FROM inquiry WHERE 1=0"
+    };
+
+    /** 필수 테이블·컬럼이 모두 있으면 null, 아니면 첫 오류 메시지 */
+    static String schemaProblem(Connection c) {
+        for (String sql : SCHEMA_CHECK) {
+            try (Statement st = c.createStatement()) { st.executeQuery(sql).close(); }
+            catch (SQLException e) { return e.getMessage(); }
+        }
+        return null;
+    }
+
+    /**
+     * DB_DDL=update(H2 기본)일 때만 테이블·컬럼을 만들고, 그 밖에는 확인만 한다.
+     * 운영 스키마는 sql/schema.sql 을 DB 관리자가 적용하고, 앱 계정은 SELECT·INSERT·UPDATE·DELETE 만 쓴다.
+     */
+    static synchronized void ensureSchema(Connection c) {
+        if (schemaReady) return;
+        if ("update".equalsIgnoreCase(DB_DDL)) {
+            String cs = IS_H2 ? "" : " DEFAULT CHARSET=utf8mb4";
+            String[] ddl = {
+                "CREATE TABLE IF NOT EXISTS board (" +
+                " id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(200) NOT NULL, writer VARCHAR(50) NOT NULL," +
+                " content TEXT, reg_date DATETIME DEFAULT CURRENT_TIMESTAMP)" + cs,
+                "ALTER TABLE board ADD COLUMN IF NOT EXISTS category VARCHAR(20) DEFAULT '공지' NOT NULL",
+                "ALTER TABLE board ADD COLUMN IF NOT EXISTS hit INT DEFAULT 0 NOT NULL",
+                "ALTER TABLE board ADD COLUMN IF NOT EXISTS is_pinned TINYINT DEFAULT 0 NOT NULL",
+                "ALTER TABLE board ADD COLUMN IF NOT EXISTS is_check TINYINT DEFAULT 0 NOT NULL",
+                "CREATE TABLE IF NOT EXISTS board_file (" +
+                " id INT AUTO_INCREMENT PRIMARY KEY, board_id INT NOT NULL, orig_name VARCHAR(255) NOT NULL," +
+                " stored_name VARCHAR(255) NOT NULL, file_size BIGINT DEFAULT 0 NOT NULL, content_type VARCHAR(120)," +
+                " reg_date DATETIME DEFAULT CURRENT_TIMESTAMP)" + cs,
+                "CREATE INDEX IF NOT EXISTS idx_board_file_board ON board_file (board_id)",
+                "ALTER TABLE board_file ADD COLUMN IF NOT EXISTS sha256 CHAR(64) NULL",
+                "CREATE TABLE IF NOT EXISTS inquiry (" +
+                " id INT AUTO_INCREMENT PRIMARY KEY, company VARCHAR(100), name VARCHAR(50) NOT NULL," +
+                " email VARCHAR(120) NOT NULL, phone VARCHAR(40), topic VARCHAR(40), message TEXT NOT NULL," +
+                " status VARCHAR(20) DEFAULT '접수' NOT NULL, reg_date DATETIME DEFAULT CURRENT_TIMESTAMP)" + cs
+            };
+            for (String sql : ddl) {
+                try (Statement st = c.createStatement()) { st.execute(sql); }
+                catch (SQLException e) { /* 아래 확인에서 걸러짐 */ }
+            }
+        }
+        boolean ok = schemaProblem(c) == null;
+        if (ok && APP_SEED) seed(c);
+        schemaReady = ok;
+    }
+
+    /** APP_SEED=true 이고 게시글이 하나도 없을 때만 예시 글을 넣어요 (운영 기본값 false). */
+    static void seed(Connection c) {
+        String[][] rows = {
+            {"홈페이지 리뉴얼 오픈", "운영팀", "새로워진 홈페이지에서 공지와 자료를 더 편하게 확인하세요.", "공지", "1"},
+            {"백업 자동화 적용 및 복구 테스트 완료", "서버팀", "매일 새벽 백업과 해시 리포트를 적용했고 복구 테스트를 마쳤습니다.", "점검", "0"},
+            {"2026년 하반기 서비스 이용 가이드", "운영팀", "서비스 이용 방법을 정리한 안내 자료입니다.", "자료", "0"},
+            {"관리망 접근 통제 정책 안내", "보안팀", "관리망 SSH 접속은 허용된 관리자 PC에서만 가능합니다.", "보안", "0"}
+        };
+        try (Statement st = c.createStatement(); ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM board")) {
+            if (!rs.next() || rs.getInt(1) > 0) return;
+        } catch (SQLException e) { return; }
+        try (PreparedStatement ps = c.prepareStatement(
+                "INSERT INTO board (title, writer, content, category, is_pinned) VALUES (?, ?, ?, ?, ?)")) {
+            for (String[] r : rows) {
+                ps.setString(1, r[0]); ps.setString(2, r[1]); ps.setString(3, r[2]); ps.setString(4, r[3]);
+                ps.setInt(5, Integer.parseInt(r[4])); ps.executeUpdate();
+            }
+        } catch (SQLException ignore) {}
+    }
+
+    /** 첨부 저장소가 있고 쓸 수 있는지 (없으면 만들어 봄) */
+    static boolean storageReady() {
+        File d = new File(UPLOAD_DIR);
+        if (!d.isDirectory()) d.mkdirs();
+        return d.isDirectory() && d.canWrite();
+    }
+
+    /** /health · /version · 검증 API 의 servedBy 에 같이 쓰는 배포 정보 */
+    static Map<String, Object> servedBy() {
+        Map<String, Object> m = new LinkedHashMap<String, Object>();
+        m.put("version", APP_VERSION);
+        m.put("color", DEPLOY_COLOR);
+        m.put("commit", GIT_COMMIT);
+        return m;
+    }
+
+    static void closeQuietly(AutoCloseable... xs) {
+        for (AutoCloseable x : xs) if (x != null) try { x.close(); } catch (Exception ignore) {}
+    }
+
+    /** HTML 이스케이프 (XSS 방지) */
+    static String esc(Object o) {
+        if (o == null) return "";
+        String s = String.valueOf(o);
+        StringBuilder b = new StringBuilder(s.length() + 16);
+        for (int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+            switch (ch) {
+                case '<': b.append("&lt;"); break;
+                case '>': b.append("&gt;"); break;
+                case '&': b.append("&amp;"); break;
+                case '"': b.append("&quot;"); break;
+                case '\'': b.append("&#39;"); break;
+                default: b.append(ch);
+            }
+        }
+        return b.toString();
+    }
+
+    static String escBr(String s) { return esc(s).replace("\r\n", "\n").replace("\n", "<br>"); }
+
+    static String url(String s) {
+        try { return java.net.URLEncoder.encode(s == null ? "" : s, "UTF-8"); } catch (Exception e) { return ""; }
+    }
+
+    static int toInt(String s, int def) {
+        try { return Integer.parseInt(s.trim()); } catch (Exception e) { return def; }
+    }
+
+    static String nz(String s) { return s == null ? "" : s.trim(); }
+
+    static String fmt(Timestamp t, String pattern) {
+        return t == null ? "" : new SimpleDateFormat(pattern).format(t);
+    }
+
+    static boolean isNew(Timestamp t) {
+        return t != null && System.currentTimeMillis() - t.getTime() < 3L * 24 * 3600 * 1000;
+    }
+
+    static String fmtSize(long n) {
+        if (n < 1024) return n + " B";
+        if (n < 1024 * 1024) return String.format("%.1f KB", n / 1024.0);
+        return String.format("%.1f MB", n / 1024.0 / 1024.0);
+    }
+
+    static boolean validCategory(String c) {
+        for (String x : CATEGORIES) if (x.equals(c)) return true;
+        return false;
+    }
+
+    static String catClass(String c) {
+        if ("자료".equals(c)) return "c-doc";
+        if ("보안".equals(c)) return "c-sec";
+        if ("점검".equals(c)) return "c-ops";
+        return "c-notice";
+    }
+
+    /** 메일 헤더에 줄바꿈이 끼어들지 못하게 정리 (헤더 주입 방지) */
+    static String oneLine(String s) { return s == null ? "" : s.replaceAll("[\\r\\n]+", " ").trim(); }
+
+    static String b64(String s) {
+        return java.util.Base64.getEncoder().encodeToString(s.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+    }
+
+    static void smtpStep(BufferedReader in, Writer out, String cmd, int expect) throws IOException {
+        if (cmd != null) { out.write(cmd + "\r\n"); out.flush(); }
+        String line;
+        do {
+            line = in.readLine();
+            if (line == null) throw new IOException("SMTP 연결이 끊겼습니다");
+        } while (line.length() > 3 && line.charAt(3) == '-');
+        if (!line.startsWith(String.valueOf(expect))) throw new IOException("SMTP " + cmd + " -> " + line);
+    }
+
+    /** 외부 라이브러리 없이 사내 SMTP(Postfix)로 UTF-8 텍스트 메일 1통 발송 */
+    static void sendMail(String to, String replyTo, String subject, String body) throws IOException {
+        to = oneLine(to);
+        if (!to.matches("^[\\x21-\\x7E&&[^<>]]+@[\\x21-\\x7E&&[^<>]]+$")) throw new IOException("받는 주소 형식 오류");
+        try (java.net.Socket sock = new java.net.Socket()) {
+            sock.connect(new java.net.InetSocketAddress(SMTP_HOST, SMTP_PORT), 5000);
+            sock.setSoTimeout(5000);
+            BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream(), "US-ASCII"));
+            Writer out = new OutputStreamWriter(sock.getOutputStream(), "US-ASCII");
+            smtpStep(in, out, null, 220);
+            smtpStep(in, out, "EHLO " + hostName(), 250);
+            smtpStep(in, out, "MAIL FROM:<" + MAIL_FROM + ">", 250);
+            smtpStep(in, out, "RCPT TO:<" + to + ">", 250);
+            smtpStep(in, out, "DATA", 354);
+            StringBuilder m = new StringBuilder();
+            m.append("From: =?UTF-8?B?").append(b64(COMPANY_KO + " 홈페이지")).append("?= <").append(MAIL_FROM).append(">\r\n");
+            m.append("To: <").append(to).append(">\r\n");
+            String rt = oneLine(replyTo);
+            if (rt.matches("^[\\x21-\\x7E&&[^<>]]+@[\\x21-\\x7E&&[^<>]]+$")) m.append("Reply-To: <").append(rt).append(">\r\n");
+            m.append("Subject: =?UTF-8?B?").append(b64(oneLine(subject))).append("?=\r\n");
+            m.append("Date: ").append(new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.US).format(new java.util.Date())).append("\r\n");
+            m.append("MIME-Version: 1.0\r\n");
+            m.append("Content-Type: text/plain; charset=UTF-8\r\n");
+            m.append("Content-Transfer-Encoding: base64\r\n\r\n");
+            m.append(java.util.Base64.getMimeEncoder().encodeToString(body.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+            m.append("\r\n");
+            out.write(m.toString());
+            smtpStep(in, out, ".", 250);
+            try { smtpStep(in, out, "QUIT", 221); } catch (IOException ignore) {}
+        }
+    }
+
+    static String hostName() {
+        try { return java.net.InetAddress.getLocalHost().getHostName(); } catch (Exception e) { return "unknown"; }
+    }
+%><%
+    String ctx = request.getContextPath();
+%>

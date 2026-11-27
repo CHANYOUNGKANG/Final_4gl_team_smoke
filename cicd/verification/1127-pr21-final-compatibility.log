@@ -1,0 +1,16 @@
+# PR #21 final compatibility — 2026-11-27 KST
+Source: user-provided terminal screenshot, normalized. Exact app source b21719bf19daf2d51ffd8b0d3039445ba8e0c0af. Existing checker from edce94a450bdf225dda8e33915d17f1353cdc968.
+WAR SHA-256: 1145da2afbc478f38968df513129386a5bb122e1dbe8ecd13bcbcc97793e7356
+Docker build: 6.2s
+Image ID: sha256:a7245cf1e55198aee6d11c556d403226ba6970b095a6357c62d13b37bf64a995
+Platform: linux/amd64; user=app
+NOTICE DOCKER H2 HEALTH VERIFIED
+LOCAL CI IMAGE ID VERIFIED
+NOTICE HEALTH VERSION LIST OK: DB=UP STORAGE=UP slot=green commit=b21719b
+NOTICE CHECK CREATE READ HIDDEN OK
+NOTICE CHECK DELETE VERIFIED: HTTP 204 then 404
+NOTICE FUNCTIONAL CHECK OK
+NOTICE ISOLATED H2 FUNCTIONAL CHECK OK: no production data used
+PR #21 FULL COMPATIBILITY SUCCESS
+GitHub App build H2 and mariadb jobs, PR check and Secret scan successful. Merge 056377985e44314d5dbf83bb24380c5ba7086ddd.
+No ECR Push, live EKS deployment or ALB change. Numeric UID/GID 1500 image still untested.

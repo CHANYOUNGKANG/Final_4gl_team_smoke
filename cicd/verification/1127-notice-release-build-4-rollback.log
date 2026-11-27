@@ -1,0 +1,37 @@
+# User-provided Jenkins console excerpt, normalized; management URLs and private backup filename omitted.
+2026-11-27 KST
+Started by user
+12:03:13 Source
+12:03:14 Checking out Revision 13eb1e2177daf553f4f1fbfd1cd41433a27306e6
+12:03:14 RELEASE PYTHON SYNTAX OK
+12:03:21 ALB WEIGHTS blue=100 green=0; default rule only
+12:03:26 SLOT blue POD_HTTP=200 x2 VERSION=test-v2 HEALTHY=2 TARGETS_MATCH=2
+12:03:30 SLOT green POD_HTTP=200 x2 VERSION=test-v4 HEALTHY=2 TARGETS_MATCH=2
+12:03:33 PRIVATE BACKUP SAVED: [PRIVATE_FILENAME]
+12:03:33 ALB SWITCH REQUEST blue=0 green=100
+12:03:35 ALB CHECK attempt=1 version=test-v4 result=RETRY
+12:03:38 ALB CHECK attempt=2 version=test-v4 result=RETRY
+12:03:41 ALB CHECK attempt=3 version=test-v4 result=RETRY
+12:03:44 ALB CHECK attempt=4 version=test-v4 result=RETRY
+12:03:47 ALB CHECK attempt=5 version=test-v4 result=RETRY
+12:03:49 ALB CHECK attempt=6 version=test-v4 result=PASS
+12:03:53 ALB CHECK attempt=7 version=test-v4 result=PASS
+12:03:55 ALB CHECK attempt=8 version=test-v4 result=PASS
+12:03:56 ALB SWITCH VERIFIED elapsed_s=22.98
+12:03:56 RELEASE CHECK FAILED: intentional post-switch assertion failure; no Pod failure injected
+12:03:59 ALB CHECK attempt=1 version=test-v2 result=RETRY
+12:04:03 ALB CHECK attempt=2 version=test-v2 result=RETRY
+12:04:06 ALB CHECK attempt=3 version=test-v2 result=RETRY
+12:04:08 ALB CHECK attempt=4 version=test-v2 result=RETRY
+12:04:12 ALB CHECK attempt=5 version=test-v2 result=PASS
+12:04:14 ALB CHECK attempt=6 version=test-v2 result=PASS
+12:04:17 ALB CHECK attempt=7 version=test-v2 result=PASS
+12:04:18 ROLLBACK VERIFIED blue=100 green=0 elapsed_s=21.64
+12:04:18 RELEASE ROLLBACK TEST OK: synthetic assertion failure
+12:04:18 NOTICE RELEASE OK: mode=ROLLBACK_TEST; build=4
+Finished: SUCCESS
+# Scope: manually started test fixture release. ModifyListener write exercised successfully.
+# Actual ALB weight switch and automatic restore after synthetic assertion failure; not actual application or Pod failure.
+# 65 seconds observed pipeline, 22.98s switch verification, 21.64s rollback verification. Not downtime or production RTO.
+# RETRY combines listener state and expected HTTP/version checks, not evidence of failed HTTP requests.
+# Continuous independent HTTP sampling, actual notice app deployment and CI-CD-release automatic chaining remain unverified.

@@ -69,3 +69,7 @@ AWS 담당자와 논의된 방향: RDS MariaDB 10.11 / smoke_board / 3306, EFS R
 - PR #20은 PR #21 병합 이후 main과 충돌 상태로 확인됨. 기존 브랜치의 app/은 최신 JSP가 아닐 수 있으므로 이 브랜치에서 업무용 이미지를 빌드/Push하거나 그대로 병합하지 않는다. main 기준으로 충돌을 해결한 뒤 최신 앱과 수정 Dockerfile을 함께 격리 검증한다. 기존 정적 슬롯은 유지한다.
 - RDS endpoint/전용 DML 사용자/Secret, boarddb 복원 및 v_migration_check, 실제 EFS 파일 읽기/쓰기, ALB health 경로와 운영 HTTPS 확인, 동적 실제 CD/Release 통합이 남음. DB_HOST 및 필수 Secret은 비어 있으면 배포 차단해야 하며 H2 fallback은 운영 금지. 운영 관리자 키/토큰은 외부 HTTP로 보내지 않는다.
 - 현재는 코드 준비 단계. 새 렌더러 테스트 6개 및 Dockerfile 재검증 필요. 서버 dry-run/apply, PVC 재생성, ECR Push, ALB 변경은 하지 않았다.
+
+## 저장소 통합 정리 (최신 main 기반)
+
+PR #18/#19는 main에 병합됐다. 기존 정적 CD/Release Job은 역사적 실험용이며 현재의 Green v4 상태에서 반복 배포하지 않는다. PR #20은 최종 JSP 앱 main의 파일을 보존한 상태로 동기화했다. `cicd/docker/Dockerfile.prod-draft`는 UID/GID 1500 및 EFS 경로 변경 제안으로, 기존 CI가 참조하는 `cicd/docker/Dockerfile`은 변경하지 않는다. 신규 Dockerfile은 실제 빌드 및 EFS 검증 이후 정식 채택한다. 이 PR은 기존 CI의 자동 downstream 호출도 활성화하지 않는다. 단일 executor 대기 교착을 방지하는 통합 실행기와 실제 앱 동적 CD/Release는 별도 후속 작업이다. 기존 성공 로그의 실행 커밋은 변경하지 않았다. 새 renderer는 로컬 전용이며 배포 허가가 아니다.

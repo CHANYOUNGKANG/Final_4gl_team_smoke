@@ -18,33 +18,24 @@
 
 **작업일지** [WORKLOG.md](WORKLOG.md) · **Jenkins 설정** [jenkins/README.md](jenkins/README.md)
 
-## 현재 현황 (2026-11-26)
+## 현재 현황 (2026-11-27)
 
-테스트 환경: Jenkins 수동·SCM 자동 WAR 빌드, Docker 이미지 생성, Tomcat HTTP 200, ECR 자동 Push 및 Digest 검증 성공. [Build #5 증빙](verification/smoke-test-build-5-ecr.log) · [작업일지](WORKLOG.md). 실제 공지 앱 통합은 미검증이며 공식 이정표 점수와 구분한다. [Ansible/EKS 인계 및 블루그린 협의안](ansible/HANDOFF.md)은 아직 구현 전이다.
+| 범위 | 상태 | 증빙 |
+| --- | --- | --- |
+| CI 및 ECR | 레퍼런스 앱 자동 성공, 최종 JSP 호환 시험 성공 | [CI #6](verification/1127-notice-ci-build-6-auto.log) · [PR #21 시험](verification/1127-pr21-final-compatibility.log) |
+| 정적 CD | EKS 후보 Green 갱신 성공 | [CD #4](verification/1127-notice-cd-build-4-deploy.log) |
+| 정적 Blue/Green | 전환 20.23초, 복귀 21.56초, 연속 HTTP 341/341 성공 | [Release #5](verification/1127-notice-release-build-5-rollback.log) · [측정](verification/1127-alb-continuity-summary.md) |
+| 동적 Plan | 활성 슬롯 자동 판별, 상위 CI에서 호출 성공 | [Handoff #2](verification/1127-notice-handoff-build-2.log) · [Plan #3](verification/1127-notice-plan-build-3-upstream.log) |
+| 실제 JSP 앱 | PR #21 병합, 기존 H2/CRUD checker 성공 | [앱](../app/README.md) · [기존 레퍼런스](../app-reference/README.md) |
+| 실제 운영 통합 | EFS 인계 완료 보고, RDS 및 동적 실제 CD/Release 대기 | [운영 준비](kubernetes/NOTICE-PROD.md) |
 
-Jenkins 서비스 계정 → Ansible 배포 계정 SSH 및 원격 Ansible ping/AWS STS 인증 성공. [실행 관찰 기록](verification/ansible-remote-check.log). Jenkins Job 원격 플레이북 검사는 Build #8에서 6개 작업 모두 성공했다. [Build #8](verification/smoke-test-build-8-ansible.log). EKS 배포는 아직 미검증이다. 활성화하려면 Jenkins 환경 변수 `SMOKE_ANSIBLE_HOST`(실제 주소 비공개), `SMOKE_ANSIBLE_CHECK=true`를 설정한다.
+## 운영 안전선 및 남은 일
 
-초기 Blue/Green 배포 코드는 [Kubernetes 실행 가이드](kubernetes/README.md) 및 [초기 배포 플레이북](ansible/bootstrap-smoke.yml)에 작성했다. 기본값은 서버 dry-run이며 실제 EKS 배포 및 ALB 전환은 자동 실행하지 않는다.
+- 기존 `smoke-notice-cd` / `smoke-notice-release`는 정적 앱 실험 전용이며 수동 실행, 기존 성공 상태에서 반복 실행 금지.
+- 기존 `smoke-notice-ci`의 Dockerfile 및 자동 호출 설정은 그대로 유지. main Poll SCM에 따른 빌드/ECR 등록은 기존 설정대로 발생할 수 있으나 배포·ALB 변경은 없음.
+- 신규 [Dockerfile.prod-draft](docker/Dockerfile.prod-draft)는 숫자 UID/GID 1500:1500 및 EFS 경로 초안. 실제 빌드 전 정식 CI Dockerfile로 대체하지 않는다.
+- [동적 Plan](jenkins/Jenkinsfile.notice-plan)은 읽기 전용, [렌더러](kubernetes/render-notice-prod.py)는 로컬 전용. 후보 배포 및 운영 트래픽 변경 권한을 부여하지 않는다.
+- RDS boarddb, 앱 DML 계정, Secret(DB_PASSWORD/CHECK_TOKEN/ADMIN_KEY), 공용 PVC, /var/smoke/attach 연동 후 실제 앱 두 버전의 배포·검증·전환·롤백을 연결한다. 데이터 이관 전후 건수·해시 검증과 장애 시험은 별도.
+- [작업일지](WORKLOG.md) · [이미지 색인](evidence/2026-11-27/README.md) · [요구사항](../docs/requirements/README.md) · [시연 기록표](../docs/delivery/README.md). PNG와 원본 CSV는 미등록. 실측 성공과 운영 완료 판정은 구분한다.
 
-## 실제 공지 앱 연동
-
-`main`의 [레퍼런스 공지 앱](../app/README.md)은 Java 17 / Spring Boot 3.3.5 / `notice.war`, MariaDB 10.11 연동 검사 성공 상태다. 기존 `smoke-cicd` 테스트 Job과 분리해 실제 앱 Jenkins 빌드부터 검증한다. 실제 DB 주소 및 RDS/EFS 인계는 [#11](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11)에서 확정한다. 테스트 이미지의 `/`와 실제 앱의 `/health`를 구분한다.
-
-## 작업 체크리스트
-
-- [ ] 이준호에게 [앱 빌드 정보](../app/README.md)를 받고 이우빈과 Jenkins EC2(퍼블릭 서브넷)·SG(실습 PC IP/32)·IAM 역할을 확인한다.
-- [ ] EC2의 Jenkins에 팀 저장소를 연결하고 Maven 테스트와 WAR 빌드를 수동으로 성공시킨다.
-- [ ] Poll SCM 자동 빌드([ADR-0004](../docs/decisions/0004-jenkins-poll-scm.md)) 확인 후 테스트 커밋을 push한다. Jenkins 로그의 SHA, 테스트 실행 결과, WAR 경로를 남긴다.
-- [ ] WAR를 Docker 이미지로 만들어 실행·조회한 뒤 커밋 SHA 태그로 ECR에 올린다.
-- [ ] [Kubernetes](kubernetes/)에서 Blue·Green Deployment, Service, readiness probe와 Green 전용 검사 경로를 준비한다.
-- [ ] [Ansible](ansible/)로 Green을 배포하고 게시글 작성·조회를 검사한다. 실패하면 Blue가 운영 요청을 계속 받는지 확인한다.
-- [ ] 검사 통과 시 이우빈의 ALB 전환 절차를 Jenkins에서 호출한다. 운영 주소 검사 실패 시 Blue 자동 복귀와 이전 버전 응답을 확인한다.
-- [ ] Jenkins 결과를 SNS로 보내고 운영 메일 수신을 이준호와 확인한다. [검증 기록](verification/)에 연속 조회 실패 수와 복귀 시간을 남긴다.
-
-[첫날 작업표와 파트 간 인계](../docs/delivery/README.md#첫날-작업표) · [시연 결과 기록](../docs/delivery/README.md#결과-기록표) · [작업 양식](../docs/templates/README.md) · [작업 이슈 열기](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/new?template=team-task.yml) · [인계 요청](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/new?template=handoff.yml)
-
-## 팀 연동
-
-첫 연동은 GitHub push → Jenkins → Maven 테스트·WAR 생성이다. 이후 ECR 푸시, Green 배포, 기능 검사, ALB 전환과 결과 알림을 연결한다.
-
-[CI/CD 담당 체크리스트 원본 화면](../docs/images/cicd-checklist.png) · [블루그린 설계](../docs/architecture/README.md)
+[PR #18](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pull/18) · [PR #19](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pull/19) · [PR #20](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pull/20) · [PR #21](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pull/21)

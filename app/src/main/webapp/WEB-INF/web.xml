@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+
+  <display-name>SMOKE Corporate Site</display-name>
+
+  <!-- 한글 파라미터 깨짐 방지 -->
+  <request-character-encoding>UTF-8</request-character-encoding>
+  <response-character-encoding>UTF-8</response-character-encoding>
+
+  <!-- 첨부파일 업로드: write_process.jsp 에 multipart 설정 (파일당 20MB, 요청 110MB) -->
+  <servlet>
+    <servlet-name>write-process</servlet-name>
+    <jsp-file>/write_process.jsp</jsp-file>
+    <multipart-config>
+      <max-file-size>20971520</max-file-size>
+      <max-request-size>115343360</max-request-size>
+      <file-size-threshold>1048576</file-size-threshold>
+    </multipart-config>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>write-process</servlet-name>
+    <url-pattern>/write_process.jsp</url-pattern>
+  </servlet-mapping>
+
+  <!-- CI/CD 규격 주소 (app/README.md) -->
+  <servlet>
+    <servlet-name>health</servlet-name>
+    <jsp-file>/health.jsp</jsp-file>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>health</servlet-name>
+    <url-pattern>/health</url-pattern>
+    <url-pattern>/health.jsp</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>version</servlet-name>
+    <jsp-file>/WEB-INF/api/version.jsp</jsp-file>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>version</servlet-name>
+    <url-pattern>/version</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>notices</servlet-name>
+    <jsp-file>/notice.jsp</jsp-file>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>notices</servlet-name>
+    <url-pattern>/notices</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>notice-detail</servlet-name>
+    <servlet-class>kr.smoke.site.NoticeDetailServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>notice-detail</servlet-name>
+    <url-pattern>/notices/*</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>check-api</servlet-name>
+    <servlet-class>kr.smoke.site.CheckApiServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>check-api</servlet-name>
+    <url-pattern>/api/check/notices</url-pattern>
+    <url-pattern>/api/check/notices/*</url-pattern>
+  </servlet-mapping>
+
+  <!-- include 조각 파일(.jspf)도 UTF-8 로 읽기 -->
+  <jsp-config>
+    <jsp-property-group>
+      <url-pattern>*.jspf</url-pattern>
+      <page-encoding>UTF-8</page-encoding>
+    </jsp-property-group>
+  </jsp-config>
+
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+
+  <error-page>
+    <error-code>404</error-code>
+    <location>/error.jsp</location>
+  </error-page>
+  <error-page>
+    <error-code>500</error-code>
+    <location>/error.jsp</location>
+  </error-page>
+</web-app>

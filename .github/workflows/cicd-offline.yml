@@ -1,0 +1,26 @@
+name: CI/CD offline tests
+on:
+  pull_request:
+    paths: ['cicd/**', '.github/workflows/cicd-offline.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Offline Python tests
+        run: |
+          python3 cicd/ansible/test-notice-dynamic-plan.py
+          python3 cicd/kubernetes/test-render-notice-prod.py
+          python3 cicd/ansible/test-notice-app-check.py
+          python3 -m py_compile cicd/ansible/alb-release-verify.py
+      - name: Shell syntax checks
+        run: |
+          bash -n cicd/ansible/run-notice-cd.sh
+          bash -n cicd/docker/check-notice-local.sh
+          bash -n cicd/docker/build-notice-ci.sh
+          bash -n cicd/docker/push-notice-ci.sh

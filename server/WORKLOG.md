@@ -13,6 +13,32 @@
 
 ---
 
+## 2026-11-27 (금) · 팀 표준 앱을 온프레미스 검증 앱으로 교체 (app/ PR)
+
+**결정** — 강찬영과 합의: 온프레미스에서 운영·검증한 회사 사이트 + 공지·자료실(JSP, `boarddb`)을 팀 표준으로 삼고 그대로 이관한다. 이전 레퍼런스 앱(Spring Boot, `smoke_board`)은 `app-reference/` 로 보존.
+
+**온프레미스에서 실제로 확인한 결과 (이 앱 기준)**
+- web: Tomcat 10.1 에 ROOT.war 배포, Nginx(80) → Tomcat(127.0.0.1:8080), `health.jsp?db=1` 응답 `{"status":"UP","db":"UP",…}`
+- 공지 작성 + 첨부 업로드 → DB `board_file.sha256` 과 NFS 실제 파일 `sha256sum` 일치 (1건)
+- 백업 복구 테스트: 덤프를 임시 DB 에 복원해 게시글·첨부·문의 건수와 본문 해시 앞 16자리가 원본과 같음, 첨부 해시 OK
+- 인계 수집(14:04): 게시글 14 · 첨부 1 · 문의 6, `v_migration_check` 본문·첨부 해시 기록 (값은 인계 자료에만, 원본 데이터는 저장소에 올리지 않음)
+
+**이번 PR 에서 바꾼 것**
+- CI/CD 규격 추가: `/health`(status·db·storage·app·version·color·commit), `/version`, `/notices`, 검증 API `POST 201 → GET 200 → DELETE 204 → 404`, `X-Check-Token`, 검증 글 `is_check=1` 은 공개 목록·상세(404)·대조 뷰에서 제외
+- DB 설정을 `DB_HOST`/`DB_PASSWORD` 방식으로도 받고, 설정이 없으면 H2 메모리 DB 로 기동 (CI 격리 검증)
+- 소스 기본값에 있던 실제 DB 주소·비밀번호 제거, 빌드 결과 `target/notice.war`, Java 17
+- `app/sql/schema.sql` 에 `is_check`·`sha256`·`v_migration_check`(검증 글 제외) 포함, 예시 데이터에서 실제 파일 없는 첨부 행 제거
+- PR 검사(app-build)를 Tomcat 10.1 컨테이너 기동 방식으로 변경
+
+**확인 범위 (이 세션)**
+- `SiteUtil` 단위 테스트와 같은 내용을 javac 로 직접 돌려 전부 통과, JSP 스크립틀릿 11개를 서블릿 API 스텁에 대고 컴파일 오류 없음
+- Maven 저장소 접속이 막힌 환경이라 `mvn package`·Tomcat 기동 검사는 PR 검사(app-build)와 Jenkins 에서 확인 필요
+
+**다음 작업**
+- 강찬영: PR 리뷰, Jenkins 빌드·검증, Docker 이미지 H2/환경 변수 정리
+- 이우빈: RDS 스키마를 `app/sql/schema.sql`(boarddb) 기준으로 적용
+- 이준호: 머지된 WAR 로 온프레미스 교체 확인, 인계 자료 재전달, 이관 후 대조표 작성
+
 ## 2026-11-26 (목) · 온프레미스 서버 3대 구축 · DB·NFS·Tomcat 3-Tier 연결
 
 **작업 목적** — 고객사(해든정밀) 공지·자료실의 온프레미스 원본 환경을 만든다. 이 환경의 게시글 건수·본문 해시·첨부 해시가 AWS 이관의 비교 기준이 된다 (NFR-03).

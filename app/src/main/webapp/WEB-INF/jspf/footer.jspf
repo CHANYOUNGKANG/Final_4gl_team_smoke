@@ -1,0 +1,19 @@
+</main>
+<footer class="foot">
+  <div class="wrap foot-top">
+    <div class="foot-brand">
+      <a class="logo" href="<%= ctx %>/index.jsp#top">SMOKE <small><%= esc(COMPANY_EN) %></small></a>
+      <p>신뢰할 수 있는 인프라 위에서,<br>비즈니스가 멈추지 않도록.</p>
+    </div>
+    <div class="foot-col"><h4>회사</h4><a href="<%= ctx %>/index.jsp#about">회사소개</a><a href="<%= ctx %>/index.jsp#business">사업분야</a><a href="<%= ctx %>/index.jsp#infra">인프라 구성</a></div>
+    <div class="foot-col"><h4>고객지원</h4><a href="<%= ctx %>/notice.jsp">공지사항</a><a href="<%= ctx %>/notice.jsp?cat=<%= url("자료") %>">자료실</a><a href="<%= ctx %>/index.jsp#contact">문의하기</a></div>
+    <div class="foot-col"><h4>연락처</h4><span><%= esc(COMPANY_ADDR) %></span><span>T. <%= esc(COMPANY_TEL) %></span><span>E. <%= esc(COMPANY_MAIL) %></span></div>
+  </div>
+  <div class="wrap foot-bot">
+    <span>Copyright © <%= new java.text.SimpleDateFormat("yyyy").format(new java.util.Date()) %> <%= esc(COMPANY_EN) %> All rights reserved.</span>
+    <span class="deploy" title="블루그린 배포 확인용 · 지금 응답한 서버"><i class="dot <%= "green".equalsIgnoreCase(DEPLOY_COLOR) ? "g" : "b" %>"></i><%= esc(DEPLOY_COLOR.toUpperCase()) %> · <%= esc(APP_VERSION) %> · <%= esc(hostName()) %></span>
+  </div>
+</footer>
+<script src="<%= ctx %>/assets/js/site.js" defer></script>
+</body>
+</html>

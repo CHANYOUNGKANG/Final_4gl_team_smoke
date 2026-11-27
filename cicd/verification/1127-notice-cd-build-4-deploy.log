@@ -1,0 +1,37 @@
+# User-provided Jenkins console excerpt, normalized; management URLs omitted.
+2026-11-27 KST
+Started by user
+11:42:45 Source
+11:42:46 Checking out Revision abfcce51b43741f42885f162c86cd8b53a89e1e7
+11:42:46 + bash cicd/ansible/run-notice-cd.sh
+11:42:47 CD candidate: tag=test-97861a363d9ff5a483b94cd5407b21d5ebd60c3b digest=sha256:fe8f3cdccd40fb2c38830118abb3c0ed7d7f2da89ab99c8d3ca77cd3921b03b7
+11:42:49 TASK [Validate private configuration and requested mode] ok: [localhost]
+11:43:35 TASK [Check initial slots and optionally update only Green] changed: [localhost]
+11:43:35 CD CHECK: cluster context
+11:43:35 CD CHECK: Blue baseline digest
+11:43:35 CD CHECK: Green baseline digest
+11:43:35 CD CHECK: blue rollout
+11:43:35 CD CHECK: blue port-forward
+11:43:35 CD CHECK: blue HTTP and expected version test-v2
+11:43:35 SLOT blue READY=2 HTTP=200 VERSION=test-v2
+11:43:35 CD CHECK: green rollout
+11:43:35 CD CHECK: green port-forward
+11:43:35 CD CHECK: green HTTP and expected version test-v3
+11:43:35 SLOT green READY=2 HTTP=200 VERSION=test-v3
+11:43:35 CD CHECK: Green server-side patch dry-run
+11:43:35 CD GREEN PATCH DRY RUN OK
+11:43:35 CD GREEN PATCH APPLIED
+11:43:35 CD CHECK: green rollout
+11:43:35 CD CHECK: green port-forward
+11:43:35 CD CHECK: green HTTP and expected version test-v4
+11:43:35 SLOT green READY=2 HTTP=200 VERSION=test-v4
+11:43:35 CD CHECK: blue rollout
+11:43:35 CD CHECK: blue port-forward
+11:43:35 CD CHECK: blue HTTP and expected version test-v2
+11:43:35 SLOT blue READY=2 HTTP=200 VERSION=test-v2
+11:43:35 CD GREEN CANDIDATE VERIFIED: digest=sha256:fe8f3cdccd40fb2c38830118abb3c0ed7d7f2da89ab99c8d3ca77cd3921b03b7; Blue unchanged; ALB untouched
+11:43:35 All assertions passed
+11:43:35 localhost : ok=4 changed=1 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0
+11:43:35 NOTICE CD OK: mode=DEPLOY; build=4
+Finished: SUCCESS
+# Scope: manually triggered static test candidate update; 50s observed total, not downtime or RTO. Port-forward verifies a selected Pod per slot, not ALB data path. Actual notice app, CI-to-CD trigger, target health after rollout, ALB cutover and rollback remain unverified. Existing CD baseline requires Green v3; do not rerun unchanged after success.

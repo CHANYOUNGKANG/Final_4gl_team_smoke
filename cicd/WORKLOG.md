@@ -6,10 +6,24 @@
 
 | 이정표 | 내용 | 구현 | 실행 | 근거 |
 | --- | --- | :---: | :---: | --- |
-| CICD1 | Jenkins 테스트·WAR 빌드 | 테스트 파이프라인 및 레퍼런스 앱 | 실제 공지 앱 Jenkins 수동 #1~3 성공 · SCM 자동 실행 검증 대기 | [Build #5](verification/smoke-test-build-5-ecr.log) · [App build](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/actions/runs/45773618799) |
-| CICD2 | Docker 이미지 · ECR 등록 | 테스트 이미지 자동 Push 구현 | 실제 앱 Docker H2/ECR Push 검증 성공 | [Build #5](verification/smoke-test-build-5-ecr.log) |
-| CICD3 | Ansible Green 배포 · 상태 검사 | 초기 매니페스트·플레이북 작성 | 정적 앱 EKS 초기 배포·HTTP 200·Jenkins 원격 조회 성공; 실제 후보 CD 대기 | [Build #8](verification/smoke-test-build-8-ansible.log) |
-| CICD4 | 검증 후 전환 · 자동 롤백 | — | — | |
+| CICD1 | Jenkins 테스트·WAR 빌드 | 구현 완료 | 레퍼런스 앱 SCM 자동 실행 및 최종 JSP 격리 호환 성공 | [CI #6](verification/1127-notice-ci-build-6-auto.log) · [최종 앱](verification/1127-pr21-final-compatibility.log) |
+| CICD2 | Docker 이미지 · ECR 등록 | 구현 완료 | 레퍼런스 앱 ECR 자동 등록 성공, 최종 JSP ECR 자동 실행 증빙 대기 | [CI #6](verification/1127-notice-ci-build-6-auto.log) |
+| CICD3 | Ansible 후보 배포 · 상태 검사 | 정적 앱 완료, 실제 앱 준비 | 정적 Green 갱신/양쪽 상태 확인, 실제 JSP RDS/EFS 대기 | [CD #4](verification/1127-notice-cd-build-4-deploy.log) |
+| CICD4 | 검증 후 전환 · 자동 롤백 | 정적 앱 완료, 실제 앱 통합 대기 | 정적 앱 자동 전환·복귀 및 341/341 관측 | [Release #5](verification/1127-notice-release-build-5-rollback.log) · [연속 요청](verification/1127-alb-continuity-summary.md) |
+
+---
+
+## 2026-11-27 · DAY 2 오후 최종 앱 및 EFS 인계 / 저장소 정리
+
+**확인한 결과**
+- 레퍼런스 앱 SCM 자동 CI/ECR [#6](verification/1127-notice-ci-build-6-auto.log). EKS Blue/Green 정적 후보 갱신 [CD #4](verification/1127-notice-cd-build-4-deploy.log), ALB 전환 및 합성 실패 복귀 [Release #5](verification/1127-notice-release-build-5-rollback.log).
+- [연속 HTTP 시험](verification/1127-alb-continuity-summary.md): 180초 341/341 성공, 실패 0, Blue 301/Green 40. 전환 확인 20.23초, 복귀 확인 21.56초(실제 업무 RTO가 아님).
+- [동적 Plan #2](verification/1127-notice-plan-build-2.log), [CI→Plan parent](verification/1127-notice-handoff-build-2.log)/[child](verification/1127-notice-plan-build-3-upstream.log) 자동 호출 99초. [Plan #5](verification/1127-notice-plan-build-5-functional.log) 격리 H2 실제 HTTP CRUD 22초, 전체 39초, Python 19/19.
+- 최종 앱 JSP/boarddb PR #21 병합(0563779), 최신 PR head b21719b 기존 검증기 호환 성공. [최종 호환성 시험](verification/1127-pr21-final-compatibility.log).
+- AWS 담당자 EFS RWX Bound/Retain 및 cross-AZ 파일 생성·조회·수정·SHA-256 일치 보고. 앱 자체의 실제 EFS 접근 미검증. [인계](kubernetes/NOTICE-PROD.md).
+- PR #18/#19 병합 완료. PR #20은 최신 JSP main 기반으로 정리하며 UID/GID 이미지 및 운영 렌더러는 미검증 초안으로 구분한다. 정식 CI 자동 Plan 및 실제 배포는 활성화하지 않음.
+
+**남은 작업** — 최종 main CI/ECR 자동 실행 증빙, UID/GID 1500 이미지 격리 시험, RDS boarddb 및 Secret/공용 PVC 인계, 실제 동적 CD/Release 통합, 두 실제 앱 버전 전환·복귀, 첨부 및 데이터 이관 무결성, 장애 시험. [이미지 색인](evidence/2026-11-27/README.md)은 등록, PNG 원본 바이너리 및 연속 요청 CSV는 미등록. 기존 성공 Job 재실행 불필요.
 
 ---
 

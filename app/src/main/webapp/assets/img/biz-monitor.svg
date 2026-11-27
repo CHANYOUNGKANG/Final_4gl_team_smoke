@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" preserveAspectRatio="xMidYMid slice">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#15213d"/><stop offset="1" stop-color="#070c19"/></linearGradient>
+<radialGradient id="g" cx=".7" cy=".35" r=".6"><stop offset="0" stop-color="#c9a56b" stop-opacity=".28"/><stop offset="1" stop-color="#c9a56b" stop-opacity="0"/></radialGradient>
+<pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#f3eee3" opacity=".08"/></pattern>
+</defs>
+<rect width="800" height="520" fill="url(#bg)"/>
+<rect width="800" height="520" fill="url(#dots)"/>
+<rect width="800" height="520" fill="url(#g)"/>
+<line x1="80" y1="120" x2="720" y2="120" stroke="#f3eee3" stroke-opacity=".06"/>
+<line x1="80" y1="190" x2="720" y2="190" stroke="#f3eee3" stroke-opacity=".06"/>
+<line x1="80" y1="260" x2="720" y2="260" stroke="#f3eee3" stroke-opacity=".06"/>
+<line x1="80" y1="330" x2="720" y2="330" stroke="#f3eee3" stroke-opacity=".06"/>
+<line x1="80" y1="400" x2="720" y2="400" stroke="#f3eee3" stroke-opacity=".06"/>
+<polyline points="80,325 100,327 120,355 140,351 160,350 180,354 200,329 220,328 240,335 260,354 280,323 300,307 320,276 340,296 360,308 380,273 400,306 420,337 440,140 460,140 480,150 500,150 520,150 540,150 560,150 580,150 600,150 620,150 640,150 660,173 680,172 700,180 720,178" fill="none" stroke="#e6cf9f" stroke-width="2.6" stroke-linejoin="round"/>
+<polygon points="80,440 80,325 100,327 120,355 140,351 160,350 180,354 200,329 220,328 240,335 260,354 280,323 300,307 320,276 340,296 360,308 380,273 400,306 420,337 440,140 460,140 480,150 500,150 520,150 540,150 560,150 580,150 600,150 620,150 640,150 660,173 680,172 700,180 720,178 720,440" fill="#c9a56b" opacity=".10"/>
+<circle cx="450" cy="140" r="9" fill="#e6cf9f"/><circle cx="450" cy="140" r="24" fill="#c9a56b" opacity=".18"/>
+<g transform="translate(560 70)"><rect width="110" height="72" rx="8" fill="#0d1629" stroke="#e6cf9f" stroke-width="2"/><path d="M6 8 L55 44 L104 8" fill="none" stroke="#e6cf9f" stroke-width="2"/></g>
+<path d="M462 132 C500 110 520 110 556 108" fill="none" stroke="#c9a56b" stroke-dasharray="3 6" stroke-width="1.6"/>
+</svg>
