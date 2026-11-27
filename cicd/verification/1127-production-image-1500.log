@@ -1,0 +1,21 @@
+# User-provided terminal screenshots, normalized; account ID, IPs, session identifiers omitted.
+2026-11-27 KST
+Source commit: c880a58e16c59aac782bece299f14b8144f1f8a5
+Maven BUILD SUCCESS, total 6.021s, finished 15:42:00
+Dockerfile.prod-draft build FINISHED 7.0s
+uid=1500(app) gid=1500(app) groups=1500(app)
+owner=1500 group=1500 mode=755
+UID GID 1500 STORAGE CHECK OK
+LOCAL CI IMAGE ID VERIFIED
+NOTICE HEALTH VERSION LIST OK: DB=UP STORAGE=UP slot=green commit=c880a58
+NOTICE CHECK CREATE READ HIDDEN OK
+NOTICE CHECK DELETE VERIFIED: HTTP 204 then 404
+NOTICE FUNCTIONAL CHECK OK
+NOTICE ISOLATED H2 FUNCTIONAL CHECK OK: no production data used
+PRODUCTION IMAGE COMPATIBILITY SUCCESS
+Local image tag: notice-ci:c880a58e16c59aac782bece299f14b8144f1f8a5-1795761712
+# Storage test uses a disposable local Docker volume, not EFS. No RDS, ECR push, or EKS mutation.
+# Separate Ansible read-only check: named PVC get forbidden; named Secret get permission no.
+# Both existing deployments 2/2, four Pods Running, zero restarts.
+# Request only named PVC get permission; do not grant Secret get solely to check existence.
+# AWS owner should verify Secret keys and non-empty values without printing them; checker token via approved private channel.
