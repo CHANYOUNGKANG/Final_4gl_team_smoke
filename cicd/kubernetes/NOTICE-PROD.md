@@ -37,3 +37,16 @@ python3 cicd/kubernetes/render-notice-prod.py --config /opt/devops/notice-prod.l
 - 모든 후보 Pod의 /health(DB/storage UP), /version(color/commit), /notices 검사. 보호된 검증 API로 숨김 글 생성·조회·삭제 및 정리 확인. 토큰/본문 민감값 미출력. 앱 코드 계약 및 반환 형식 확인 후 구현한다.
 - 실제 앱 두 버전으로 전환·복귀 반복 시험, 관리자 세션/CSRF 및 첨부 쓰기·다운로드 무결성 확인. 여러 Pod 및 슬롯 간 세션 유지 정책 별도 확정.
 - CI → CD → Release 호출은 별도 PR. 승인된 앱 변경만 트리거하고, immutable digest/commit 검증, 활성 슬롯 동적 감지, 공유 잠금, 실패 시 배포 차단 및 운영 복귀를 구현. 현재의 정적 버전 고정 CD/Release 코드를 업무 앱에 직접 재사용하지 않는다.
+
+## DAY 2 추가 인계 및 동적 PLAN (11/27)
+
+AWS 담당자와 논의된 방향: RDS MariaDB 10.11 / smoke_board / 3306, EFS RWX 공용 PVC를 실시간 첨부 저장소로 사용, S3는 온프레미스 첨부 이관 및 객체 저장, CloudFront 다운로드 및 S3 동기화 구현 방식은 추가 협의, Redis 범위는 협의, 도메인/ACM 보류로 HTTP 80 테스트 우선. 구축 완료 정보 및 실제 Secret 값은 아직 인계 전이다. 민감한 사용자/관리자 요청이나 실제 검증 토큰은 외부 HTTP로 전송하지 않는다.
+
+### Dynamic planner (read-only)
+- `cicd/ansible/notice-dynamic-plan.py`: 실제 HTTP 80 기본 리스너 가중치, TG 매핑 및 기존 Deployment/Pod/TG 상태 조회. Blue 100/Green 0이면 Green, 반대면 Blue를 후보로 선택한다. 혼합 가중치, stickiness, 예상 외 리스너 규칙, 불일치 또는 draining은 차단. 두 슬롯 모두 현재 Healthy여야 한다.
+- `cicd/ansible/test-notice-dynamic-plan.py`: 양방향 슬롯 선택, 잘못된 가중치/대상 그룹/규칙, 중복 이미지 처리의 단위 테스트. 테스트는 AWS 연결 없이 실행된다.
+- Jenkins Pipeline Job `smoke-notice-plan`: SCM branch `*/cicd/notice-prod-integration`, script path `cicd/jenkins/Jenkinsfile.notice-plan`, no SCM polling. 첫 실행은 후보 commit/tag/digest 모두 공란. 오프라인 단위 테스트 두 파일을 먼저 실행한 후 기존 Ansible SSH 및 공유 flock으로 읽기 전용 live plan 수행.
+- 후보 입력이 있다면 commit/tag/digest 전체를 요구하고 ECR의 실제 digest 및 Jenkins/Ansible AWS 계정을 대조. 활성 이미지와 동일하면 NOOP_ALREADY_ACTIVE, 대기 이미지와 같으면 VERIFY_EXISTING_CANDIDATE, 다르면 PLAN_UPDATE_INACTIVE. 후보 미입력 시 DISCOVER_ONLY.
+- 이 검사는 실제 앱 기능 또는 후보 이미지 출처 전체를 증명하지 않으며, 계획 결과는 배포/전환 허가가 아니다. 실제 변경 직전에 다시 검사하고, 잠금을 변경과 복귀까지 유지하는 통합 실행기가 필요하다. 외부 콘솔 변경은 flock으로 차단할 수 없다.
+- 현재 CI Jenkinsfile 변경은 이 Draft 브랜치에만 있다. `NOTICE_AUTO_PLAN=true`는 main 병합 및 downstream Job 수동 검증 후에만 설정한다. 기본값 미설정/false. 성공한 ECR 단계의 commit/tag/digest를 읽어 trusted main CI Job에서만 downstream plan 호출, 실패 전파. 두 executor 이상 필요할 수 있으며 Job 대기/timeout도 검증한다. 실제 CD 및 Release mutation 호출은 아직 없음. 기존 smoke-notice-ci/CD/Release Job 설정은 유지한다.
+- 실제 업무 앱 배포 후에야 /health 및 /version, 보호된 CRUD, EFS 공유 쓰기, 스키마 호환, ALB 전환 및 롤백을 검증한다. 현재 기존 정적 앱의 실제 배포/전환 결과를 그대로 보존한다. 단위 테스트 및 live plan 실행 증빙은 아직 대기.
