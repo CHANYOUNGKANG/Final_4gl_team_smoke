@@ -29,7 +29,7 @@
     if (!SiteUtil.tokenMatches(CHECK_TOKEN, request.getHeader("X-Check-Token"))) {
         response.setStatus(401); out.print(err("unauthorized")); return;
     }
-    int id = SiteUtil.checkApiId(request.getRequestURI(), request.getContextPath());
+    int id = SiteUtil.checkApiId(String.valueOf(request.getAttribute("check.uri")), request.getContextPath());
     if (id < 0) { response.setStatus(404); out.print(err("not found")); return; }
 
     Connection conn = null; PreparedStatement ps = null; ResultSet rs = null;

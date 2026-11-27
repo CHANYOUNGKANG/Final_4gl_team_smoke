@@ -15,11 +15,14 @@ import java.io.IOException;
 public class CheckApiServlet extends HttpServlet {
 
     public static final String METHOD_ATTR = "check.method";
+    /** forward 하면 getRequestURI() 가 JSP 경로로 바뀌므로 원래 주소를 따로 넘긴다 */
+    public static final String URI_ATTR = "check.uri";
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         final String real = req.getMethod();
         req.setAttribute(METHOD_ATTR, real);
+        req.setAttribute(URI_ATTR, req.getRequestURI());
         HttpServletRequest wrapped = new HttpServletRequestWrapper(req) {
             @Override
             public String getMethod() {

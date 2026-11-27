@@ -137,7 +137,7 @@ jobs:
         working-directory: app
         run: |
           set -x
-          curl -fs localhost:8080/notices | grep -q '홈페이지 리뉴얼 오픈'
+          curl -fs localhost:8080/notices | grep -q '홈페이지 서비스 클라우드 이전 완료 안내'
           curl -fs 'localhost:8080/notices?cat=%EC%A0%90%EA%B2%80' | grep -q '백업 자동화'
           id=$(curl -fs -X POST localhost:8080/api/check/notices -H "X-Check-Token: $CHECK_TOKEN" \
                 -H 'Content-Type: application/json' -d '{"title":"ci-check","content":"mariadb"}' \
