@@ -1,0 +1,34 @@
+# User-provided console excerpt, normalized; management URLs and private backup filename omitted.
+2026-11-27 KST
+12:05:57 Source
+12:05:58 Checking out Revision 661ddfcf225bd64a7ec2d9efb2c601a6a39e786e
+12:05:58 RELEASE PYTHON SYNTAX OK
+12:06:07 ALB WEIGHTS blue=100 green=0; default rule only
+12:06:12 SLOT blue POD_HTTP=200 x2 VERSION=test-v2 HEALTHY=2 TARGETS_MATCH=2
+12:06:16 SLOT green POD_HTTP=200 x2 VERSION=test-v4 HEALTHY=2 TARGETS_MATCH=2
+12:06:19 PRIVATE BACKUP SAVED: [PRIVATE_FILENAME]
+12:06:19 ALB SWITCH REQUEST blue=0 green=100
+12:06:21 ALB CHECK attempt=1 version=test-v4 result=RETRY
+12:06:24 ALB CHECK attempt=2 version=test-v4 result=RETRY
+12:06:27 ALB CHECK attempt=3 version=test-v4 result=RETRY
+12:06:30 ALB CHECK attempt=4 version=test-v4 result=RETRY
+12:06:33 ALB CHECK attempt=5 version=test-v4 result=PASS
+12:06:35 ALB CHECK attempt=6 version=test-v4 result=PASS
+12:06:39 ALB CHECK attempt=7 version=test-v4 result=PASS
+12:06:39 ALB SWITCH VERIFIED elapsed_s=20.23
+12:06:39 RELEASE CHECK FAILED: intentional post-switch assertion failure; no Pod failure injected
+12:06:42 ALB CHECK attempt=1 version=test-v2 result=RETRY
+12:06:45 ALB CHECK attempt=2 version=test-v2 result=RETRY
+12:06:48 ALB CHECK attempt=3 version=test-v2 result=RETRY
+12:06:51 ALB CHECK attempt=4 version=test-v2 result=RETRY
+12:06:54 ALB CHECK attempt=5 version=test-v2 result=PASS
+12:06:57 ALB CHECK attempt=6 version=test-v2 result=PASS
+12:07:00 ALB CHECK attempt=7 version=test-v2 result=PASS
+12:07:01 ROLLBACK VERIFIED blue=100 green=0 elapsed_s=21.56
+12:07:01 RELEASE ROLLBACK TEST OK: synthetic assertion failure
+12:07:01 NOTICE RELEASE OK: mode=ROLLBACK_TEST; build=5
+Finished: SUCCESS
+
+# AWS owner handoff (reported by teammate): five ELBv2 Describe permissions and listener-scoped ModifyListener added to smoke-ansible-role; existing IAM/RBAC preserved. Worker capacity for one surge Pod confirmed by teammate. Live write exercised by successful tests; policy scope is teammate-reported, not independently audited.
+# Independent continuity screenshot: visible requests 12:06:23.668–12:06:47.445 HTTP 200 PASS; last visible Blue before first Green 12:06:31.572,200,test-v2,PASS; first visible Green 12:06:32.105,200,test-v4,PASS. Screenshot ends before observed rollback completion. Full CSV and FINAL RESULT pending; no claim of zero failures across full window.
+# Static fixtures only, synthetic assertion failure, not real outage. Total pipeline time 64s; switch/rollback verification time is not downtime or production RTO.
