@@ -13,3 +13,10 @@ Job: smoke-notice-mail-test, Pipeline script from SCM, repository team repo, bra
 정적 release Jenkinsfile에 SEND_RELEASE_MAIL opt-in 추가. 기본 false, VERIFY 모드는 알림 미발송. 정확한 원격 결과/exit code를 확인하고 성공 전환, 합성 롤백 시험, 실제 실패 후 복귀 확인, 미확인을 구분한다. 일반 CI 실패가 롤백 성공을 의미하지 않는다. 메일 실패는 배포 결과를 뒤집거나 트래픽 변경을 재시도하지 않는다. 정적 release는 이미 시험 완료한 과거 fixture 전용이므로 메일 시험 때문에 재실행하지 않는다. 현재 운영 Job이 사용하는 브랜치는 변경하지 않았다. 실제 업무 앱 동적 CD/Release 구현 시 동일한 명시적 결과 계약을 사용하고 커밋/색상/rollback 검증 여부를 추가한다. 제목은 [배포], 시험은 [시험] 또는 [정적시험]으로 식별.
 
 현재 코드 준비 상태: 실제 SMTP 주소, 방화벽 및 경로, 수신 테스트 대기. 운영 배포/ALB 변경 없음. Jenkins Groovy 구문 및 실행 시험은 Jenkins에서 별도 확인.
+
+## VPN 전 임시 경로: SNS → SQS → 사내 메일 (이 절 우선)
+
+- AWS 담당자가 Standard SNS topic ARN과 SQS 연동 완료 여부를 전달한다. Jenkins 전역 환경 변수 SMOKE_DEPLOY_SNS_TOPIC_ARN으로 실제 ARN을 비공개 설정하고 Jenkins EC2 IAM role에는 해당 topic에만 sns:Publish를 허용한다. Jenkins는 SQS 읽기 권한 불필요. KMS 암호화 topic이라면 필요한 제한된 KMS 권한은 AWS 담당자가 검토한다.
+- SQS subscription RawMessageDelivery=false 권장: SNS JSON envelope Subject 및 Message를 사용하여 메일 제목/본문 구성. Subject는 [배포]로 시작, Message는 평문 UTF-8, Event ID 포함. SQS 중복 수신 가능하므로 소비자는 MessageId/Event ID 중복 처리, 메일 성공 확인 후 삭제, 실패 시 재시도 및 DLQ를 협의한다. 실제 ARN, 토큰, DB 정보, 내부 URL은 공개 코드나 알림 본문에 넣지 않는다.
+- 별도 Job smoke-notice-sns-test, branch */cicd/deployment-mail-notification, script cicd/jenkins/Jenkinsfile.notice-sns-test, CONFIRM_SNS_TEST=true 한 번 실행. 단위 테스트 6개와 SNS acceptance MessageId 확인 후 준호 씨에게 메일 도착 확인. SNS 발행 성공은 최종 수신 성공과 다르다. 전송 상태 불명 시 무조건 재발행하지 않는다.
+- 기존 SMTP Job 초안은 VPN 이후 참고용으로 보존; 지금 사용하지 않는다. 정적 release는 SEND_RELEASE_SNS 기본 false, VERIFY 모드는 전송하지 않는다. 정적 release 재실행 없이 독립 Job으로 테스트한다. 동적 업무 앱 release에는 동일 발행기와 정확한 결과 계약을 후속 연동해야 한다. SNS 실패가 ALB rollback을 유발하지 않는다. 실제 Jenkins 설정 및 실행은 미검증.
