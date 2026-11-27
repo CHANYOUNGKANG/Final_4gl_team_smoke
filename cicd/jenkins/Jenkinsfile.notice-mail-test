@@ -1,0 +1,23 @@
+// Manual SMTP smoke test only. Does not touch AWS, RDS, Kubernetes or ALB.
+pipeline {
+  agent any
+  options { timestamps(); disableConcurrentBuilds(); skipDefaultCheckout(); timeout(time: 5, unit: 'MINUTES') }
+  parameters {
+    booleanParam(name: 'CONFIRM_MAIL_TEST', defaultValue: false, description: 'Send exactly one labelled internal test email')
+  }
+  stages {
+    stage('SMTP test') {
+      steps {
+        script {
+          if (!params.CONFIRM_MAIL_TEST) { error('Explicit mail test confirmation required') }
+          mail to: 'smoke@smoke.local',
+               from: 'jenkins@smoke.local',
+               charset: 'UTF-8',
+               subject: "[배포] [시험] ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+               body: "SMTP 연결 시험입니다. 실제 배포 또는 롤백은 수행하지 않았습니다.\n${env.BUILD_URL}"
+          echo 'SMTP SEND ACCEPTED; verify inbox separately'
+        }
+      }
+    }
+  }
+}
