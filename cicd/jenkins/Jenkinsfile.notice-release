@@ -1,0 +1,18 @@
+// Read-only release preflight. No SCM trigger or AWS write operation.
+pipeline {
+  agent any
+  options { timestamps(); disableConcurrentBuilds(); skipDefaultCheckout(); timeout(time: 10, unit: 'MINUTES') }
+  stages {
+    stage('Source') { steps { checkout scm; sh 'git rev-parse HEAD' } }
+    stage('ALB preflight on Ansible host') {
+      steps {
+        sh '''
+          set -eu
+          test -n "$SMOKE_ANSIBLE_HOST"
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=10 -i /var/lib/jenkins/.ssh/smoke-deploy "ansadmin@$SMOKE_ANSIBLE_HOST" "flock -n /opt/devops/.notice-cd.lock python3 -" < cicd/ansible/alb-release-verify.py
+        '''
+      }
+    }
+  }
+  post { success { echo 'NOTICE RELEASE PREFLIGHT OK' } }
+}
