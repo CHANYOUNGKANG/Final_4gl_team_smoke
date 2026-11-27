@@ -16,12 +16,23 @@ pipeline {
   stages {
     stage('Source') {
       steps {
-        checkout scm
         script {
+          def gitInfo = checkout scm
           env.BUILD_COMMIT = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
           if (params.NOTICE_ECR_PUSH && !params.NOTICE_DOCKER_CHECK) {
             error('ECR push requires NOTICE_DOCKER_CHECK')
           }
+          def fromScm = !currentBuild.getBuildCauses('hudson.triggers.SCMTrigger$SCMTriggerCause').isEmpty()
+          def autoPublish = fromScm && env.NOTICE_AUTO_PUBLISH == 'true'
+          if (autoPublish) {
+            def branch = (gitInfo.GIT_BRANCH ?: env.GIT_BRANCH ?: '').replaceFirst('^refs/remotes/', '').replaceFirst('^origin/', '')
+            if (!(branch in ['main', 'cicd/notice-ci-integration']) || env.JOB_NAME != 'smoke-notice-ci') {
+              error('Auto-publish is restricted to the trusted notice CI job and branches')
+            }
+          }
+          env.NOTICE_RUN_DOCKER = (params.NOTICE_DOCKER_CHECK || autoPublish) ? 'true' : 'false'
+          env.NOTICE_RUN_ECR = (params.NOTICE_ECR_PUSH || autoPublish) ? 'true' : 'false'
+          echo "NOTICE CI MODE: scm=${fromScm} autoPublish=${autoPublish} docker=${env.NOTICE_RUN_DOCKER} ecr=${env.NOTICE_RUN_ECR}"
         }
         sh 'git log -1 --format="commit=%H%nsubject=%s"'
       }
@@ -54,13 +65,13 @@ pipeline {
       }
     }
     stage('Notice Docker + H2 Check') {
-      when { expression { params.NOTICE_DOCKER_CHECK } }
+      when { expression { env.NOTICE_RUN_DOCKER == 'true' } }
       steps {
         sh 'bash cicd/docker/build-notice-ci.sh'
       }
     }
     stage('Notice ECR Push + Verify') {
-      when { expression { params.NOTICE_ECR_PUSH } }
+      when { expression { env.NOTICE_RUN_ECR == 'true' } }
       steps {
         sh 'bash cicd/docker/push-notice-ci.sh'
         archiveArtifacts artifacts: 'app/target/notice-ecr-image.txt', fingerprint: true
