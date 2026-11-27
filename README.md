@@ -32,13 +32,12 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11.21 – 12.09
 | [`6499afd`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/6499afdb8d1cd577a29e15107ff5994b96031447) docs(cicd): consolidate DAY2 meeting and afternoon deployment evidence | CHANYOUNGKANG | 11/27 17:28 |
 | [`c2e7dc0`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/c2e7dc0b1d8314da75595c340aecaa56023bbff7) Merge pull request #22 from CHANYOUNGKANG/cicd/production-image-1500 | CHANYOUNGKANG | 11/27 16:23 |
 | [`5e8aa31`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/5e8aa31d200a82211ee17452711497d14e7b4534) docs(cicd): record RDS handoff and least-privilege preflight findings | CHANYOUNGKANG | 11/27 15:43 |
-| [`1f9eb5d`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/1f9eb5d0bc4f5a0bd344a403650b769e2a9be88e) docs(cicd): record production image local storage and functional verif… | CHANYOUNGKANG | 11/27 15:43 |
 
 **열린 이슈·PR**　[#11 [인계] 온프레미스 DB 주소 대역 확정 및 AWS 공지 앱 배포 조건 ](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11)　·　[#1 팀 구축 진행률 · 구현 근거와 시연 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)
 
 **작업 브랜치 27개**　[`aws/eks-day1-handoff-record`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/aws/eks-day1-handoff-record)　[`aws/woobin-day1-jenkins-ec2`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/aws/woobin-day1-jenkins-ec2)　[`chore/security-automation`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/chore/security-automation)　[`cicd/alb-release-integration`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/alb-release-integration)　[`cicd/chanyoung-day1-first-build`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/chanyoung-day1-first-build)　[`cicd/day2-evidence`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/day2-evidence)　[`cicd/day2-final-records`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/day2-final-records)　[`cicd/deployment-mail-notification`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/deployment-mail-notification)　[`cicd/notice-cd-integration`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/notice-cd-integration)　[`cicd/notice-ci-integration`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/notice-ci-integration)　[`cicd/notice-prod-candidate`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/notice-prod-candidate)　[`cicd/notice-prod-integration`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/notice-prod-integration)
 
-<sub>11/27 17:30 KST 기준 · main push와 매일 00:05에 갱신</sub>
+<sub>11/28 08:21 KST 기준 · main push와 매일 00:05에 갱신</sub>
 <!-- smoke-activity:end -->
 
 <details>
