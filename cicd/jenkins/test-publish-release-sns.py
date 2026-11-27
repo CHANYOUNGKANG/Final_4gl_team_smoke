@@ -16,6 +16,7 @@ class TestSNS(unittest.TestCase):
             self.assertTrue(subject.startswith("[배포]"))
             self.assertLess(len(subject), 100)
             self.assertNotIn("\n", subject)
+            self.assertEqual(body.splitlines()[0], subject)
             self.assertIn("Event ID:", body)
     def test_unknown(self):
         with self.assertRaises(ValueError): m.build_message(self.env(), "SUCCESS")
