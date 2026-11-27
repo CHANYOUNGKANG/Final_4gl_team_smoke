@@ -35,7 +35,7 @@
 
 **다음 작업**
 - 이준호: 팀 표준 앱 `/health` 재확인 → Grafana 장애 알림·`/health` 감시 → 백업 실패 메일 시험 → 플레이북 원본 사본 교체
-- 이우빈: SNS 토픽·SQS·온프레미스 수신 전용 최소 권한 (인계 이슈) · RDS·S3 복원 후 이준호와 기준값 대조
+- 이우빈: SNS 토픽·SQS·온프레미스 수신 전용 최소 권한 (이슈 #29) · RDS·S3 복원 후 이준호와 기준값 대조
 - 강찬영: PR #23 SNS 발행 시험 메시지 → smoke@ 수신 확인
 
 **증빙** — [evidence/2026-11-27](evidence/2026-11-27/) · [확인 기록](verification/1127-ops-check.md) · [출력 사본](logs/1127-terminal-transcript.md) · PR #21 · CI/CD PR #23 · 이슈 #11

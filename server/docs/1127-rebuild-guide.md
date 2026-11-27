@@ -209,7 +209,7 @@ curl -s localhost:9100/metrics | head
 | 대상 | 항목 | 상태 |
 | --- | --- | --- |
 | 이우빈 | 백업 묶음(덤프·첨부·해시 목록)·기준값 → RDS·S3 복원 후 대조 | 인계 자료 준비 완료, 대조 대기 |
-| 이우빈 | SNS 토픽 · SQS 대기열(`RawMessageDelivery=false`) · 온프레미스 수신 전용 최소 권한 | 요청 ([이슈](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues)) |
+| 이우빈 | SNS 토픽 · SQS 대기열(`RawMessageDelivery=false`) · 온프레미스 수신 전용 최소 권한 | 요청 ([이슈 #29](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/29)) |
 | 이우빈·강찬영 | 첨부 저장 방식 (EFS 또는 S3) | 이슈 #11 에서 결정 대기 |
 | 강찬영 | 배포 결과·롤백 알림 SNS 발행 (`[배포]` 제목) | PR #23 진행 중 |
 | 강찬영 | 팀 표준 앱 계약 (`/health`·검증 API·환경 변수) | PR #21 병합 완료 |
