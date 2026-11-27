@@ -1,0 +1,250 @@
+# User-provided Jenkins console paste, normalized and identifiers masked; 2026-11-27 KST.
+Started by an SCM change
+Obtained cicd/jenkins/Jenkinsfile.notice-ci from git https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke.git
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/lib/jenkins/workspace/smoke-notice-ci
+[Pipeline] {
+[Pipeline] timestamps
+[Pipeline] {
+[Pipeline] timeout
+11:03:08  Timeout set to expire in 20 min
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Source)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] checkout
+11:03:09  Selected Git installation does not exist. Using Default
+11:03:09  The recommended git tool is: NONE
+11:03:09  No credentials specified
+11:03:09   > /usr/bin/git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/smoke-notice-ci/.git # timeout=10
+11:03:09  Fetching changes from the remote Git repository
+11:03:09   > /usr/bin/git config remote.origin.url https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke.git # timeout=10
+11:03:09  Fetching upstream changes from https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke.git
+11:03:09   > /usr/bin/git --version # timeout=10
+11:03:09   > git --version # 'git version 2.43.0'
+11:03:09   > /usr/bin/git fetch --tags --force --progress -- https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+11:03:09   > /usr/bin/git rev-parse refs/remotes/origin/cicd/notice-ci-integration^{commit} # timeout=10
+11:03:09  Checking out Revision aff033cb9ddef109a972416a65bbfd53e64a8bab (refs/remotes/origin/cicd/notice-ci-integration)
+11:03:09   > /usr/bin/git config core.sparsecheckout # timeout=10
+11:03:09   > /usr/bin/git checkout -f aff033cb9ddef109a972416a65bbfd53e64a8bab # timeout=10
+11:03:09  Commit message: "test(cicd): trigger SCM auto-publish verification after opt-in"
+11:03:09   > /usr/bin/git rev-list --no-walk 2f15d724a9067c8af348867a2861f50c45dfa83a # timeout=10
+[Pipeline] sh
+11:03:10  + git rev-parse HEAD
+[Pipeline] echo
+11:03:10  NOTICE CI MODE: scm=true autoPublish=true docker=true ecr=true
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sh
+11:03:10  + git log -1 --format=commit=%H%nsubject=%s
+11:03:10  commit=aff033cb9ddef109a972416a65bbfd53e64a8bab
+11:03:10  subject=test(cicd): trigger SCM auto-publish verification after opt-in
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Java 17 + WAR)
+[Pipeline] dir
+11:03:10  Running in /var/lib/jenkins/workspace/smoke-notice-ci/app
+[Pipeline] {
+[Pipeline] sh
+11:03:10  + set -eu
+11:03:10  + export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+11:03:10  + export PATH=/usr/lib/jvm/java-17-openjdk-amd64/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
+11:03:10  + test -x /usr/lib/jvm/java-17-openjdk-amd64/bin/java
+11:03:10  + java -version
+11:03:10  openjdk version "17.0.21.1" 2026-11-17
+11:03:10  OpenJDK Runtime Environment (build 17.0.21.1+2-1-24.04.1-Ubuntu)
+11:03:10  OpenJDK 64-Bit Server VM (build 17.0.21.1+2-1-24.04.1-Ubuntu, mixed mode, sharing)
+11:03:10  + mvn -v
+11:03:11  Apache Maven 3.8.7
+11:03:11  Maven home: /usr/share/maven
+11:03:11  Java version: 17.0.21.1, vendor: Ubuntu, runtime: /usr/lib/jvm/java-17-openjdk-amd64
+11:03:11  Default locale: en, platform encoding: UTF-8
+11:03:11  OS name: "linux", version: "7.0.0-1018-aws", arch: "amd64", family: "unix"
+11:03:11  + mvn -B -ntp clean package
+11:03:12  [INFO] Scanning for projects...
+11:03:13  [INFO] 
+11:03:13  [INFO] ------------------------< kr.co.haedeun:notice >------------------------
+11:03:13  [INFO] Building haedeun-notice 1.0.0
+11:03:13  [INFO] --------------------------------[ war ]---------------------------------
+11:03:14  [INFO] 
+11:03:14  [INFO] --- maven-clean-plugin:3.3.2:clean (default-clean) @ notice ---
+11:03:14  [INFO] Deleting /var/lib/jenkins/workspace/smoke-notice-ci/app/target
+11:03:14  [INFO] 
+11:03:14  [INFO] --- maven-resources-plugin:3.3.1:resources (default-resources) @ notice ---
+11:03:14  [INFO] Copying 1 resource from src/main/resources to target/classes
+11:03:14  [INFO] Copying 10 resources from src/main/resources to target/classes
+11:03:14  [INFO] 
+11:03:14  [INFO] --- maven-compiler-plugin:3.13.0:compile (default-compile) @ notice ---
+11:03:14  [INFO] Recompiling the module because of changed source code.
+11:03:14  [INFO] Compiling 23 source files with javac [debug parameters release 17] to target/classes
+11:03:17  [INFO] 
+11:03:17  [INFO] --- maven-resources-plugin:3.3.1:testResources (default-testResources) @ notice ---
+11:03:17  [INFO] Copying 1 resource from src/test/resources to target/test-classes
+11:03:17  [INFO] 
+11:03:17  [INFO] --- maven-compiler-plugin:3.13.0:testCompile (default-testCompile) @ notice ---
+11:03:17  [INFO] Recompiling the module because of changed dependency.
+11:03:17  [INFO] Compiling 1 source file with javac [debug parameters release 17] to target/test-classes
+11:03:18  [INFO] 
+11:03:18  [INFO] --- maven-surefire-plugin:3.2.5:test (default-test) @ notice ---
+11:03:18  [INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+11:03:18  [INFO] 
+11:03:18  [INFO] -------------------------------------------------------
+11:03:18  [INFO]  T E S T S
+11:03:18  [INFO] -------------------------------------------------------
+11:03:19  [INFO] Running kr.co.haedeun.notice.NoticeAppTests
+11:03:19  11:03:19.852 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [kr.co.haedeun.notice.NoticeAppTests]: NoticeAppTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+11:03:20  11:03:20.084 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration kr.co.haedeun.notice.NoticeApplication for test class kr.co.haedeun.notice.NoticeAppTests
+11:03:21  
+11:03:21    .   ____          _            __ _ _
+11:03:21   /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+11:03:21  ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+11:03:21   \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+11:03:21    '  |____| .__|_| |_|_| |_\__, | / / / /
+11:03:21   =========|_|==============|___/=/_/_/_/
+11:03:21  
+11:03:21   :: Spring Boot ::                (v3.3.5)
+11:03:21  
+11:03:21  2026-11-27T11:03:20.913+09:00  INFO 203100 --- [haedeun-notice] [           main] kr.co.haedeun.notice.NoticeAppTests      : Starting NoticeAppTests using Java 17.0.21.1 with PID 203100 (started by jenkins in /var/lib/jenkins/workspace/smoke-notice-ci/app)
+11:03:21  2026-11-27T11:03:20.917+09:00  INFO 203100 --- [haedeun-notice] [           main] kr.co.haedeun.notice.NoticeAppTests      : The following 1 profile is active: "test"
+11:03:22  2026-11-27T11:03:22.391+09:00  INFO 203100 --- [haedeun-notice] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+11:03:22  2026-11-27T11:03:22.479+09:00  INFO 203100 --- [haedeun-notice] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 78 ms. Found 3 JPA repository interfaces.
+11:03:24  2026-11-27T11:03:23.626+09:00  INFO 203100 --- [haedeun-notice] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+11:03:24  2026-11-27T11:03:23.791+09:00  INFO 203100 --- [haedeun-notice] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+11:03:24  2026-11-27T11:03:23.873+09:00  INFO 203100 --- [haedeun-notice] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+11:03:24  2026-11-27T11:03:24.502+09:00  INFO 203100 --- [haedeun-notice] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+11:03:24  2026-11-27T11:03:24.544+09:00  INFO 203100 --- [haedeun-notice] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+11:03:25  2026-11-27T11:03:24.959+09:00  INFO 203100 --- [haedeun-notice] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:notice user=SA
+11:03:25  2026-11-27T11:03:24.961+09:00  INFO 203100 --- [haedeun-notice] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+11:03:27  2026-11-27T11:03:26.645+09:00  INFO 203100 --- [haedeun-notice] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+11:03:27  2026-11-27T11:03:26.766+09:00  INFO 203100 --- [haedeun-notice] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+11:03:27  2026-11-27T11:03:27.608+09:00  INFO 203100 --- [haedeun-notice] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+
+```
+
+
+11:03:29  2026-11-27T11:03:29.179+09:00  INFO 203100 --- [haedeun-notice] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name users 
+
+
+11:03:30  2026-11-27T11:03:30.283+09:00  INFO 203100 --- [haedeun-notice] [           main] o.s.b.t.m.w\.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet '' 
+11:03:30  2026-11-27T11:03:30.285+09:00  INFO 203100 --- [haedeun-notice] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet '' 
+11:03:30  2026-11-27T11:03:30.287+09:00  INFO 203100 --- [haedeun-notice] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 2 ms 
+11:03:30  2026-11-27T11:03:30.336+09:00  INFO 203100 --- [haedeun-notice] [           main] kr.co.haedeun.notice.NoticeAppTests      : Started NoticeAppTests in 10.024 seconds (process running for 11.736) 
+11:03:30  2026-11-27T11:03:30.694+09:00  INFO 203100 --- [haedeun-notice] [           main] k.c.h.notice.service.AdminBootstrap      : 관리자 계정 'admin'을 admin_user 에 만들었습니다. 
+11:03:30  2026-11-27T11:03:30.829+09:00  INFO 203100 --- [haedeun-notice] [           main] k.c.h.notice.service.DemoDataSeeder      : 시연용 공지 8건을 넣었습니다 (APP_SEED=true). 
+
+
+11:03:31  OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended 
+
+
+11:03:34  [INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 14.39 s -- in kr.co.haedeun.notice.NoticeAppTests 
+11:03:34  [INFO]  
+11:03:34  [INFO] Results: 
+11:03:34  [INFO]  
+11:03:34  [INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0 
+11:03:34  [INFO]  
+11:03:34  [INFO]  
+11:03:34  [INFO] --- maven-war-plugin:3.4.0:war (default-war) @ notice --- 
+11:03:34  [INFO] Packaging webapp 
+11:03:34  [INFO] Assembling webapp [notice] in [/var/lib/jenkins/workspace/smoke-notice-ci/app/target/notice] 
+11:03:34  [INFO] Processing war project 
+11:03:35  [INFO] Building war: /var/lib/jenkins/workspace/smoke-notice-ci/app/target/notice.war 
+
+
+11:03:37  [INFO]  
+11:03:37  [INFO] --- spring-boot-maven-plugin:3.3.5:repackage (repackage) @ notice --- 
+
+
+11:03:38  [INFO] Replacing main artifact /var/lib/jenkins/workspace/smoke-notice-ci/app/target/notice.war with repackaged archive, adding nested dependencies in BOOT-INF/. 
+11:03:38  [INFO] The original artifact has been renamed to /var/lib/jenkins/workspace/smoke-notice-ci/app/target/notice.war.original 
+11:03:38  [INFO] ------------------------------------------------------------------------ 
+11:03:38  [INFO] BUILD SUCCESS 
+11:03:38  [INFO] ------------------------------------------------------------------------ 
+11:03:38  [INFO] Total time:  25.668 s 
+11:03:38  [INFO] Finished at: 2026-11-27T11:03:38+09:00 
+11:03:38  [INFO] ------------------------------------------------------------------------ 
+11:03:38  + test -s target/notice.war 
+11:03:38  + sha256sum target/notice.war 
+11:03:38  + tee target/war.sha256 
+11:03:38  6d0f12751250756ff022069b3b86ae906626ebe2ff7870dee12f6de321d5ef9a  target/notice.war 
+
+[Pipeline] } [Pipeline] // dir Post stage [Pipeline] junit 
+11:03:38  Recording test results 
+11:03:38  [Checks API] No suitable checks publisher found. [Pipeline] } [Pipeline] // stage [Pipeline] stage [Pipeline] { (Record WAR) [Pipeline] archiveArtifacts 
+11:03:38  Archiving artifacts 
+11:03:38  Recording fingerprints [Pipeline] } [Pipeline] // stage [Pipeline] stage [Pipeline] { (Notice Docker + H2 Check) [Pipeline] sh 
+11:03:39  + bash cicd/docker/build-notice-ci.sh 
+
+
+11:03:39  #0 building with "default" instance using docker driver 
+11:03:39   
+11:03:39  #1 [internal] load build definition from Dockerfile 
+11:03:39  #1 transferring dockerfile: 1.25kB 0.0s done 
+11:03:39  #1 DONE 0.0s 
+11:03:39   
+11:03:39  #2 [internal] load metadata for docker.io/library/tomcat:10.1-jre17-temurin 
+
+
+11:03:40  #2 DONE 1.1s 
+11:03:40   
+11:03:40  #3 [1/3] FROM docker.io/library/tomcat:10.1-jre17-temurin\@sha256:c6c2358e5c94d163923d3e69df5b8f4605cd2a714fc50c36b6206c6994b41820 
+11:03:40  #3 resolve docker.io/library/tomcat:10.1-jre17-temurin\@sha256:c6c2358e5c94d163923d3e69df5b8f4605cd2a714fc50c36b6206c6994b41820 0.0s done 
+11:03:40  #3 CACHED 
+11:03:40   
+11:03:40  #4 [internal] load build context 
+11:03:40  #4 transferring context: 4.82MB 0.1s 
+11:03:41  #4 transferring context: 59.13MB 0.8s done 
+11:03:41  #4 DONE 0.8s 
+11:03:41   
+11:03:41  #5 [2/3] RUN rm -rf /usr/local/tomcat/webapps/\*  && groupadd -r app && useradd -r -g app -d /usr/local/tomcat app  && mkdir -p /data/attachments  && chown -R app:app /usr/local/tomcat /data 
+
+
+11:03:45  #5 DONE 4.0s 
+11:03:45   
+11:03:45  #6 [3/3] COPY --chown=app:app app/target/notice.war /usr/local/tomcat/webapps/ROOT.war 
+11:03:45  #6 DONE 0.2s 
+11:03:45   
+11:03:45  #7 exporting to image 
+11:03:45  #7 exporting layers 
+
+
+11:03:48  #7 exporting layers 3.2s done 
+11:03:48  #7 exporting manifest sha256:b4972a8e1c6f4c0528b940c0738682522648b41c3254e7f3e56a309708ea6b32 done 
+11:03:48  #7 exporting config sha256:e81fbf8825d3ea5c77f04b6cfb823381a1cdd0c44201498d09a18c6ae21b5990 done 
+11:03:48  #7 exporting attestation manifest sha256:8e1f4395ebccf47c62d26a429493b1be419b1241b4bd933272cec7cfbbf9ebe5 0.0s done 
+11:03:48  #7 exporting manifest list sha256:cf23f6b1b0fa8f13dd475210afd5aea575a099ab4f5af64cbe534830f223bdb7 0.0s done 
+11:03:48  #7 naming to docker.io/library/notice-ci:aff033cb9ddef109a972416a65bbfd53e64a8bab-6 done 
+11:03:48  #7 unpacking to docker.io/library/notice-ci:aff033cb9ddef109a972416a65bbfd53e64a8bab-6 
+11:03:49  #7 unpacking to docker.io/library/notice-ci:aff033cb9ddef109a972416a65bbfd53e64a8bab-6 0.9s done 
+11:03:49  #7 DONE 4.2s 
+11:03:49  image=sha256:cf23f6b1b0fa8f13dd475210afd5aea575a099ab4f5af64cbe534830f223bdb7 platform=linux/amd64 user=app 
+
+
+11:03:49  b1b31222c0a233e1ee0c4175c8634a3576e3ace21164290482cac58433d9ad17 
+
+
+11:04:07  NOTICE DOCKER H2 HEALTH VERIFIED: notice-ci:aff033cb9ddef109a972416a65bbfd53e64a8bab-6 [Pipeline] } 
+
+[Pipeline] // stage [Pipeline] stage [Pipeline] { (Notice ECR Push + Verify) [Pipeline] sh 
+11:04:08  + bash cicd/docker/push-notice-ci.sh 
+
+
+11:04:10   
+11:04:10  WARNING! Your credentials are stored unencrypted in '/tmp/[TEMP_DIR]/config.json'. 
+11:04:10  Configure a credential helper to remove this warning. See 
+11:04:10  [https://docs.docker.com/go/credential-store/](https://docs.docker.com/go/credential-store/) 
+11:04:10   
+11:04:10  Login Succeeded 
+
+
+11:04:14  commit=aff033cb9ddef109a972416a65bbfd53e64a8bab 
+11:04:14  tag=notice-aff033cb9ddef109a972416a65bbfd53e64a8bab-6 
+11:04:14  digest=sha256:cf23f6b1b0fa8f13dd475210afd5aea575a099ab4f5af64cbe534830f223bdb7 
+11:04:14  NOTICE ECR PUSH VERIFIED [Pipeline] archiveArtifacts 
+11:04:14  Archiving artifacts 
+11:04:14  Recording fingerprints 
+
+[Pipeline] } [Pipeline] // stage [Pipeline] stage [Pipeline] { (Declarative: Post Actions) [Pipeline] echo 
+11:04:14  NOTICE CI OK: build=6 commit=aff033cb9ddef109a972416a65bbfd53e64a8bab [Pipeline] } [Pipeline] // stage [Pipeline] } [Pipeline] // timeout [Pipeline] } [Pipeline] // timestamps [Pipeline] } [Pipeline] // node [Pipeline] End of Pipeline Finished: SUCCESS
