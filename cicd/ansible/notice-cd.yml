@@ -23,35 +23,51 @@
         quiet: true
     - name: Check initial slots and optionally update only Green
       ansible.builtin.shell: |
-        set -euo pipefail
+        set -Eeuo pipefail
+        trap 'printf "CD ERROR: unexpected failure at shell line %s\n" "$LINENO"; exit 1' ERR
+        fail() { printf 'CD ERROR: %s\n' "$1"; exit 1; }
         k() { kubectl --context "$CTX" -n notice "$@"; }
-        [[ "$(kubectl config current-context)" == "$CTX" ]]
+        echo "CD CHECK: cluster context"
+        [[ "$(kubectl config current-context)" == "$CTX" ]] || fail "cluster context mismatch"
         image() { k get deployment "notice-$1" -o jsonpath='{.spec.template.spec.containers[?(@.name=="notice")].image}'; }
         check() (
-          slot=$1; expected=$2; port=$3
-          k rollout status "deployment/notice-$slot" --timeout=300s >/dev/null
-          [[ "$(k get deployment "notice-$slot" -o jsonpath='{.status.readyReplicas}')" == 2 ]]
+          slot=$1; expected=$2
+          echo "CD CHECK: $slot rollout"
+          k rollout status "deployment/notice-$slot" --timeout=300s >/dev/null || fail "$slot rollout status failed"
+          [[ "$(k get deployment "notice-$slot" -o jsonpath='{.status.readyReplicas}')" == 2 ]] || fail "$slot ready replicas not 2"
+          echo "CD CHECK: $slot port-forward"
           log=$(mktemp)
-          k port-forward --address 127.0.0.1 "svc/notice-$slot-svc" "$port:8080" >"$log" 2>&1 &
+          # Execute kubectl directly (not a background shell function).
+          # Let the OS assign a free loopback port to avoid stale port collisions.
+          kubectl --context "$CTX" -n notice port-forward --address 127.0.0.1 "svc/notice-$slot-svc" :8080 >"$log" 2>&1 &
           pid=$!
           trap 'kill "$pid" 2>/dev/null || true; wait "$pid" 2>/dev/null || true; rm -f "$log"' EXIT
+          port=""
           for i in $(seq 1 30); do
-            if grep -q 'Forwarding from 127.0.0.1:' "$log"; then break; fi
-            kill -0 "$pid" 2>/dev/null || exit 1
+            port=$(sed -nE 's/^Forwarding from 127[.]0[.]0[.]1:([0-9]+) -> .*/\1/p' "$log" | head -n1)
+            [[ "$port" =~ ^[0-9]+$ ]] && break
+            if ! kill -0 "$pid" 2>/dev/null; then
+              if grep -qi forbidden "$log"; then fail "$slot port-forward forbidden"; fi
+              fail "$slot port-forward process exited"
+            fi
             sleep 1
           done
-          grep -q 'Forwarding from 127.0.0.1:' "$log"
-          body=$(curl -fsS --max-time 10 -w '\n%{http_code}' "http://127.0.0.1:$port/")
-          [[ "${body##*$'\n'}" == 200 ]]
-          grep -Fq "<p id=\"version\">$expected</p>" <<<"$body"
+          [[ "$port" =~ ^[0-9]+$ ]] || fail "$slot port-forward readiness timeout"
+          echo "CD CHECK: $slot HTTP and expected version $expected"
+          body=$(curl -fsS --max-time 10 -w '\n%{http_code}' "http://127.0.0.1:$port/") || fail "$slot HTTP request failed"
+          status=$(tail -n1 <<<"$body")
+          [[ "$status" == 200 ]] || fail "$slot HTTP status not 200"
+          grep -Fq "<p id=\"version\">$expected</p>" <<<"$body" || fail "$slot version mismatch"
           echo "SLOT $slot READY=2 HTTP=200 VERSION=$expected"
         )
         old_blue="$REPO@$BLUE"
         old_green="$REPO@$GREEN"
-        [[ "$(image blue)" == "$old_blue" ]]
-        [[ "$(image green)" == "$old_green" ]]
-        check blue test-v2 18080
-        check green test-v3 18081
+        echo "CD CHECK: Blue baseline digest"
+        [[ "$(image blue)" == "$old_blue" ]] || fail "Blue baseline image mismatch or query failed"
+        echo "CD CHECK: Green baseline digest"
+        [[ "$(image green)" == "$old_green" ]] || fail "Green baseline image mismatch or query failed"
+        check blue test-v2
+        check green test-v3
         if [[ "$MODE" == VERIFY ]]; then
           echo "CD VERIFY OK: no workload or ALB mutation"
           exit 0
@@ -60,7 +76,8 @@
         [[ "$(k get deployment notice-green -o jsonpath='{.spec.template.spec.containers[0].name}')" == notice ]]
         [[ "$(k get deployment notice-green -o jsonpath='{.spec.template.spec.containers[*].name}')" == notice ]]
         patch=$(printf '[{"op":"test","path":"/spec/template/spec/containers/0/image","value":"%s"},{"op":"replace","path":"/spec/template/spec/containers/0/image","value":"%s"}]' "$old_green" "$REPO@$CANDIDATE")
-        k patch deployment notice-green --type=json -p "$patch" --dry-run=server >/dev/null
+        echo "CD CHECK: Green server-side patch dry-run"
+        k patch deployment notice-green --type=json -p "$patch" --dry-run=server >/dev/null || fail "Green server-side patch dry-run failed"
         echo "CD GREEN PATCH DRY RUN OK"
         if [[ "$MODE" == PLAN ]]; then
           echo "CD PLAN OK: no workload or ALB mutation"
@@ -70,10 +87,10 @@
         [[ "$(image blue)" == "$old_blue" ]]
         k patch deployment notice-green --type=json -p "$patch" >/dev/null
         echo "CD GREEN PATCH APPLIED"
-        check green test-v4 18081
+        check green test-v4
         [[ "$(image green)" == "$REPO@$CANDIDATE" ]]
         [[ "$(image blue)" == "$old_blue" ]]
-        check blue test-v2 18080
+        check blue test-v2
         echo "CD GREEN CANDIDATE VERIFIED: digest=$CANDIDATE; Blue unchanged; ALB untouched"
       args:
         executable: /bin/bash
