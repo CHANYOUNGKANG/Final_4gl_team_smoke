@@ -1,0 +1,57 @@
+// Read-only planner. No triggers; optional downstream invocation from trusted CI.
+pipeline {
+  agent any
+  options {
+    timestamps()
+    disableConcurrentBuilds()
+    skipDefaultCheckout()
+    timeout(time: 10, unit: 'MINUTES')
+  }
+  parameters {
+    string(name: 'CANDIDATE_COMMIT', defaultValue: '', description: 'Full SHA from successful notice CI; leave all three blank for discovery')
+    string(name: 'CANDIDATE_TAG', defaultValue: '', description: 'Immutable notice CI tag')
+    string(name: 'CANDIDATE_DIGEST', defaultValue: '', description: 'ECR SHA-256 digest from CI artifact')
+  }
+  stages {
+    stage('Source and offline tests') {
+      steps {
+        checkout scm
+        sh '''
+          set -eu
+          python3 cicd/ansible/test-notice-dynamic-plan.py
+          python3 cicd/kubernetes/test-render-notice-prod.py
+        '''
+      }
+    }
+    stage('Read-only live plan') {
+      steps {
+        sh '''
+          set +x
+          set -eu
+          : "${SMOKE_ANSIBLE_HOST:?Missing control host}"
+          case "$SMOKE_ANSIBLE_HOST" in *[!a-zA-Z0-9.-]*|[-.]* ) exit 2;; esac
+          commit="${CANDIDATE_COMMIT:-}"
+          tag="${CANDIDATE_TAG:-}"
+          digest="${CANDIDATE_DIGEST:-}"
+          remote_args=""
+          if [ -n "$commit$tag$digest" ]; then
+            echo "$commit" | grep -Eq "^[a-f0-9]{40}$"
+            echo "$tag" | grep -Eq "^notice-${commit}-[0-9]+$"
+            echo "$digest" | grep -Eq "^sha256:[a-f0-9]{64}$"
+            [ "$SMOKE_AWS_REGION" = ap-northeast-2 ] && [ "$SMOKE_ECR_REPO" = smoke-notice ]
+            account=$(aws sts get-caller-identity --query Account --output text)
+            echo "$account" | grep -Eq "^[0-9]{12}$"
+            actual=$(aws ecr describe-images --region ap-northeast-2 --registry-id "$account" --repository-name smoke-notice --image-ids "imageTag=$tag" --query "imageDetails[0].imageDigest" --output text)
+            [ "$actual" = "$digest" ]
+            remote_args="$account $digest"
+            echo "NOTICE CI IMAGE TAG/DIGEST VERIFIED"
+          fi
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=10 -i /var/lib/jenkins/.ssh/smoke-deploy "ansadmin@$SMOKE_ANSIBLE_HOST" "flock -n /opt/devops/.notice-cd.lock python3 - $remote_args" < cicd/ansible/notice-dynamic-plan.py
+        '''
+      }
+    }
+  }
+  post {
+    success { echo 'NOTICE PLAN SUCCESS: no deployment or traffic change' }
+  }
+}
