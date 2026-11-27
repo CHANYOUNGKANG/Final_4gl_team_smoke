@@ -1,18 +1,29 @@
-// Read-only release preflight. No SCM trigger or AWS write operation.
+// Manual test fixture release. VERIFY is read-only. No SCM trigger.
 pipeline {
   agent any
-  options { timestamps(); disableConcurrentBuilds(); skipDefaultCheckout(); timeout(time: 10, unit: 'MINUTES') }
+  options { timestamps(); disableConcurrentBuilds(); skipDefaultCheckout(); timeout(time: 20, unit: 'MINUTES') }
+  parameters {
+    choice(name: 'RELEASE_MODE', choices: ['VERIFY', 'ROLLBACK_TEST', 'SWITCH'], description: 'VERIFY read-only; ROLLBACK_TEST switches and restores Blue; SWITCH leaves Green active')
+    booleanParam(name: 'CONFIRM_TEST_TRAFFIC_CHANGE', defaultValue: false, description: 'AWS owner approved traffic change and no concurrent edits')
+  }
   stages {
     stage('Source') { steps { checkout scm; sh 'git rev-parse HEAD' } }
     stage('ALB preflight on Ansible host') {
       steps {
         sh '''
+          set +x
           set -eu
+          mode="${RELEASE_MODE:-VERIFY}"
+          case "$mode" in
+            VERIFY) ;;
+            SWITCH|ROLLBACK_TEST) test "$CONFIRM_TEST_TRAFFIC_CHANGE" = true ;;
+            *) exit 2 ;;
+          esac
           test -n "$SMOKE_ANSIBLE_HOST"
-          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=10 -i /var/lib/jenkins/.ssh/smoke-deploy "ansadmin@$SMOKE_ANSIBLE_HOST" "flock -n /opt/devops/.notice-cd.lock python3 -" < cicd/ansible/alb-release-verify.py
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=10 -i /var/lib/jenkins/.ssh/smoke-deploy "ansadmin@$SMOKE_ANSIBLE_HOST" "flock -n /opt/devops/.notice-cd.lock python3 - $mode" < cicd/ansible/alb-release-verify.py
         '''
       }
     }
   }
-  post { success { echo 'NOTICE RELEASE PREFLIGHT OK' } }
+  post { success { echo "NOTICE RELEASE OK: mode=${params.RELEASE_MODE}; build=${env.BUILD_NUMBER}" } }
 }
