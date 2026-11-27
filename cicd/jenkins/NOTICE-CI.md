@@ -41,3 +41,7 @@ Jenkins 관리 → System → Global properties → Environment variables에 `NO
 - ECR: push digest와 원격 조회 digest 일치.
 - 실제 MariaDB/RDS, EFS, EKS, ALB, Blue/Green 전환은 별도 검증. [인계 이슈 #11](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11).
 - 작은 Jenkins 인스턴스에서 두 Job 동시 빌드를 피하고 디스크/메모리 상태를 확인한다. Docker 검사 시 운영 DB 변수/Secret을 전달하지 않는다.
+
+## 자동 등록 검증 요청 · 2026-11-27
+
+Jenkins 전역 환경 변수 `NOTICE_AUTO_PUBLISH=true` 설정을 담당자가 확인한 뒤 SCM 변경을 발생시킨다. 이번 변경은 문서만 수정하며 EKS/ALB에는 영향을 주지 않는다. 자동 실행 결과와 ECR digest를 확인하기 전에는 성공으로 기록하지 않는다.
