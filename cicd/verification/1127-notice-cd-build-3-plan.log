@@ -1,0 +1,28 @@
+# User-provided Jenkins console excerpt normalized, management URLs omitted.
+2026-11-27 KST
+Started by user
+11:37:19 Source
+11:37:20 Checking out Revision c6e94ef86665691b6296c0b6308df6035b580160
+11:37:21 + bash cicd/ansible/run-notice-cd.sh
+11:37:21 CD candidate: tag=test-97861a363d9ff5a483b94cd5407b21d5ebd60c3b digest=sha256:fe8f3cdccd40fb2c38830118abb3c0ed7d7f2da89ab99c8d3ca77cd3921b03b7
+11:37:23 TASK [Validate private configuration and requested mode] ok: [localhost]
+11:37:35 TASK [Check initial slots and optionally update only Green] ok: [localhost]
+11:37:35 CD CHECK: cluster context
+11:37:35 CD CHECK: Blue baseline digest
+11:37:35 CD CHECK: Green baseline digest
+11:37:35 CD CHECK: blue rollout
+11:37:35 CD CHECK: blue port-forward
+11:37:35 CD CHECK: blue HTTP and expected version test-v2
+11:37:35 SLOT blue READY=2 HTTP=200 VERSION=test-v2
+11:37:35 CD CHECK: green rollout
+11:37:35 CD CHECK: green port-forward
+11:37:35 CD CHECK: green HTTP and expected version test-v3
+11:37:35 SLOT green READY=2 HTTP=200 VERSION=test-v3
+11:37:35 CD CHECK: Green server-side patch dry-run
+11:37:35 CD GREEN PATCH DRY RUN OK
+11:37:35 CD PLAN OK: no workload or ALB mutation
+11:37:35 All assertions passed
+11:37:35 localhost : ok=4 changed=0 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0
+11:37:35 NOTICE CD OK: mode=PLAN; build=3
+Finished: SUCCESS
+# Separate terminal screenshot observation: prior kubectl port-forward processes remained listening on localhost:18080 and :18081. Port conflict strongly supported as explanation of build #2, but original stderr not recovered. No actual candidate update, image runtime verification, or ALB validation in PLAN.

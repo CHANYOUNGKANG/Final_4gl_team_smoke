@@ -1,0 +1,21 @@
+# User-provided console excerpt, normalized; management links omitted.
+2026-11-27 KST
+Started by user
+11:10:40 Source
+11:10:41 Checking out Revision 0f64dd210cc6c5cad2e6927833cff6c9b1548bea (refs/remotes/origin/cicd/notice-cd-integration)
+11:10:42 + bash cicd/ansible/run-notice-cd.sh
+11:10:43 PLAY [Verify or update the isolated Green test candidate (never changes ALB)]
+11:10:43 TASK [Validate private configuration and requested mode]
+11:10:43 ok: [localhost]
+11:10:43 TASK [Check initial slots and optionally update only Green]
+11:10:52 ok: [localhost]
+11:10:52 TASK [Report non-sensitive verification output]
+11:10:52 SLOT blue READY=2 HTTP=200 VERSION=test-v2
+11:10:52 SLOT green READY=2 HTTP=200 VERSION=test-v3
+11:10:52 CD VERIFY OK: no workload or ALB mutation
+11:10:52 TASK [Require success]
+11:10:52 All assertions passed
+11:10:52 localhost : ok=4 changed=0 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0
+11:10:52 NOTICE CD OK: mode=VERIFY; build=1
+Finished: SUCCESS
+# Scope: manually triggered read-only CD Job, selected Pod via service port-forward; no candidate update or ALB traffic verification.
