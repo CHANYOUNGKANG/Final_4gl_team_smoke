@@ -15,6 +15,9 @@ class PatchTest(unittest.TestCase):
         self.assertEqual(patch[3]["value"],self.want["spec"]["template"])
         self.assertNotIn("FILE_BASE_URL", str(patch))
         self.assertNotIn("value': 'DB_PASSWORD",str(patch))
+    def test_rds_host(self):
+        self.assertTrue(m.valid_db_host('example.ap-northeast-2.rds.amazonaws.com'))
+        self.assertFalse(m.valid_db_host('example.invalid'))
     def test_reject_blue(self):
         self.want["metadata"]["name"]="notice-blue"
         with self.assertRaises(ValueError): m.make_patch(self.old,self.want)
