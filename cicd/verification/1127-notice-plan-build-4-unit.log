@@ -1,0 +1,17 @@
+# Normalized user-provided Jenkins console, 2026-11-27 KST; management URLs omitted.
+12:42:03 Source and offline tests
+12:42:04 Checking out Revision c56954ab40cba026c75e0527f796a5eb4dec883f
+12:42:04 Dynamic planner: Ran 8 tests, OK
+12:42:04 Deployment renderer: Ran 5 tests, OK
+12:42:05 Functional checker: Ran 6 tests, OK
+# Fake-client tests intentionally emit cleanup-unconfirmed when ownership mismatches; no actual DB access in those tests.
+12:42:07 NOTICE CI IMAGE TAG/DIGEST VERIFIED
+12:42:17 SLOT blue READY=2 HEALTHY=2 TARGETS_MATCH=2
+12:42:19 SLOT green READY=2 HEALTHY=2 TARGETS_MATCH=2
+12:42:20 ACTIVE_SLOT=blue CANDIDATE_SLOT=green
+12:42:20 NEXT_ACTION=PLAN_UPDATE_INACTIVE
+12:42:20 NOTICE DYNAMIC PLAN OK: read-only; not authorization to deploy or switch
+Optional isolated application functional check skipped due to when conditional
+12:42:20 NOTICE PLAN SUCCESS: no deployment or traffic change
+Finished: SUCCESS
+# 17 seconds observed; build number 4 inferred from prior sequential runs. 19 offline tests passed. Local Docker HTTP functional test not run, RDS/EFS not exercised. No actual CRUD or deployment mutation.
