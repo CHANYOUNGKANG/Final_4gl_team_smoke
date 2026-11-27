@@ -1,0 +1,4 @@
+**
+!app/
+!app/target/
+!app/target/notice.war

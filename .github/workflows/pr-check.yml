@@ -27,7 +27,7 @@ jobs:
         run: docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.4 -color
       - name: Dockerfile (hadolint)
         run: |
-          files=$(git ls-files | grep -E '(^|/)Dockerfile(\.[^/]*)?$' | grep -v '^docs/' || true)
+          files=$(git ls-files | grep -E '(^|/)Dockerfile(\.[^/]*)?$' | grep -v '^docs/' | grep -vE '\.dockerignore$' || true)
           [ -z "$files" ] && { echo "Dockerfile 없음"; exit 0; }
           for f in $files; do echo "== $f"; docker run --rm -i hadolint/hadolint:v2.12.0 hadolint --failure-threshold error - < "$f"; done
       - name: Kubernetes 매니페스트 (kubeconform)
