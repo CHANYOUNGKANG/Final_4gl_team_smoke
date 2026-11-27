@@ -4,12 +4,11 @@ pipeline {
   options { timestamps(); disableConcurrentBuilds(); skipDefaultCheckout(); timeout(time: 20, unit: 'MINUTES') }
   parameters {
     choice(name: 'RELEASE_MODE', choices: ['VERIFY', 'ROLLBACK_TEST', 'SWITCH'], description: 'VERIFY read-only; ROLLBACK_TEST switches and restores Blue; SWITCH leaves Green active')
-    booleanParam(name: 'SEND_RELEASE_MAIL', defaultValue: false, description: 'Enable internal mail only after SMTP receipt is verified')
+    booleanParam(name: 'SEND_RELEASE_SNS', defaultValue: false, description: 'Enable SNS only after end-to-end receipt is verified')
     booleanParam(name: 'CONFIRM_TEST_TRAFFIC_CHANGE', defaultValue: false, description: 'AWS owner approved traffic change and no concurrent edits')
   }
-  environment { RELEASE_MAIL_OUTCOME = 'NOT_CONFIRMED' }
   stages {
-    stage('Source') { steps { checkout scm; sh 'git rev-parse HEAD' } }
+    stage('Source') { steps { checkout scm; script { env.RELEASE_MAIL_OUTCOME = 'NOT_CONFIRMED'; env.RELEASE_SOURCE_COMMIT = sh(script: 'git rev-parse HEAD', returnStdout: true).trim() } } }
     stage('Python syntax check') {
       steps {
         sh '''
@@ -58,24 +57,16 @@ pipeline {
   post {
     always {
       script {
-        if (params.SEND_RELEASE_MAIL && params.RELEASE_MODE != 'VERIFY') {
-          def labels = [
-            SWITCH_VERIFIED: '정적 시험 앱 전환 성공 (Green)',
-            SYNTHETIC_ROLLBACK_VERIFIED: '정적 시험 앱 합성 롤백 검증 성공 (Blue)',
-            ROLLBACK_VERIFIED: '전환 실패 / Blue 복귀 확인',
-            ROLLBACK_UNCONFIRMED: '복귀 미확인 / 즉시 상태 확인',
-            NOT_CONFIRMED: '실패 또는 중단 / 실제 전환·복귀 미확인'
-          ]
-          def outcome = labels[env.RELEASE_MAIL_OUTCOME] ?: '결과 미확인'
+        if (params.SEND_RELEASE_SNS && params.RELEASE_MODE != 'VERIFY') {
           try {
-            mail to: 'smoke@smoke.local', from: 'jenkins@smoke.local', charset: 'UTF-8',
-                 subject: "[배포] [정적시험] ${env.JOB_NAME} #${env.BUILD_NUMBER} ${outcome}",
-                 body: "결과: ${outcome}\nJob 상태: ${currentBuild.currentResult}\n${env.BUILD_URL}console"
-            echo 'RELEASE MAIL SEND ACCEPTED; inbox receipt separate'
+            withEnv(["NOTICE_SNS_OUTCOME=${env.RELEASE_MAIL_OUTCOME ?: 'NOT_CONFIRMED'}"]) {
+              int notifyRc = sh(returnStatus: true, script: 'python3 cicd/jenkins/publish-release-sns.py "$NOTICE_SNS_OUTCOME"')
+              if (notifyRc != 0) { echo 'SNS notification unconfirmed; release outcome unchanged' }
+            }
           } catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException e) {
             throw e
           } catch (Exception e) {
-            echo 'RELEASE MAIL FAILED: release outcome unchanged; inspect SMTP configuration'
+            echo 'SNS notification failed; release outcome unchanged'
           }
         }
       }
