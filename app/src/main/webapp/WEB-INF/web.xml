@@ -52,6 +52,14 @@
     <url-pattern>/notices</url-pattern>
   </servlet-mapping>
   <servlet>
+    <servlet-name>notice-detail</servlet-name>
+    <servlet-class>kr.smoke.site.NoticeDetailServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>notice-detail</servlet-name>
+    <url-pattern>/notices/*</url-pattern>
+  </servlet-mapping>
+  <servlet>
     <servlet-name>check-api</servlet-name>
     <servlet-class>kr.smoke.site.CheckApiServlet</servlet-class>
   </servlet>

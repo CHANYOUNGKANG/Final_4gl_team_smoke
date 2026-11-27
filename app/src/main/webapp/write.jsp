@@ -9,6 +9,7 @@
     else if ("input".equals(err)) errMsg = "제목, 작성자, 내용을 모두 입력해 주세요.";
     else if ("file".equals(err))  errMsg = "허용되지 않는 파일 형식이거나 파일이 너무 큽니다. (파일당 20MB, 최대 5개)";
     else if ("db".equals(err))    errMsg = "저장 중 오류가 발생했습니다. DB 연결을 확인해 주세요.";
+    if (!WRITE_ENABLED) errMsg = "공지 쓰기가 꺼져 있습니다. 관리자에게 문의해 주세요.";
 %>
 <%@ include file="/WEB-INF/jspf/header.jspf" %>
 
@@ -51,7 +52,7 @@
       </div>
       <div class="form-actions">
         <a class="pill ghost" href="<%= ctx %>/notice.jsp">취소</a>
-        <button type="submit" class="pill">등록하기</button>
+        <button type="submit" class="pill"<%= WRITE_ENABLED ? "" : " disabled" %>>등록하기</button>
       </div>
     </form>
   </div>

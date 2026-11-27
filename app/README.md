@@ -18,9 +18,10 @@ CI/CD 가 쓰던 상태 검사·버전·검증 API 규격은 이전 레퍼런스
 
 | 주소 | 응답 |
 | --- | --- |
-| `GET /health` | 200 `{"status":"UP","db":"UP","storage":"UP","app":"haedeun-notice","version":…,"color":…,"commit":…}` · DB 나 첨부 저장소가 안 되면 503 |
+| `GET /health` | 200 `{"status":"UP","db":"UP","storage":"UP","app":"haedeun-notice","version":…,"color":…,"commit":…}` · `db=UP` 은 접속 + 필수 테이블·컬럼(board·board_file·inquiry) 정상일 때만, 하나라도 안 되면 503 |
 | `GET /version` | `{"app":"haedeun-notice","version":…,"color":…,"commit":…}` (commit = `GIT_COMMIT` 앞 7자리) |
 | `GET /notices` | 200 공지 목록 |
+| `GET /notices/{id}` | 공지 상세 (= `/view.jsp?id={id}`), 검증 글·없는 글은 404 |
 | `POST /api/check/notices` | 헤더 `X-Check-Token`, 본문 `{"title","content"}` → 201 + `Location` + `{"id","docNo","title","content","servedBy":{"version","color","commit"}}` |
 | `GET /api/check/notices/{id}` | 200 / 없으면 404 |
 | `DELETE /api/check/notices/{id}` | 204 (검증 글이 아니면 409) → 다시 조회하면 404 |
@@ -39,7 +40,8 @@ PR 검사 [.github/workflows/app-build.yml](../.github/workflows/app-build.yml) 
 | `FILE_BASE_URL` | 설정 | S3·CloudFront 로 이관 후 내려받기를 그 주소로 넘긴다 (비우면 앱이 직접 전송) |
 | `DEPLOY_COLOR` `APP_VERSION` `GIT_COMMIT` | 설정 | 화면 하단 · `/health` · `/version` · `servedBy` |
 | `CHECK_TOKEN` | **비밀** | 검증 API 토큰 (Jenkins Credentials 같은 값) |
-| `ADMIN_KEY` | **비밀** | 설정하면 공지 쓰기에 관리자 키가 필요 |
+| `ADMIN_KEY` | **비밀** | 공지 쓰기 관리자 키. 운영(MariaDB)에서 비어 있으면 공지 쓰기 자체가 꺼진다 (H2 만 키 없이 허용) |
+| `DB_DDL` | 설정 | `validate`(운영 기본): 앱은 테이블을 만들지 않고 확인만, 앱 계정은 SELECT·INSERT·UPDATE·DELETE 만 · `update`(H2 기본): 앱이 테이블 생성 |
 | `APP_SEED` | 설정 | 예시 글 입력. H2 기본 `true`, MariaDB 기본 `false` (이관 데이터 건수 보존) |
 | `MAIL_TO` `MAIL_FROM` `SMTP_HOST` `SMTP_PORT` | 설정 | 문의 접수 메일 알림. `MAIL_TO` 를 비우면 알림 끔 (AWS 기본) |
 | `COMPANY_ADDR` `COMPANY_TEL` `COMPANY_MAIL` | 설정 | 화면에 보이는 회사 연락처 |

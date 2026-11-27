@@ -19,7 +19,10 @@
     boolean pinned  = "1".equals(request.getParameter("is_pinned"));
     if (!validCategory(category)) category = CATEGORIES[0];
 
-    if (!ADMIN_KEY.isEmpty() && !ADMIN_KEY.equals(request.getParameter("admin_key"))) {
+    if (!WRITE_ENABLED) {                 // 운영에서 ADMIN_KEY 미설정 → 쓰기 차단
+        response.sendRedirect(ctx + "/write.jsp?err=disabled"); return;
+    }
+    if (!ADMIN_KEY.isEmpty() && !SiteUtil.tokenMatches(ADMIN_KEY, request.getParameter("admin_key"))) {
         response.sendRedirect(ctx + "/write.jsp?err=key"); return;
     }
     if (title.isEmpty() || writer.isEmpty() || content.isEmpty()) {

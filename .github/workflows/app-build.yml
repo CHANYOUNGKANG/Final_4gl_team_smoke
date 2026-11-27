@@ -53,6 +53,8 @@ jobs:
           test "$(curl -s -o /dev/null -w '%{http_code}' "localhost:8080/api/check/notices/$id" -H "X-Check-Token: $CHECK_TOKEN")" = 200
           test "$(curl -s -o /dev/null -w '%{http_code}' "localhost:8080/api/check/notices/$id")" = 401
           test "$(curl -s -o /dev/null -w '%{http_code}' "localhost:8080/view.jsp?id=$id")" = 404
+          test "$(curl -s -o /dev/null -w '%{http_code}' "localhost:8080/notices/$id")" = 404
+          test "$(curl -s -o /dev/null -w '%{http_code}' localhost:8080/notices/1)" = 200
           if curl -fs localhost:8080/notices | grep -q ci-check; then echo '검증 글이 공개 목록에 보임'; exit 1; fi
           test "$(curl -s -o /dev/null -w '%{http_code}' -X DELETE "localhost:8080/api/check/notices/$id" -H "X-Check-Token: $CHECK_TOKEN")" = 204
           test "$(curl -s -o /dev/null -w '%{http_code}' "localhost:8080/api/check/notices/$id" -H "X-Check-Token: $CHECK_TOKEN")" = 404
@@ -69,7 +71,7 @@ jobs:
             echo "### 공지·자료실 앱 검사 (Tomcat 10.1 · H2)"
             echo '```json'; cat health.json; echo; echo '```'
             echo "- WAR SHA-256: \`$(cut -d' ' -f1 target/war.sha256)\`"
-            echo "- /notices 200 · 검증 API POST 201 → GET 200 → 무토큰 401 → 공개 상세 404 → DELETE 204 → 재조회 404"
+            echo "- /notices 200 · 검증 API POST 201 → GET 200 → 무토큰 401 → 공개 상세(/view.jsp · /notices/{id}) 404 → DELETE 204 → 재조회 404"
           } >> "$GITHUB_STEP_SUMMARY"
       - name: 앱 로그 (실패 시)
         if: failure()
@@ -139,6 +141,8 @@ jobs:
           set -x
           curl -fs localhost:8080/notices | grep -q '홈페이지 서비스 클라우드 이전 완료 안내'
           curl -fs 'localhost:8080/notices?cat=%EC%A0%90%EA%B2%80' | grep -q '백업 자동화'
+          # 운영 모드: ADMIN_KEY 가 없으면 공지 쓰기 차단
+          curl -s -o /dev/null -w '%{redirect_url}' -F title=t -F writer=w -F content=c localhost:8080/write_process.jsp | grep -q 'err=disabled'
           id=$(curl -fs -X POST localhost:8080/api/check/notices -H "X-Check-Token: $CHECK_TOKEN" \
                 -H 'Content-Type: application/json' -d '{"title":"ci-check","content":"mariadb"}' \
                 | python3 -c 'import sys,json; print(json.load(sys.stdin)["id"])')
@@ -151,7 +155,7 @@ jobs:
             echo "### MariaDB 10.11 + app/sql/schema.sql 연동"
             echo '```json'; cat health.json; echo; echo '```'
             echo '```'; mysql -h 127.0.0.1 -uroot -t -e 'SELECT notice_count, file_count, inquiry_count FROM boarddb.v_migration_check'; echo '```'
-            echo "- 예시 12건 조회 · 점검 분류 · 검증 글 is_check=1(대조 건수 12 유지) · 삭제 204"
+            echo "- DML 권한 계정 + DB_DDL=validate 로 health UP · 예시 12건 조회 · 점검 분류 · ADMIN_KEY 없으면 쓰기 차단 · 검증 글 is_check=1(대조 건수 12 유지) · 삭제 204"
           } >> "$GITHUB_STEP_SUMMARY"
       - name: 앱 로그 (실패 시)
         if: failure()

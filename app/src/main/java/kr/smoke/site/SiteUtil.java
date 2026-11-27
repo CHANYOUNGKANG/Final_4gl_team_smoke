@@ -164,4 +164,12 @@ public final class SiteUtil {
         if (!rest.matches("\\d{1,9}")) return -1;
         return Integer.parseInt(rest);
     }
+
+    /** /notices/{id} 의 pathInfo("/12") 에서 id. 비었으면 0, 형식이 아니면 -1 */
+    public static int noticeId(String pathInfo) {
+        if (pathInfo == null || pathInfo.isEmpty() || "/".equals(pathInfo)) return 0;
+        String rest = pathInfo.substring(1);
+        if (!rest.matches("[1-9]\\d{0,8}")) return -1;
+        return Integer.parseInt(rest);
+    }
 }

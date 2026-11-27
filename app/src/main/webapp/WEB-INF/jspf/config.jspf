@@ -34,11 +34,15 @@
     static final String  DB_USER = env("DB_USER", IS_H2 ? "sa" : "");
     static final String  DB_PASS = env("DB_PASSWORD", env("DB_PASS", ""));
     static final boolean APP_SEED = "true".equalsIgnoreCase(env("APP_SEED", IS_H2 ? "true" : "false"));
+    /** update: 앱이 테이블을 만듦(H2 기본) · validate: 만들지 않고 확인만(운영 기본, 앱 계정은 DML 권한만) */
+    static final String  DB_DDL  = env("DB_DDL", IS_H2 ? "update" : "validate");
 
     // ---- 첨부파일 (NFS 마운트 경로 · EFS · S3/CloudFront 주소) ----
     static final String UPLOAD_DIR    = env("APP_STORAGE_DIR", env("UPLOAD_DIR", "/data/attachments"));
     static final String FILE_BASE_URL = env("FILE_BASE_URL", "");   // 예: https://files.도메인 (설정 시 CloudFront로 바로 내려받기)
-    static final String ADMIN_KEY     = env("ADMIN_KEY", "");       // 설정 시 글쓰기에 관리자 키 필요
+    static final String ADMIN_KEY     = env("ADMIN_KEY", "");       // 공지 쓰기 관리자 키
+    /** 운영(MariaDB)에서 ADMIN_KEY 가 없으면 공지 쓰기를 막음. H2(CI·로컬)만 키 없이 허용 */
+    static final boolean WRITE_ENABLED = !ADMIN_KEY.isEmpty() || IS_H2;
 
     // ---- 문의 메일 알림 (사내 메일 서버 Postfix) ----
     static final String MAIL_TO   = env("MAIL_TO", "");                   // 비어 있으면 메일 알림 끔 (예: smoke@smoke.local)
@@ -64,43 +68,56 @@
         return c;
     }
 
-    /** 테이블·컬럼이 없으면 만들어요(MariaDB·H2 공통 문법). 권한이 없으면 넘어가고 sql/schema.sql 로 직접 적용해요. */
+    /** 앱이 쓰는 테이블·컬럼 (없으면 SELECT 가 실패 → /health 503) */
+    static final String[] SCHEMA_CHECK = {
+        "SELECT id, title, writer, content, reg_date, category, hit, is_pinned, is_check FROM board WHERE 1=0",
+        "SELECT id, board_id, orig_name, stored_name, file_size, content_type, reg_date, sha256 FROM board_file WHERE 1=0",
+        "SELECT id, company, name, email, phone, topic, message, status, reg_date FROM inquiry WHERE 1=0"
+    };
+
+    /** 필수 테이블·컬럼이 모두 있으면 null, 아니면 첫 오류 메시지 */
+    static String schemaProblem(Connection c) {
+        for (String sql : SCHEMA_CHECK) {
+            try (Statement st = c.createStatement()) { st.executeQuery(sql).close(); }
+            catch (SQLException e) { return e.getMessage(); }
+        }
+        return null;
+    }
+
+    /**
+     * DB_DDL=update(H2 기본)일 때만 테이블·컬럼을 만들고, 그 밖에는 확인만 한다.
+     * 운영 스키마는 sql/schema.sql 을 DB 관리자가 적용하고, 앱 계정은 SELECT·INSERT·UPDATE·DELETE 만 쓴다.
+     */
     static synchronized void ensureSchema(Connection c) {
         if (schemaReady) return;
-        String cs = IS_H2 ? "" : " DEFAULT CHARSET=utf8mb4";
-        String[] ddl = {
-            "CREATE TABLE IF NOT EXISTS board (" +
-            " id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(200) NOT NULL, writer VARCHAR(50) NOT NULL," +
-            " content TEXT, reg_date DATETIME DEFAULT CURRENT_TIMESTAMP)" + cs,
-            "ALTER TABLE board ADD COLUMN IF NOT EXISTS category VARCHAR(20) DEFAULT '공지' NOT NULL",
-            "ALTER TABLE board ADD COLUMN IF NOT EXISTS hit INT DEFAULT 0 NOT NULL",
-            "ALTER TABLE board ADD COLUMN IF NOT EXISTS is_pinned TINYINT DEFAULT 0 NOT NULL",
-            "ALTER TABLE board ADD COLUMN IF NOT EXISTS is_check TINYINT DEFAULT 0 NOT NULL",
-            "CREATE TABLE IF NOT EXISTS board_file (" +
-            " id INT AUTO_INCREMENT PRIMARY KEY, board_id INT NOT NULL, orig_name VARCHAR(255) NOT NULL," +
-            " stored_name VARCHAR(255) NOT NULL, file_size BIGINT DEFAULT 0 NOT NULL, content_type VARCHAR(120)," +
-            " reg_date DATETIME DEFAULT CURRENT_TIMESTAMP)" + cs,
-            "CREATE INDEX IF NOT EXISTS idx_board_file_board ON board_file (board_id)",
-            "ALTER TABLE board_file ADD COLUMN IF NOT EXISTS sha256 CHAR(64) NULL",
-            "CREATE TABLE IF NOT EXISTS inquiry (" +
-            " id INT AUTO_INCREMENT PRIMARY KEY, company VARCHAR(100), name VARCHAR(50) NOT NULL," +
-            " email VARCHAR(120) NOT NULL, phone VARCHAR(40), topic VARCHAR(40), message TEXT NOT NULL," +
-            " status VARCHAR(20) DEFAULT '접수' NOT NULL, reg_date DATETIME DEFAULT CURRENT_TIMESTAMP)" + cs
-        };
-        boolean ok = true;
-        for (String sql : ddl) {
-            try (Statement st = c.createStatement()) { st.execute(sql); }
-            catch (SQLException e) { ok = false; }
+        if ("update".equalsIgnoreCase(DB_DDL)) {
+            String cs = IS_H2 ? "" : " DEFAULT CHARSET=utf8mb4";
+            String[] ddl = {
+                "CREATE TABLE IF NOT EXISTS board (" +
+                " id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(200) NOT NULL, writer VARCHAR(50) NOT NULL," +
+                " content TEXT, reg_date DATETIME DEFAULT CURRENT_TIMESTAMP)" + cs,
+                "ALTER TABLE board ADD COLUMN IF NOT EXISTS category VARCHAR(20) DEFAULT '공지' NOT NULL",
+                "ALTER TABLE board ADD COLUMN IF NOT EXISTS hit INT DEFAULT 0 NOT NULL",
+                "ALTER TABLE board ADD COLUMN IF NOT EXISTS is_pinned TINYINT DEFAULT 0 NOT NULL",
+                "ALTER TABLE board ADD COLUMN IF NOT EXISTS is_check TINYINT DEFAULT 0 NOT NULL",
+                "CREATE TABLE IF NOT EXISTS board_file (" +
+                " id INT AUTO_INCREMENT PRIMARY KEY, board_id INT NOT NULL, orig_name VARCHAR(255) NOT NULL," +
+                " stored_name VARCHAR(255) NOT NULL, file_size BIGINT DEFAULT 0 NOT NULL, content_type VARCHAR(120)," +
+                " reg_date DATETIME DEFAULT CURRENT_TIMESTAMP)" + cs,
+                "CREATE INDEX IF NOT EXISTS idx_board_file_board ON board_file (board_id)",
+                "ALTER TABLE board_file ADD COLUMN IF NOT EXISTS sha256 CHAR(64) NULL",
+                "CREATE TABLE IF NOT EXISTS inquiry (" +
+                " id INT AUTO_INCREMENT PRIMARY KEY, company VARCHAR(100), name VARCHAR(50) NOT NULL," +
+                " email VARCHAR(120) NOT NULL, phone VARCHAR(40), topic VARCHAR(40), message TEXT NOT NULL," +
+                " status VARCHAR(20) DEFAULT '접수' NOT NULL, reg_date DATETIME DEFAULT CURRENT_TIMESTAMP)" + cs
+            };
+            for (String sql : ddl) {
+                try (Statement st = c.createStatement()) { st.execute(sql); }
+                catch (SQLException e) { /* 아래 확인에서 걸러짐 */ }
+            }
         }
-        if (!ok) {   // DML 권한만 있는 운영 계정: 테이블이 이미 다 있으면 그대로 사용
-            try (Statement st = c.createStatement()) {
-                st.executeQuery("SELECT is_check FROM board WHERE 1=0").close();
-                st.executeQuery("SELECT sha256 FROM board_file WHERE 1=0").close();
-                st.executeQuery("SELECT id FROM inquiry WHERE 1=0").close();
-                ok = true;
-            } catch (SQLException e) { /* 스키마가 덜 적용됨 → sql/schema.sql 적용 필요 */ }
-        }
-        if (APP_SEED) seed(c);
+        boolean ok = schemaProblem(c) == null;
+        if (ok && APP_SEED) seed(c);
         schemaReady = ok;
     }
 

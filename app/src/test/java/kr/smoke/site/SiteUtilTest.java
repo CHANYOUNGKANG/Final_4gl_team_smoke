@@ -73,4 +73,14 @@ class SiteUtilTest {
         assertEquals(-1, SiteUtil.checkApiId("/api/check/notices/1/2", ""));
         assertEquals(-1, SiteUtil.checkApiId("/other", ""));
     }
+
+    @Test
+    void noticeIdParsesDetailPath() {
+        assertEquals(12, SiteUtil.noticeId("/12"));
+        assertEquals(0, SiteUtil.noticeId(null));
+        assertEquals(0, SiteUtil.noticeId("/"));
+        assertEquals(-1, SiteUtil.noticeId("/0"));
+        assertEquals(-1, SiteUtil.noticeId("/12/edit"));
+        assertEquals(-1, SiteUtil.noticeId("/abc"));
+    }
 }
