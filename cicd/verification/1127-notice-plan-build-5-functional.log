@@ -1,0 +1,25 @@
+# Normalized user-provided Jenkins console; management URLs omitted.
+2026-11-27 KST
+12:44:29 Source and offline tests
+12:44:30 Checking out Revision 3f8935d0c3d6c7a261070d1f7b34bb7ab115a3a8
+12:44:30 Dynamic planner: Ran 8 tests, OK
+12:44:30 Deployment renderer: Ran 5 tests, OK
+12:44:31 Functional checker: Ran 6 tests, OK
+# The CLEANUP UNCONFIRMED message within the unit tests is an intentional fake-client ownership rejection, not an actual database failure.
+12:44:34 NOTICE CI IMAGE TAG/DIGEST VERIFIED
+12:44:42 SLOT blue READY=2 HEALTHY=2 TARGETS_MATCH=2
+12:44:45 SLOT green READY=2 HEALTHY=2 TARGETS_MATCH=2
+12:44:45 ACTIVE_SLOT=blue CANDIDATE_SLOT=green
+12:44:45 NEXT_ACTION=PLAN_UPDATE_INACTIVE
+12:44:45 NOTICE DYNAMIC PLAN OK: read-only; not authorization to deploy or switch
+12:44:46 Optional isolated application functional check
+12:44:46 LOCAL CI IMAGE ID VERIFIED
+12:45:08 NOTICE HEALTH VERSION LIST OK: DB=UP STORAGE=UP slot=green commit=acfb0a8
+12:45:08 NOTICE CHECK CREATE READ HIDDEN OK
+12:45:08 NOTICE CHECK DELETE VERIFIED: HTTP 204 then 404
+12:45:08 NOTICE FUNCTIONAL CHECK OK
+12:45:08 NOTICE ISOLATED H2 FUNCTIONAL CHECK OK: no production data used
+12:45:08 NOTICE PLAN SUCCESS: no deployment or traffic change
+Finished: SUCCESS
+
+# Observed elapsed 39 seconds; isolated functional stage 22 seconds. Build number 5 inferred from sequential runs. The actual HTTP checker passed against the previously built local CI image using disposable H2. The reviewed checker requires health/version/list, POST 201, GET 200 and exact title/body/servedBy, public-list absence and public-detail 404, DELETE 204 then authenticated GET 404. Container cleanup was attempted via EXIT trap; removal was not independently observed. The storage health check checks directory writability, not EFS sharing or attachment file integrity. No ECR push, production data use, EKS workload mutation or ALB switch in this run. Actual RDS/EFS and full dynamic deployment/release remain pending.
