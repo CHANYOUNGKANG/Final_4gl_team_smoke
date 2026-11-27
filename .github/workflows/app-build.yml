@@ -30,44 +30,50 @@ jobs:
         run: |
           ls -l target/notice.war
           sha256sum target/notice.war | tee target/war.sha256
-      - name: WAR 기동 후 검사 (상태 · 버전 · 공지 작성·조회·삭제)
+      - name: Tomcat 10.1 에 ROOT.war 로 띄운 뒤 검사 (H2 · 상태 · 버전 · 검증 API)
         working-directory: app
         run: |
           # 이 실행에서만 쓰는 임시 값. 저장소·로그에 남지 않는다.
-          CHECK_TOKEN="$(openssl rand -hex 24)"
-          ADMIN_PASSWORD="$(openssl rand -hex 24)"
-          export CHECK_TOKEN ADMIN_PASSWORD
-          export DEPLOY_COLOR=blue GIT_COMMIT="$GITHUB_SHA" APP_STORAGE_DIR="$RUNNER_TEMP/files"
-          java -jar target/notice.war > "$RUNNER_TEMP/app.log" 2>&1 &
-          for _ in $(seq 1 60); do curl -fs localhost:8080/health >/dev/null && break; sleep 1; done
+          CHECK_TOKEN="$(openssl rand -hex 24)"; echo "::add-mask::$CHECK_TOKEN"
+          SHORT="${GITHUB_SHA::7}"
+          docker run -d --name notice -p 8080:8080 \
+            -e CHECK_TOKEN="$CHECK_TOKEN" -e DEPLOY_COLOR=blue -e GIT_COMMIT="$GITHUB_SHA" -e APP_STORAGE_DIR=/tmp/files \
+            -v "$PWD/target/notice.war:/usr/local/tomcat/webapps/ROOT.war:ro" tomcat:10.1-jre17-temurin
+          for _ in $(seq 1 90); do curl -fs localhost:8080/health >/dev/null && break; sleep 1; done
           set -x
-          curl -fs localhost:8080/health | tee health.json
-          grep -q '"status":"UP"' health.json
-          curl -fs localhost:8080/notices | grep -q 'ISO 9001'
-          id=$(curl -fs -X POST localhost:8080/api/check/notices -H "X-Check-Token: $CHECK_TOKEN" \
-                -H 'Content-Type: application/json' -d '{"title":"ci-check","content":"app-build workflow"}' \
-                | python3 -c 'import sys,json; print(json.load(sys.stdin)["id"])')
-          curl -fs "localhost:8080/api/check/notices/$id" -H "X-Check-Token: $CHECK_TOKEN" | grep -q ci-check
+          curl -fs localhost:8080/health | tee health.json; echo
+          for k in '"status":"UP"' '"db":"UP"' '"storage":"UP"' '"app":"haedeun-notice"' '"color":"blue"' "\"commit\":\"$SHORT\""; do grep -qF "$k" health.json; done
+          curl -fs localhost:8080/version | tee version.json; echo
+          grep -qF "\"commit\":\"$SHORT\"" version.json
+          curl -fs localhost:8080/notices | grep -q '홈페이지 리뉴얼 오픈'
+          code=$(curl -s -o post.json -w '%{http_code}' -X POST localhost:8080/api/check/notices -H "X-Check-Token: $CHECK_TOKEN" \
+                 -H 'Content-Type: application/json' -d '{"title":"ci-check","content":"app-build workflow"}')
+          test "$code" = 201
+          id=$(python3 -c 'import json; d=json.load(open("post.json")); assert d["servedBy"]["commit"]; print(d["id"])')
+          test "$(curl -s -o /dev/null -w '%{http_code}' "localhost:8080/api/check/notices/$id" -H "X-Check-Token: $CHECK_TOKEN")" = 200
           test "$(curl -s -o /dev/null -w '%{http_code}' "localhost:8080/api/check/notices/$id")" = 401
-          curl -fs -X DELETE "localhost:8080/api/check/notices/$id" -H "X-Check-Token: $CHECK_TOKEN"
+          test "$(curl -s -o /dev/null -w '%{http_code}' "localhost:8080/view.jsp?id=$id")" = 404
+          if curl -fs localhost:8080/notices | grep -q ci-check; then echo '검증 글이 공개 목록에 보임'; exit 1; fi
+          test "$(curl -s -o /dev/null -w '%{http_code}' -X DELETE "localhost:8080/api/check/notices/$id" -H "X-Check-Token: $CHECK_TOKEN")" = 204
+          test "$(curl -s -o /dev/null -w '%{http_code}' "localhost:8080/api/check/notices/$id" -H "X-Check-Token: $CHECK_TOKEN")" = 404
           set +x
           mkdir -p "$RUNNER_TEMP/shots"
-          for p in "/" "/notices" "/notices/2" "/archive" "/login"; do
-            n=$(echo "$p" | tr '/' '_'); [ "$n" = "_" ] && n=_home
+          for p in "/" "/notices" "/view.jsp?id=1" "/write.jsp"; do
+            n=$(echo "$p" | tr '/?=.' '____'); [ "$n" = "_" ] && n=_home
             google-chrome --headless=new --no-sandbox --hide-scrollbars --window-size=1280,1400 \
               --screenshot="$RUNNER_TEMP/shots/desktop$n.png" "http://localhost:8080$p" 2>/dev/null || true
           done
           google-chrome --headless=new --no-sandbox --hide-scrollbars --window-size=390,1500 \
             --screenshot="$RUNNER_TEMP/shots/mobile_home.png" "http://localhost:8080/" 2>/dev/null || true
           {
-            echo "### 공지·자료실 앱 검사"
+            echo "### 공지·자료실 앱 검사 (Tomcat 10.1 · H2)"
             echo '```json'; cat health.json; echo; echo '```'
             echo "- WAR SHA-256: \`$(cut -d' ' -f1 target/war.sha256)\`"
-            echo "- 공지 목록 200 · 검증 글 작성→조회→무토큰 401→삭제 통과"
+            echo "- /notices 200 · 검증 API POST 201 → GET 200 → 무토큰 401 → 공개 상세 404 → DELETE 204 → 재조회 404"
           } >> "$GITHUB_STEP_SUMMARY"
       - name: 앱 로그 (실패 시)
         if: failure()
-        run: tail -100 "$RUNNER_TEMP/app.log" || true
+        run: docker logs notice 2>&1 | tail -120 || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -79,7 +85,7 @@ jobs:
             ${{ runner.temp }}/shots/*.png
           retention-days: 7
 
-  # 이준호의 server/db/smoke_board.sql 을 실제 MariaDB 10.11 에 넣고, 앱을 운영 프로필(prod, 스키마 검증)로 붙여 본다.
+  # app/sql/schema.sql + sample_data.sql 을 실제 MariaDB 10.11 에 넣고, 앱을 운영과 같은 방식(DB_HOST)으로 붙여 본다.
   mariadb:
     runs-on: ubuntu-latest
     services:
@@ -105,28 +111,25 @@ jobs:
       - name: WAR 빌드 (테스트는 build 작업에서)
         working-directory: app
         run: mvn -B -ntp -DskipTests clean package
-      - name: smoke_board.sql 적용
+      - name: schema.sql · sample_data.sql 적용
         run: |
           APP_DB_PW="$(openssl rand -hex 16)"
           echo "::add-mask::$APP_DB_PW"
           echo "APP_DB_PW=$APP_DB_PW" >> "$GITHUB_ENV"
-          # 파일의 '비밀번호' 자리표시자를 이 실행의 임시 값으로 바꿔 넣는다 (원본 파일은 그대로)
-          sed "s/'비밀번호'/'$APP_DB_PW'/g" server/db/smoke_board.sql > "$RUNNER_TEMP/init.sql"
-          mysql -h 127.0.0.1 -uroot --default-character-set=utf8mb4 < "$RUNNER_TEMP/init.sql"
-          # CI 러너는 10.10.30.% 대역이 아니므로 같은 권한의 계정을 하나 더 만든다 (CI 전용)
-          mysql -h 127.0.0.1 -uroot -e "CREATE USER 'smoke'@'%' IDENTIFIED BY '$APP_DB_PW'; GRANT SELECT, INSERT, UPDATE, DELETE ON smoke_board.* TO 'smoke'@'%';"
-          mysql -h 127.0.0.1 -uroot --default-character-set=utf8mb4 -t -e "SELECT category, COUNT(*) cnt FROM smoke_board.notice GROUP BY category; SELECT notice_count, file_count FROM smoke_board.v_migration_check;"
-      - name: 앱을 prod 프로필로 기동 (DB_DDL=validate → 스키마가 앱과 다르면 여기서 실패)
+          mysql -h 127.0.0.1 -uroot --default-character-set=utf8mb4 < app/sql/schema.sql
+          mysql -h 127.0.0.1 -uroot --default-character-set=utf8mb4 boarddb < app/sql/sample_data.sql
+          # 운영은 10.10.30.% 대역 계정, CI 러너는 같은 권한의 계정을 하나 더 만든다 (CI 전용, DML 만)
+          mysql -h 127.0.0.1 -uroot -e "CREATE USER 'boarduser'@'%' IDENTIFIED BY '$APP_DB_PW'; GRANT SELECT, INSERT, UPDATE, DELETE ON boarddb.* TO 'boarduser'@'%';"
+          mysql -h 127.0.0.1 -uroot --default-character-set=utf8mb4 -t -e "SELECT category, COUNT(*) cnt FROM boarddb.board GROUP BY category; SELECT notice_count, file_count, inquiry_count FROM boarddb.v_migration_check;"
+      - name: 앱 기동 (DB_HOST · 운영과 같은 변수)
         working-directory: app
         run: |
-          CHECK_TOKEN="$(openssl rand -hex 24)"
-          ADMIN_PASSWORD="$(openssl rand -hex 24)"
-          echo "::add-mask::$CHECK_TOKEN"; echo "::add-mask::$ADMIN_PASSWORD"
+          CHECK_TOKEN="$(openssl rand -hex 24)"; echo "::add-mask::$CHECK_TOKEN"
           echo "CHECK_TOKEN=$CHECK_TOKEN" >> "$GITHUB_ENV"
-          SPRING_PROFILES_ACTIVE=prod DB_HOST=127.0.0.1 DB_USER=smoke DB_PASSWORD="$APP_DB_PW" \
-          CHECK_TOKEN="$CHECK_TOKEN" ADMIN_PASSWORD="$ADMIN_PASSWORD" DEPLOY_COLOR=green \
-          APP_STORAGE_DIR="$RUNNER_TEMP/files" GIT_COMMIT="$GITHUB_SHA" \
-            nohup java -jar target/notice.war > "$RUNNER_TEMP/app.log" 2>&1 &
+          docker run -d --name notice --network host \
+            -e DB_HOST=127.0.0.1 -e DB_NAME=boarddb -e DB_USER=boarduser -e DB_PASSWORD="$APP_DB_PW" \
+            -e CHECK_TOKEN="$CHECK_TOKEN" -e DEPLOY_COLOR=green -e GIT_COMMIT="$GITHUB_SHA" -e APP_STORAGE_DIR=/tmp/files \
+            -v "$PWD/target/notice.war:/usr/local/tomcat/webapps/ROOT.war:ro" tomcat:10.1-jre17-temurin
           for _ in $(seq 1 90); do curl -fs localhost:8080/health >/dev/null && break; sleep 1; done
           curl -fs localhost:8080/health | tee health.json; echo
           grep -q '"db":"UP"' health.json
@@ -134,23 +137,22 @@ jobs:
         working-directory: app
         run: |
           set -x
-          curl -fs localhost:8080/notices | grep -q 'ISO 9001 인증서 갱신본 게시'
-          curl -fs 'localhost:8080/notices?category=DRAWING' | grep -q 'B-207 플랜지 도면 Rev.C'
+          curl -fs localhost:8080/notices | grep -q '홈페이지 리뉴얼 오픈'
+          curl -fs 'localhost:8080/notices?cat=%EC%A0%90%EA%B2%80' | grep -q '백업 자동화'
           id=$(curl -fs -X POST localhost:8080/api/check/notices -H "X-Check-Token: $CHECK_TOKEN" \
                 -H 'Content-Type: application/json' -d '{"title":"ci-check","content":"mariadb"}' \
                 | python3 -c 'import sys,json; print(json.load(sys.stdin)["id"])')
-          test "$(mysql -h 127.0.0.1 -uroot -N -e "SELECT is_check FROM smoke_board.notice WHERE notice_id=$id")" = 1
-          test "$(mysql -h 127.0.0.1 -uroot -N -e 'SELECT notice_count FROM smoke_board.v_migration_check')" = 8
+          test "$(mysql -h 127.0.0.1 -uroot -N -e "SELECT is_check FROM boarddb.board WHERE id=$id")" = 1
+          test "$(mysql -h 127.0.0.1 -uroot -N -e 'SELECT notice_count FROM boarddb.v_migration_check')" = 12
           if curl -fs localhost:8080/notices | grep -q ci-check; then echo '검증 글이 공개 목록에 보임'; exit 1; fi
-          curl -fs -X DELETE "localhost:8080/api/check/notices/$id" -H "X-Check-Token: $CHECK_TOKEN"
-          test "$(mysql -h 127.0.0.1 -uroot -N -e "SELECT COUNT(*) FROM smoke_board.admin_user WHERE password_hash LIKE '\$2%'")" = 1
+          test "$(curl -s -o /dev/null -w '%{http_code}' -X DELETE "localhost:8080/api/check/notices/$id" -H "X-Check-Token: $CHECK_TOKEN")" = 204
           set +x
           {
-            echo "### MariaDB 10.11 + smoke_board.sql 연동"
+            echo "### MariaDB 10.11 + app/sql/schema.sql 연동"
             echo '```json'; cat health.json; echo; echo '```'
-            echo '```'; mysql -h 127.0.0.1 -uroot -t -e 'SELECT notice_count, file_count FROM smoke_board.v_migration_check'; echo '```'
-            echo "- prod 프로필 스키마 검증 통과 · 샘플 8건 조회 · 도면 분류 · 검증 글 is_check=1(대조 건수 8 유지) · 관리자 bcrypt 1건"
+            echo '```'; mysql -h 127.0.0.1 -uroot -t -e 'SELECT notice_count, file_count, inquiry_count FROM boarddb.v_migration_check'; echo '```'
+            echo "- 예시 12건 조회 · 점검 분류 · 검증 글 is_check=1(대조 건수 12 유지) · 삭제 204"
           } >> "$GITHUB_STEP_SUMMARY"
       - name: 앱 로그 (실패 시)
         if: failure()
-        run: tail -120 "$RUNNER_TEMP/app.log" || true
+        run: docker logs notice 2>&1 | tail -120 || true
