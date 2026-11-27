@@ -1,0 +1,12 @@
+# User-provided Jenkins console excerpt normalized; management links and IPs omitted.
+2026-11-27 KST
+Started by user
+11:48:47 Source
+11:48:48 Checking out Revision 6c12613e6ac50dcf90a5e1871d13f59b3f2f39c8
+11:48:55 ALB WEIGHTS blue=100 green=0; default rule only
+11:49:00 SLOT blue POD_HTTP=200 x2 VERSION=test-v2 HEALTHY=2 TARGETS_MATCH=2
+11:49:05 SLOT green POD_HTTP=200 x2 VERSION=test-v4 HEALTHY=2 TARGETS_MATCH=2
+11:49:05 RELEASE VERIFY OK: no mutation; ModifyListener permission not tested
+11:49:05 NOTICE RELEASE PREFLIGHT OK
+Finished: SUCCESS
+# 18 seconds observed. All four pod HTTP/version and target matching checks passed. No ALB mutation; not a traffic cutover or rollback test.

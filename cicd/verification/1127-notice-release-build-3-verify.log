@@ -1,0 +1,13 @@
+# User-provided Jenkins console excerpt; normalized and management URLs omitted.
+2026-11-27 KST
+Started by user
+12:00:30 Source
+12:00:31 Checking out Revision a3dd452f10afac803fa5298e73286d1784ceef01
+12:00:31 RELEASE PYTHON SYNTAX OK
+12:00:38 ALB WEIGHTS blue=100 green=0; default rule only
+12:00:43 SLOT blue POD_HTTP=200 x2 VERSION=test-v2 HEALTHY=2 TARGETS_MATCH=2
+12:00:47 SLOT green POD_HTTP=200 x2 VERSION=test-v4 HEALTHY=2 TARGETS_MATCH=2
+12:00:47 RELEASE VERIFY OK: no mutation; ModifyListener permission not tested
+12:00:48 NOTICE RELEASE OK: mode=VERIFY; build=3
+Finished: SUCCESS
+# Build #2 failed at Python parse, no mutation. Build #3 confirms syntax correction and read-only preflight, 18s observed. Listener write permission, cutover, rollback and downtime measurement remain unverified.
