@@ -4,10 +4,11 @@ pipeline {
   options { timestamps(); disableConcurrentBuilds(); skipDefaultCheckout(); timeout(time: 20, unit: 'MINUTES') }
   parameters {
     choice(name: 'RELEASE_MODE', choices: ['VERIFY', 'ROLLBACK_TEST', 'SWITCH'], description: 'VERIFY read-only; ROLLBACK_TEST switches and restores Blue; SWITCH leaves Green active')
+    booleanParam(name: 'SEND_RELEASE_SNS', defaultValue: false, description: 'Enable SNS only after end-to-end receipt is verified')
     booleanParam(name: 'CONFIRM_TEST_TRAFFIC_CHANGE', defaultValue: false, description: 'AWS owner approved traffic change and no concurrent edits')
   }
   stages {
-    stage('Source') { steps { checkout scm; sh 'git rev-parse HEAD' } }
+    stage('Source') { steps { checkout scm; script { env.RELEASE_MAIL_OUTCOME = 'NOT_CONFIRMED'; env.RELEASE_SOURCE_COMMIT = sh(script: 'git rev-parse HEAD', returnStdout: true).trim() } } }
     stage('Python syntax check') {
       steps {
         sh '''
@@ -18,9 +19,12 @@ pipeline {
     }
     stage('ALB preflight on Ansible host') {
       steps {
-        sh '''
+        script {
+          int rc = sh(returnStatus: true, script: '''#!/usr/bin/env bash
           set +x
-          set -eu
+          set -euo pipefail
+          umask 077
+          rm -f .release-mail-result.log
           mode="${RELEASE_MODE:-VERIFY}"
           case "$mode" in
             VERIFY) ;;
@@ -28,10 +32,44 @@ pipeline {
             *) exit 2 ;;
           esac
           test -n "$SMOKE_ANSIBLE_HOST"
-          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=10 -i /var/lib/jenkins/.ssh/smoke-deploy "ansadmin@$SMOKE_ANSIBLE_HOST" "flock -n /opt/devops/.notice-cd.lock python3 - $mode" < cicd/ansible/alb-release-verify.py
-        '''
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=10 -i /var/lib/jenkins/.ssh/smoke-deploy "ansadmin@$SMOKE_ANSIBLE_HOST" "flock -n /opt/devops/.notice-cd.lock python3 - $mode" < cicd/ansible/alb-release-verify.py | tee .release-mail-result.log
+        ''')
+          def lines = fileExists('.release-mail-result.log') ? readFile('.release-mail-result.log').readLines() : []
+          def last = lines ? lines[-1] : ''
+          if (rc == 0 && params.RELEASE_MODE == 'SWITCH' && last == 'RELEASE SWITCH OK active=green') {
+            env.RELEASE_MAIL_OUTCOME = 'SWITCH_VERIFIED'
+          } else if (rc == 0 && params.RELEASE_MODE == 'ROLLBACK_TEST' && last == 'RELEASE ROLLBACK TEST OK: synthetic assertion failure' && lines.any { it.startsWith('ROLLBACK VERIFIED blue=100 green=0 ') }) {
+            env.RELEASE_MAIL_OUTCOME = 'SYNTHETIC_ROLLBACK_VERIFIED'
+          } else if (rc == 1 && last == 'RELEASE FAILED: release failed; original Blue route verified' && lines.any { it.startsWith('ROLLBACK VERIFIED blue=100 green=0 ') }) {
+            env.RELEASE_MAIL_OUTCOME = 'ROLLBACK_VERIFIED'
+          } else if (lines.any { it.startsWith('RELEASE FAILED: ROLLBACK UNCONFIRMED:') }) {
+            env.RELEASE_MAIL_OUTCOME = 'ROLLBACK_UNCONFIRMED'
+          } else if (rc == 0 && params.RELEASE_MODE == 'VERIFY' && last.startsWith('RELEASE VERIFY OK:')) {
+            env.RELEASE_MAIL_OUTCOME = 'VERIFY_ONLY'
+          }
+          if (rc != 0 || env.RELEASE_MAIL_OUTCOME == 'NOT_CONFIRMED') {
+            error('Release failed or outcome not confirmed; inspect console')
+          }
+        }
       }
     }
   }
-  post { success { echo "NOTICE RELEASE OK: mode=${params.RELEASE_MODE}; build=${env.BUILD_NUMBER}" } }
+  post {
+    always {
+      script {
+        if (params.SEND_RELEASE_SNS && params.RELEASE_MODE != 'VERIFY') {
+          try {
+            withEnv(["NOTICE_SNS_OUTCOME=${env.RELEASE_MAIL_OUTCOME ?: 'NOT_CONFIRMED'}"]) {
+              int notifyRc = sh(returnStatus: true, script: 'python3 cicd/jenkins/publish-release-sns.py "$NOTICE_SNS_OUTCOME"')
+              if (notifyRc != 0) { echo 'SNS notification unconfirmed; release outcome unchanged' }
+            }
+          } catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException e) {
+            throw e
+          } catch (Exception e) {
+            echo 'SNS notification failed; release outcome unchanged'
+          }
+        }
+      }
+    }
+  }
 }
