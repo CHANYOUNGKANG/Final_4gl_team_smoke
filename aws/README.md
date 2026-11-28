@@ -12,7 +12,37 @@
 | [migration/](migration/) | RDS·S3 이관 절차와 원본 대조 결과 |
 | [operations/](operations/) | 전환·복귀 스크립트, 복구 시간과 실제 비용 기록 |
 
-## 현재 구축 현황 (2026-11-26)
+## 최신 확인 현황 — 2026-11-27 작업 / 11-28 증빙 보완
+
+[상세 작업일지](WORKLOG.md) · [실제 콘솔 구성](infrastructure/1127-console-configuration.md) · [이관 원본·대상 구분](migration/1127-source-and-target-evidence.md) · [진행률 점검](operations/1128-progress-review.md) · [PR #27](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pull/27) · [인계 Issue #11](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11)
+
+| 작업 | 현재 확인한 결과 | 확인 범위·남은 작업 |
+| --- | --- | --- |
+| EKS·Ansible 인계 | 11/26 회수 결과의 노드 2대 Ready·시스템 Pod 6개 Running, 팀 11/27 Ansible 역할·private API·notice 권한 검증 | 실제 EKS 구성과 노드별 두 AZ 증빙은 추가 필요 |
+| ALB·Blue/Green | 실제 대상 그룹 각각 Healthy 2개, HTTP:80 리스너 Blue 100 / Green 0, 정적 test-v2 응답 | HTTPS·업무 앱 검증과 구분. 팀 전환 20.23초·복귀 21.56초, 정적 연속 조회 341/341은 팀 로그 참조 |
+| RDS | MariaDB db.t3.micro 사용 가능, 프라이빗 연결, 두 AZ DB subnet group | RDS 복원 후 데이터·해시 원문은 미확보. DB subnet group 두 AZ는 EKS 노드 배치 증거가 아님 |
+| EFS | Access Point 사용 가능, UID/GID 1500:1500 | 실제 mount target 배치·마운트·파일 해시 원문과 구분 |
+| 이관 기준값·S3 | 인계 원본 board 14 / board_file 1 / inquiry 6, 파일 1개 189,525 bytes; S3에 같은 저장 이름 객체 1개 | 온프레미스 기준값과 대상 검증을 분리. S3 표시 크기 185.1 KB는 재다운로드 SHA-256 검증과 별도 |
+| 후보 앱 후속 인계 | 팀 11/27 오후 로그의 PVC BOUND RWX, Green 서버 dry-run, 17:24 격리 후보 패치 적용 | 이전 PVC Forbidden 이후 성공 기록 반영. 최종 rollout·target health·실제 앱 통합은 미관찰 |
+
+**공식 AWS 진행률은 0/8을 유지한다.** 위 실제 구축 결과가 없다는 뜻이 아니라, 대표 이정표 전체에 맞는 저장소 근거가 아직 부족하다는 뜻이다. [정확한 계산 경로와 필요한 증거](operations/1128-progress-review.md)를 함께 본다. 숫자를 올리기 위해 코드를 복원하거나 HTTP를 HTTPS 성공으로 표시하지 않았다.
+
+실제 원본 캡처 9장을 새로 확보해 마스킹했고 기존 11/26 캡처 7장은 보존했다. 첨부 업로드 시각과 원래 대화 메시지 시각을 구분한다. 상세 출처·증명 범위는 작업일지에 있다.
+
+![실제 Blue 대상 2개 Healthy](evidence/1127-alb-blue-targets-masked.png)
+
+![실제 RDS 사용 가능 및 프라이빗 연결 설정](evidence/1127-rds-instance-masked.png)
+
+### 다음에 필요한 근거
+
+1. 실제 EKS 구성·연결 서브넷과 Ready 노드의 AZ 배치.
+2. HTTPS 리스너·인증서와 접속 결과.
+3. 실제 사용한 이관 명령, RDS 대상의 건수·내용 대조, EFS/S3 대상 파일 SHA-256.
+4. Green 최종 상태와 실제 업무 앱 연동, 워커 장애·복구·모니터링 측정.
+
+이미 확보한 콘솔 화면·인계 원본·ECR 자료를 다시 요청하지 않는다. 최신 후속 결과가 확보되면 해당 작업 날짜 기록을 보완한다.
+
+## 11/26 초기 인계 기록 (이력)
 
 [팀 공유 인계 PR #15](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pull/15)의 AWS 담당자 보고 기준으로 Terraform EKS 및 Managed Node Group 구축 완료: 두 프라이빗 앱 서브넷의 t3.medium 워커 2대, Private Only API, 워커 2/2 Ready 및 시스템 Pod 6/6 Running, 재시작 0회. 실제 Terraform 원본·검증 화면 및 로그는 추가 제출 대기 중이다.
 
@@ -33,7 +63,7 @@ Access Entry와 notice namespace RBAC 설정 진행 중이며 Ansible 접속 검
 
 이준호와 이관을 대조하고, 강찬영과 ECR 저장소·EKS 대상·ALB 전환 및 복귀 절차를 연결한다.
 
-## 최신 구축 현황 — 2026-11-26
+## 11/26 기반 구축 상세 (이력)
 
 [상세 작업일지](WORKLOG.md) · [EKS 관찰 기록](verification/1126-eks-observations.log) · [원문 CLI의 공개용 발췌](verification/1126-aws-cli-masked.log) · [실제 캡처](evidence/) · [인계 Issue #11](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11)
 
@@ -73,7 +103,7 @@ VPC·서브넷·보안 그룹은 서비스와 관리 통신의 경계를 구성�
 
 서브넷의 Available 상태를 확인한 화면이며 EKS 노드가 두 AZ에 분산됐다는 증거는 별도로 필요하다. 나머지 실제 캡처 5장과 설명은 [작업일지](WORKLOG.md)와 [발표 자료 색인](../docs/presentation/README.md)에 연결했다.
 
-## 다음 작업과 협업
+## 11/26 당시 다음 작업과 협업 (이력)
 
 1. **이우빈:** 사용한 Terraform 원본·실제 EKS 설정과 노드 AZ 라벨을 확보해 구성과 관찰 결과를 대조한다.
 2. **이우빈 ↔ 강찬영:** PR #15에 기록된 Access Entry 및 `notice` namespace / `smoke-deployers` RBAC 설정 진행 상태를 인계하고, 동일 Ansible 역할의 `eks:ListClusters` 상태와 필요한 EKS Access Entry/RBAC·프라이빗 API 접근을 확인한다. 사용자 kubectl 성공을 다른 주체의 권한 해결로 간주하지 않는다.

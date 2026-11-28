@@ -41,3 +41,15 @@
 11/26은 자료 정리·업로드 기준일이다. 화면에 시각이 보이는 도메인 등록 실패 자료 외의 원본은 정확한 캡처 시각과 리소스 생성 시각을 단정하지 않는다. 실제 스크린샷의 민감 부분만 불투명하게 제거하고 메타데이터를 지웠으며 성공 화면을 생성하지 않았다. 실패·보류·미검증 자료를 성과 지표로 바꾸지 않는다.
 
 [AWS 상세 설명·출처](../../aws/WORKLOG.md) · [AWS 현황](../../aws/README.md)
+
+## AWS · 11/27 실제 구축 화면 (11/28 회수)
+
+담당: 이우빈. 각 자료의 출처·업로드 시각·증명 범위는 [AWS 작업일지](../../aws/WORKLOG.md)와 [구성 기록](../../aws/infrastructure/1127-console-configuration.md)에 있다. 실제 원본을 마스킹한 사본이며 생성 전 설정 양식은 성공 증빙에 포함하지 않았다.
+
+| 발표 후보 | 실제 화면 | 설명과 한계 |
+| --- | --- | --- |
+| Blue/Green 대상 준비 | [Blue](../../aws/evidence/1127-alb-blue-targets-masked.png), [Green](../../aws/evidence/1127-alb-green-targets-masked.png) | 대상 그룹 각각 Healthy 2개. 팀원 파이프라인의 전환·복귀 로그와 함께 설명 |
+| HTTP 경로와 리스너 | [test-v2 응답](../../aws/evidence/1127-alb-http-response-masked.png), [HTTP80 리스너](../../aws/evidence/1127-alb-http-listener-masked.png) | 실제 정적 시험 응답 및 Blue100/Green0. HTTPS 완료로 제시하지 않음 |
+| DB 대상 준비 | [DB subnet group](../../aws/evidence/1127-rds-subnet-group-masked.png), [RDS](../../aws/evidence/1127-rds-instance-masked.png) | 두 AZ DB subnet group 및 RDS 사용 가능·private. EKS 두 AZ 배치 또는 DB 복원 무결성과 구분 |
+| 공유 파일 저장소 | [EFS Access Point](../../aws/evidence/1127-efs-access-point-masked.png) | 사용 가능·UID/GID1500. 실제 마운트·해시 검증은 별도 |
+| 이관 원본과 S3 대상 | [버킷](../../aws/evidence/1127-s3-bucket-masked.png), [객체](../../aws/evidence/1127-s3-object-masked.png) | S3 객체1개·표시크기와 원본 목록 대응. [원본 기준값](../../aws/verification/1127-handoff-source-baseline-masked.log)은 온프레미스이며 RDS 복원 후 결과가 아님 |

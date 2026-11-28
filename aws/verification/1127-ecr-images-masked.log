@@ -1,0 +1,10 @@
+# 실제 첨부 '붙여넣은 텍스트(1)(2).txt', 2026-11-27 10:18 KST 업로드. 당일 태그 행 발췌, 호스트 및 저장소명 치환, 표 정규화. 실행 시각과 업로드 시각 구분.
+aws ecr describe-images \
+  --repository-name "$ECR_REPO" \
+  --region ap-northeast-2 \
+  --query 'sort_by(imageDetails,&imagePushedAt)[].{Tags:imageTags,Digest:imageDigest,Pushed:imagePushedAt}' \
+  --output table
+
+Digest: sha256:08a1e4d2d695fa2923b3881233e08b22da6262eb190c54995c0630867845524d
+Pushed: 2026-11-27T01:10:43.697000+00:00
+Tags: ['notice-77bd103e06c6609478a566a5513e22d6747e9d34-3']
