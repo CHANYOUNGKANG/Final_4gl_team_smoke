@@ -19,8 +19,12 @@
   },
   "AWS1": {
     "implementation": {
-      "file": "cicd/verification/1127-day2-midpoint.md",
-      "observed": "부분 구현: 11/26 VPC 리소스맵에서 두 AZ 앱 서브넷, 11/27 Ansible DescribeCluster ACTIVE·private API 및 Blue/Green 4 Pod Running·서로 다른 워커 배치 확인. 노드별 AZ 및 실제 EKS 연결 서브넷 원문 미확보로 전체 실행 검증은 미등록. 종전 부분 verification은 감사 문서에 보존."
+      "file": "aws/infrastructure/1127-eks-access-and-controller.md",
+      "observed": "실제 사용자 실행 결과 회수 및 팀 관찰 기록: EKS 기반의 노드 두 대가 ap-northeast-2a/2c에 배치됐고 private API 접근·Access Entry/RBAC 연동을 확인. 실제 구성 관찰이며 Terraform 원문 전체를 확보했다는 뜻은 아님."
+    },
+    "verification": {
+      "file": "aws/verification/1127-recovered-user-results.log",
+      "observed": "「261127 2일차」 2026-11-27 09:17:41 KST 사용자 kubectl 출력 회수: 두 노드 모두 Ready이며 AZ 각각 ap-northeast-2a/2c, Pod 6개 Running·재시작 0. 두 AZ EKS 기반의 실행 기준을 확인; 검색 회수 기록이며 원본 터미널 로그 전체를 새로 만든 것이 아님."
     }
   },
   "CICD1": {
@@ -38,13 +42,17 @@
   "AWS2": {
     "implementation": {
       "file": "aws/infrastructure/1127-console-configuration.md",
-      "observed": "부분 구현: 실제 HTTP 80 가중치 100:0, Blue/Green IP 대상 각각 Healthy 2개, 정적 시험 앱 전환·복귀 실측 확인. HTTPS·ACM 및 실제 업무 앱 검증 미완료로 전체 실행 검증은 미등록."
+      "observed": "부분 구현: 실제 콘솔의 HTTP:80 ALB 리스너 Blue100/Green0, 두 IP 대상 그룹 각각 Healthy2개와 정적 HTTP 응답 확인. 팀 CI/CD 전환·복귀는 공동 연동 결과로 구분. HTTPS 리스너·인증서·TLS 검증은 미확인이므로 완료 실행 점수는 등록하지 않음."
     }
   },
   "AWS3": {
     "implementation": {
       "file": "aws/migration/1127-source-and-target-evidence.md",
-      "observed": "부분 구현: RDS MariaDB private available, EFS Access Point, S3 버킷·첨부 객체, 원본 인계 기준 및 저장 이름·표시 크기 대조. RDS 복원 후 데이터 및 EFS/S3 대상 SHA-256 원문 미확보로 전체 실행 검증은 미등록."
+      "observed": "실제 사용자 실행 결과 회수: 11/27 16:19:48 KST RDS boarddb 복원·스키마 적용, 16:25:58 EFS로 원본 첨부 전송, 16:35:22 S3 객체 조회·재다운로드. 실제 대상 콘솔·온프레미스 인계 원본을 연결하며 미확보 명령 인자나 YAML을 재구성하지 않음."
+    },
+    "verification": {
+      "file": "aws/verification/1127-recovered-user-results.log",
+      "observed": "사용자 실행 결과 회수와 실제 인계 원본 대조: RDS 복원·스키마 적용 종료0, 건수14/1/6 및 content/file digest 모두 원본과 일치. EFS 두 AZ와 S3 재다운로드의189525bytes 첨부 SHA-256도 원본과 일치. 17:08:11 KST PAB4개true·VersioningEnabled·익명직접접근403. 실제 업무 앱 전체 연동·CloudFront·예약 CronJob 실행 성공은 별도 미검증."
     }
   }
 }

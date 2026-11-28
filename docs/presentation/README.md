@@ -53,3 +53,15 @@
 | DB 대상 준비 | [DB subnet group](../../aws/evidence/1127-rds-subnet-group-masked.png), [RDS](../../aws/evidence/1127-rds-instance-masked.png) | 두 AZ DB subnet group 및 RDS 사용 가능·private. EKS 두 AZ 배치 또는 DB 복원 무결성과 구분 |
 | 공유 파일 저장소 | [EFS Access Point](../../aws/evidence/1127-efs-access-point-masked.png) | 사용 가능·UID/GID1500. 실제 마운트·해시 검증은 별도 |
 | 이관 원본과 S3 대상 | [버킷](../../aws/evidence/1127-s3-bucket-masked.png), [객체](../../aws/evidence/1127-s3-object-masked.png) | S3 객체1개·표시크기와 원본 목록 대응. [원본 기준값](../../aws/verification/1127-handoff-source-baseline-masked.log)은 온프레미스이며 RDS 복원 후 결과가 아님 |
+## AWS · DAY2 재조회 보완 자료
+
+11/27 수행 결과를 11/28에 보완했다. 기존 다른 파트의 후보와 AWS9장은 유지한다. 원본과 마스킹 사본을 대조한 신규 이미지는 아래3장이다.
+
+| 후보 | 경로 | 설명·증명 범위 |
+| --- | --- | --- |
+| ALB 포트 규칙 | [ALB SG](../../aws/evidence/1127-alb-security-group-masked.png) | 저장된 TCP80·443 규칙. 소스 범위는 화면 밖이며 HTTPS 완료와 구분 |
+| DB 접속 경계 | [RDS SG](../../aws/evidence/1127-rds-security-group-masked.png) | TCP3306 출발지 Bastion/EKS cluster SG. 실제 접속·복원은 별도 사용자 결과 |
+| 공유 파일 접속 경계 | [EFS SG](../../aws/evidence/1127-efs-security-group-masked.png) | TCP2049 출발지 EKS cluster SG. 파일 공유 시험은 별도 사용자 결과 |
+| 두 AZ 실행·권한 인계 | [EKS 과정](../../aws/infrastructure/1127-eks-access-and-controller.md) | 노드2개 Ready·2a/2c, 접근 그룹 정정, chart3.6.2 설치 결과. 전체 설정 원문은 미확보 |
+| 데이터 보존 검증 | [이관 대조표](../../aws/migration/1127-source-and-target-evidence.md) · [실행 발췌](../../aws/verification/1127-recovered-user-results.log) | 실제 원본과 RDS14/1/6·digest, EFS/S3 첨부189,525bytes·SHA 일치. 새 AWS 재실행이 아닌 사용자 출력 회수 대조 |
+| 성공과 남은 시험 구분 | [운영 기록](../../aws/operations/1127-sync-and-handoff.md) | 수동 Job Complete1/1과 CronJob suspend=True를 함께 설명. 정기 자동화 성공으로 제시하지 않음 |

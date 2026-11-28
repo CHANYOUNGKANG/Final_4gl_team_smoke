@@ -12,35 +12,43 @@
 | [migration/](migration/) | RDS·S3 이관 절차와 원본 대조 결과 |
 | [operations/](operations/) | 전환·복귀 스크립트, 복구 시간과 실제 비용 기록 |
 
-## 최신 확인 현황 — 2026-11-27 작업 / 11-28 증빙 보완
+## 최신 현황 — 2026-11-27 DAY 2 / 11-28 재조회 보완
 
-[상세 작업일지](WORKLOG.md) · [실제 콘솔 구성](infrastructure/1127-console-configuration.md) · [이관 원본·대상 구분](migration/1127-source-and-target-evidence.md) · [진행률 점검](operations/1128-progress-review.md) · [PR #27](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pull/27) · [인계 Issue #11](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11)
+[상세 작업일지](WORKLOG.md) · [EKS·접근·Controller](infrastructure/1127-eks-access-and-controller.md) · [콘솔 구성](infrastructure/1127-console-configuration.md) · [RDS·EFS·S3 대조](migration/1127-source-and-target-evidence.md) · [운영 인계](operations/1127-sync-and-handoff.md) · [사용자 실행 발췌](verification/1127-recovered-user-results.log) · [인계 Issue #11](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11)
 
-| 작업 | 현재 확인한 결과 | 확인 범위·남은 작업 |
+| 작업 | 확인한 DAY2 결과 | 근거·남은 범위 |
 | --- | --- | --- |
-| EKS·Ansible 인계 | 11/26 회수 결과의 노드 2대 Ready·시스템 Pod 6개 Running, 팀 11/27 Ansible 역할·private API·notice 권한 검증 | 실제 EKS 구성과 노드별 두 AZ 증빙은 추가 필요 |
-| ALB·Blue/Green | 실제 대상 그룹 각각 Healthy 2개, HTTP:80 리스너 Blue 100 / Green 0, 정적 test-v2 응답 | HTTPS·업무 앱 검증과 구분. 팀 전환 20.23초·복귀 21.56초, 정적 연속 조회 341/341은 팀 로그 참조 |
-| RDS | MariaDB db.t3.micro 사용 가능, 프라이빗 연결, 두 AZ DB subnet group | RDS 복원 후 데이터·해시 원문은 미확보. DB subnet group 두 AZ는 EKS 노드 배치 증거가 아님 |
-| EFS | Access Point 사용 가능, UID/GID 1500:1500 | 실제 mount target 배치·마운트·파일 해시 원문과 구분 |
-| 이관 기준값·S3 | 인계 원본 board 14 / board_file 1 / inquiry 6, 파일 1개 189,525 bytes; S3에 같은 저장 이름 객체 1개 | 온프레미스 기준값과 대상 검증을 분리. S3 표시 크기 185.1 KB는 재다운로드 SHA-256 검증과 별도 |
-| 후보 앱 후속 인계 | 팀 11/27 오후 로그의 PVC BOUND RWX, Green 서버 dry-run, 17:24 격리 후보 패치 적용 | 이전 PVC Forbidden 이후 성공 기록 반영. 최종 rollout·target health·실제 앱 통합은 미관찰 |
+| EKS·접근 인계 | 노드 2개 Ready, 각각 2a·2c. 접근 그룹 불일치 후 일치 확인. 팀 Ansible private API·notice 권한 검증 | 09:17:41·09:18:59 사용자 회수 + 팀 오전 로그. 실제 Terraform/IAM/RBAC 원문 전문은 미확보 |
+| ALB·Blue/Green | chart3.6.2 Helm 설치 deployed, 대상 그룹 각각 Healthy2, HTTP80 Blue100/Green0, 정적 test-v2 응답 | HTTPS·인증서·실제 LBC 이미지 버전은 추가 필요. 전환/복귀는 팀 CI/CD 로그로 구분 |
+| RDS 데이터 | 복원·스키마 적용 exit0, RDS10.11.19, 공지14/첨부1/문의6 및 비교 digest가 실제 원본과 일치 | 16:19:48 사용자 실행 회수 + 인계 원본 대조. 업무 앱 통합은 별도 |
+| EFS 첨부 | 공유 시험 후 실제 첨부 이관 exit0. 두 AZ에서189,525bytes·1500:1500·동일SHA | 15:16:14 시험 파일과16:25:58 실제 첨부 파일 구분 |
+| S3 객체·보안 | AES256·189,525bytes·image/jpeg, 다운로드SHA가 실제 원본과 일치. PAB4개true·Versioning Enabled·익명403 | 16:35:22·17:08:11 사용자 출력. S3 HTTPS403은 ALB HTTPS 완료와 다름 |
+| 동기화·후속 앱 | 수동 Job Complete1/1, CronJob suspend=True. 17:27 Blue/Green 각2Pod Running·PVC Bound/RWX | 예약 실행·신규 파일 동기화·최종 후보 rollout/TG·업무 앱 기능은 추가 검증 |
 
-**공식 AWS 진행률은 0/8을 유지한다.** 위 실제 구축 결과가 없다는 뜻이 아니라, 대표 이정표 전체에 맞는 저장소 근거가 아직 부족하다는 뜻이다. [정확한 계산 경로와 필요한 증거](operations/1128-progress-review.md)를 함께 본다. 숫자를 올리기 위해 코드를 복원하거나 HTTP를 HTTPS 성공으로 표시하지 않았다.
+### 진행률 등록과 해석
 
-실제 원본 캡처 9장을 새로 확보해 마스킹했고 기존 11/26 캡처 7장은 보존했다. 첨부 업로드 시각과 원래 대화 메시지 시각을 구분한다. 상세 출처·증명 범위는 작업일지에 있다.
+기존 [계산 기준](../docs/progress/README.md)의 **부분 구현 1점, 완료 기준과 실행 검증을 갖춘 항목 2점**으로 AWS 근거를 갱신했다. **AWS1 2/2, AWS2 1/2, AWS3 2/2, AWS4 0/2 — 등록 기준 합계 5/8**이다. 실제 원격 집계는 [main 진행률 Issue #1](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)과 [Actions](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/actions/workflows/project-progress.yml)에서 확인한다. 계산 코드와 다른 팀원의 증빙은 변경하지 않았다.
 
-![실제 Blue 대상 2개 Healthy](evidence/1127-alb-blue-targets-masked.png)
+앞선 0/8 기록은 1차 검색 실패·구현 등록 누락과 부분 구현 기준을 지나치게 엄격하게 적용한 당시 판단이다. 이번에는 실제 명령·출력을 추가 회수하고 원본과 대조해 보완했다. [이전 판단과 후속 정정](operations/1128-progress-review.md)을 남겼다. 5/8은 저장소 구축 지표이며 전체 요구사항·장애 복구·운영 전환이 모두 끝났다는 뜻은 아니다.
 
-![실제 RDS 사용 가능 및 프라이빗 연결 설정](evidence/1127-rds-instance-masked.png)
+### 실제 화면과 출처
 
-### 다음에 필요한 근거
+11/27 원본 캡처는 기존9장에 저장된 보안 그룹3장을 더해 **12장**을 연결했다. 11/26의 기존7장은 보존했다. 성공 화면을 새로 생성하지 않았고 원본의 민감 영역만 불투명하게 제거했다. 전체 번호·시각·목적·증명 범위는 작업일지와 [발표 자료 색인](../docs/presentation/README.md)에 있다.
 
-1. 실제 EKS 구성·연결 서브넷과 Ready 노드의 AZ 배치.
-2. HTTPS 리스너·인증서와 접속 결과.
-3. 실제 사용한 이관 명령, RDS 대상의 건수·내용 대조, EFS/S3 대상 파일 SHA-256.
-4. Green 최종 상태와 실제 업무 앱 연동, 워커 장애·복구·모니터링 측정.
+![실제 Blue 대상2개 Healthy](evidence/1127-alb-blue-targets-masked.png)
 
-이미 확보한 콘솔 화면·인계 원본·ECR 자료를 다시 요청하지 않는다. 최신 후속 결과가 확보되면 해당 작업 날짜 기록을 보완한다.
+![RDS의 저장된 TCP3306 인바운드 규칙](evidence/1127-rds-security-group-masked.png)
+
+### 다음 작업
+
+1. 실제 JSP Green 후보의 rollout·target health, RDS 공지/첨부 조회와 EFS 다운로드·쓰기 확인.
+2. 사용자와11/30로 미룬 신규 파일 예약 동기화 시험. 현재 CronJob은 정지 상태.
+3. 도메인·ACM·HTTPS 및 CloudFront/OAC 검증 후 FILE_BASE_URL 합의.
+4. 워커 장애·대체 준비 시간·모니터링·비용 실측.
+
+추가 원문이 필요한 것은 실제 Terraform·IAM/RBAC·PV/PVC·ServiceAccount/CronJob 파일과 LBC 이미지 태그·후속 시험 결과다. 이미 확보한 명령·해시·인계 파일·스키마·이미지를 다시 요청하지 않는다. 과거 대화는 선별 결과만 회수됐으므로 모든 메시지·PC/EC2 파일을 열람한 것으로 표현하지 않는다.
+
+아래11/26 항목은 **그날의 이력**이다. 최신 상태는 위 DAY2 표를 따른다.
 
 ## 11/26 초기 인계 기록 (이력)
 
@@ -79,9 +87,9 @@ Access Entry와 notice namespace RBAC 설정 진행 중이며 Ansible 접속 검
 | RDS | DB 서브넷 그룹 생성 완료에 대한 사용자 보고 | DB 인스턴스·실제 접속·데이터 이관 완료와 구분 |
 | 도메인·ACM | 실제 도메인 등록 실패 화면 확보, 이후 도메인·ACM 작업 보류 보고 | [등록 실패](evidence/1126-domain-registration-failed-masked.png), [사용 불가 오류](evidence/1126-domain-unavailable-masked.png). 초기 HTTP 후 HTTPS 전환을 협의하는 공통 기준 적용 |
 
-첫 네 개의 체크리스트는 여러 인수 조건을 묶은 항목이다. 일부 기반 구축만 확인된 상태에서 전체 완료로 체크하지 않는다. AWS1에는 노드·시스템 Pod의 **부분 실행 근거만** 등록하며, 두 AZ의 EKS 구현 전체를 입증하는 근거가 없으므로 점수를 임의 상향하지 않는다.
+11/26 당시 첫 네 개의 체크리스트는 여러 인수 조건을 묶은 항목이었다. 일부 기반 구축만 확인된 상태에서 전체 완료로 체크하지 않는다. AWS1에는 노드·시스템 Pod의 **부분 실행 근거만** 등록하며, 두 AZ의 EKS 구현 전체를 입증하는 근거가 없으므로 점수를 임의 상향하지 않는다.
 
-## 사용 기술과 확인 범위
+## 11/26 사용 기술과 확인 범위 (이력)
 
 VPC·서브넷·보안 그룹은 서비스와 관리 통신의 경계를 구성하고, NAT는 프라이빗 계층의 외부 접근 경로를 마련한다. Terraform은 EKS 변경 계획을 관리하고 EKS 관리형 노드 그룹은 Kubernetes 실행 기반을 제공한다. Ansible·AWS CLI·IAM Role은 CI/CD의 원격 작업과 AWS 접근에 사용한다. 선정 목적과 실제 성능·비용 개선 실측은 별도로 구분한다.
 
