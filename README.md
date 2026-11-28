@@ -58,6 +58,37 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11.21 – 12.09
 
 </details>
 
+## 프로젝트 관리 · 검증 및 다음 작업
+
+<!-- smoke-management:start -->
+**DAY2 실적 · 2026-11-28 사후 검수 기준** — 11/27 작업에 대한 증빙 보완이며 11/28 신규 구축으로 중복 계산하지 않는다. 공식 점수 및 D-day는 위 자동 갱신 패널을 기준으로 한다.
+
+| 담당 | 확인된 작업 | 미확인 / 다음 작업 |
+| --- | --- | --- |
+| 강민서 · 네트워크/PM | DAY1 VLAN·SVI·HSRP 기반, 관리망 ICMP 5/5, 인접 WAN 응답 | DAY2 신규 장비 실측 없음; VLAN20 중복·L2·CPU hog·Core2/HSRP901, ACL/NAT/VPN/IDS·절체 |
+| 이준호 · 서버 | Ansible 3대, root 차단, 중앙 로그, 백업 복구·해시, 운영 메일, Prometheus 3/3 | 예약 백업·실패 알림·SNS/SQS/IDS 통합 수신, 최종 앱 재검증 |
+| 이우빈 · AWS | EKS 2AZ Ready, HTTP ALB 양쪽 TG Healthy2, RDS 14/1/6 및 digest, EFS/S3 SHA 일치, 직접 접근 403, 수동 동기화 완료 | HTTPS/ACM·CloudFront/OAC, 예약 CronJob 실행, 실제 JSP 기능, 워커/ASG·CloudWatch·비용 |
+| 강찬영 · CI/CD | Jenkins WAR·ECR digest, 실제 JSP CI #8 수동 30초·JUnit 8/8, Plan 20 tests, 정적 배포·전환/복귀, 실제 Green patch | 최신 JSP SCM 자동 빌드·rollout/readiness/TG·DB/EFS 업무 검증·실제 두 버전 전환/복귀·SNS·CSV 원본 |
+
+**공동 실측 범위** — 정적 Release #5 전환 확인 20.23초·복귀 확인 21.56초, 180초 동안 341/341 HTTP 응답 성공(실패 0). 합성 실패 시험이며 실제 JSP 무중단 배포 또는 실제 Pod 장애/RTO가 검증된 것은 아니다. 17:24 실제 Green patch 적용 후 최종 업무 기능·TG 상태는 미확인. 검증 및 승인 전 ALB 전환 금지.
+
+**PR 상태 (11/28 확인)** — [#27](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pull/27), [#28](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pull/28), [#30](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pull/30), [#31](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pull/31), [#32](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pull/32), [#33](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pull/33) 병합; #24 미병합 종료(#30 대체); [#26](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pull/26) 열림, [#23](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pull/23)·[#25](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pull/25) Draft 열림. [#11 DB/앱 인계](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11) · [#29 운영 알림](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/29).
+
+**기술 기준** — 팀 표준은 JSP `notice.war`, 앱 Java 17/Tomcat 10.1, Jenkins 서비스 Java 21, Maven 3.8.7, MariaDB 10.11.19, linux/amd64·UID/GID 1500. 레퍼런스 앱과 실제 앱을 구별한다. 네트워크 범위 축소·제외 및 Transit Gateway 채택은 팀 확정 근거가 없어 미확인(기존 범위 유지). 기존 구축 완료와 DR 실측을 우선한다.
+
+| 목표일 | 우선순위 / 완료 기준 |
+| --- | --- |
+| 11/30 | P0 실제 Green 검증, 최신 CI 자동 실행, 네트워크·알림 인계 |
+| 12/03 | 기존 WBS 네트워크·보안 종료 목표; HTTPS·동기화 병행 |
+| 12/05 | AWS 및 CI/CD 연동 종료 목표 |
+| 12/07 | 통합·장애 실측 종료 목표 (요청 실패 수·롤백·워커 복구·비용) |
+| 12/07~12/09 | 발표·최종 보고서 및 자료 제출; 정확한 발표일 미확인, D-day는 12/09 종료 기준 |
+
+[DAY2 최종 회의록](docs/daily/1127-meeting.md) · [일일 작업 기록](docs/daily/) · [공식 산정 규칙](docs/progress/README.md) · [WBS 및 시연 기록](docs/delivery/README.md) · [공식 점수 #1](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)
+
+미확인은 실패 또는 미수행과 동일하지 않다. 공식 점수는 16개 이정표의 0/1/2점 기준이며 PR 병합·제출 증빙과 독립적인 운영 검증을 구분한다.
+<!-- smoke-management:end -->
+
 ## 작업 시작하기
 
 | 순서 | 할 일 | 바로가기 |
