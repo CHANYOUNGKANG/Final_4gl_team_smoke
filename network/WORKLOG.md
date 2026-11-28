@@ -1,5 +1,28 @@
 # 네트워크·보안 작업일지
 
+## 2026-11-27 · DAY 2 — 저장소 인계 점검
+
+### 실제 확인한 결과
+- DAY1 네트워크 PR [#14](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/pull/14)가 main에 병합되어 설정 예시와 검증 기록이 보존되어 있다.
+- [진행률 이슈 #1](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1) 기준 NET1 구현 근거 1점, 네트워크 1/8점이다. 실행 근거 등록과 실제 통합 시험은 별개다.
+- [인계 이슈 #11](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11)에 네트워크·서버 P0 조치 순서가 추가되어 있다. 이는 조치 계획이지 실행 결과가 아니다.
+- 오늘 새 장비 실행 로그나 네트워크 설정 변경은 확인하지 못했다.
+
+### 막힌 부분
+- VLAN 20 주소 중복과 IOSv CPU hog 원인은 해결 확인 전이다.
+- Core2 및 VLAN 901 HSRP 최종 상태, 절체, 최종 GNS3 경로의 서비스·DB 통신은 미검증이다.
+- 실제 VM 주소와 공통 IP 계획 불일치는 서버 담당 합의 전이다.
+
+### 다음 작업
+- 네트워크 담당: VMnet2, 복제 VM NIC, Core SVI 주소/MAC, Cloud 이중 연결을 대조하고 중복 원인을 확인한다.
+- 네트워크·서버 담당: Core 인터페이스/HSRP/trunk/MAC 표와 서버 주소/라우팅/게이트웨이 응답을 대조한다.
+- 최종 경로에서 웹→DB TCP 3306 및 NFS TCP 2049를 검증하고 DB 계정 host 범위를 합의한다. 실제 환경값은 공개하지 않는다.
+- 이후 ACL 허용·차단, VPN, 절체 시간, IDS·메일 연동을 실측한다.
+
+### 증빙
+- PR #14, 이슈 #1 및 #11. 기존 [DAY1 검증](verification/1126-day1.md)과 [마스킹 캡처](evidence/1126-pfsense-wan-ping-masked.png)를 재사용한다.
+- 당일 신규 캡처·원본 콘솔 로그는 미확보이며 추가하지 않았다.
+
 ## 2026-11-26 · DAY 1 — GNS3 본사 코어 및 지사 기초 연결
 
 ### 실제 확인한 결과
