@@ -28,29 +28,29 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11.21 – 12.09
 <!-- smoke-activity:start -->
 | 최근 커밋 | 작성자 | 시각 (KST) |
 | --- | --- | ---: |
+| [`ce98dac`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/ce98dac914b07b4f19f8800952e632e082f90c73) Merge PR #32: AWS DAY2 실행 근거 및 진행률 5/8 반영 | woobin6318-dot | 11/28 20:23 |
+| [`a79ecc2`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/a79ecc21980b7532da166e38d68fc1bf97ef1490) aws: 11/27 DAY2 실행 근거 복원 및 진행률 등록 보완 | woobin6318-dot | 11/28 20:22 |
 | [`0a917de`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/0a917de4e56a23514316e65ec6fa031bffba29b5) Merge pull request #31 from CHANYOUNGKANG/docs/day2-aws-evidence-reass… | CHANYOUNGKANG | 11/28 20:20 |
 | [`f3f2190`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/f3f219023c19780dcd34db871675b32be9cb80dc) docs: audit DAY2 AWS evidence and credit verified partial implementation | CHANYOUNGKANG | 11/28 20:19 |
-| [`6c550b4`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/6c550b4024225e46c079c3bddb262f724834eeec) Merge PR #30: server 11/27 온프레미스 운영 구축 기록 | leejunho97 | 11/28 20:05 |
-| [`3f2df28`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/3f2df280f3f6ac7268561a8426175958bbdd85c6) Merge PR #27: AWS 11/27 실제 증빙·인계 기록 보완 | woobin6318-dot | 11/28 19:47 |
 
 **열린 이슈·PR**　[#29 [인계] 운영 알림 SNS → SQS 수신 경로 (배포·롤백·CloudW](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/29)　·　[#11 [인계] 온프레미스 DB 주소 대역 확정 및 AWS 공지 앱 배포 조건 ](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11)　·　[#1 팀 구축 진행률 · 구현 근거와 시연 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)
 
 **작업 브랜치 29개**　[`aws/eks-day1-handoff-record`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/aws/eks-day1-handoff-record)　[`aws/woobin-day1-jenkins-ec2`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/aws/woobin-day1-jenkins-ec2)　[`chore/security-automation`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/chore/security-automation)　[`cicd/alb-release-integration`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/alb-release-integration)　[`cicd/chanyoung-day1-first-build`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/chanyoung-day1-first-build)　[`cicd/day2-evidence`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/day2-evidence)　[`cicd/day2-final-records`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/day2-final-records)　[`cicd/deployment-mail-notification`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/deployment-mail-notification)　[`cicd/notice-cd-integration`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/notice-cd-integration)　[`cicd/notice-ci-integration`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/notice-ci-integration)　[`cicd/notice-prod-candidate`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/notice-prod-candidate)　[`cicd/notice-prod-integration`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/notice-prod-integration)
 
-<sub>11/28 20:20 KST 기준 · main push와 매일 00:05에 갱신</sub>
+<sub>11/28 20:24 KST 기준 · main push와 매일 00:05에 갱신</sub>
 <!-- smoke-activity:end -->
 
 <details>
 <summary><b>점수표 텍스트로 보기</b> · 산정 기준과 근거 파일</summary>
 
 <!-- smoke-progress:start -->
-**전체 구축 진행률 53.1%**　·　17/32점
+**전체 구축 진행률 59.4%**　·　19/32점
 
 | 파트 | 점수 | 진행률 |
 | --- | ---: | ---: |
 | 강민서 · 네트워크 | 1/8 | 12.5% |
 | 이준호 · 서버 | 7/8 | 87.5% |
-| 이우빈 · AWS | 3/8 | 37.5% |
+| 이우빈 · AWS | 5/8 | 62.5% |
 | 강찬영 · CI/CD | 6/8 | 75.0% |
 <!-- smoke-progress:end -->
 
