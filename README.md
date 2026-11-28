@@ -28,28 +28,28 @@ KDT 최종 프로젝트　·　스모커 팀 4인　·　2026.11.21 – 12.09
 <!-- smoke-activity:start -->
 | 최근 커밋 | 작성자 | 시각 (KST) |
 | --- | --- | ---: |
+| [`6c550b4`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/6c550b4024225e46c079c3bddb262f724834eeec) Merge PR #30: server 11/27 온프레미스 운영 구축 기록 | leejunho97 | 11/28 20:05 |
 | [`3f2df28`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/3f2df280f3f6ac7268561a8426175958bbdd85c6) Merge PR #27: AWS 11/27 실제 증빙·인계 기록 보완 | woobin6318-dot | 11/28 19:47 |
 | [`676387e`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/676387efbe6949942ac47acb11cc98de16975ed2) aws: 11/27 실제 증빙 보완 및 11/28 게시·진행률 점검 | woobin6318-dot | 11/28 19:46 |
-| [`3a52994`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/3a529945ec60e950ca9360323c9e283b101238ce) Merge pull request #28 from CHANYOUNGKANG/cicd/day2-final-records | CHANYOUNGKANG | 11/27 17:30 |
-| [`6499afd`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/6499afdb8d1cd577a29e15107ff5994b96031447) docs(cicd): consolidate DAY2 meeting and afternoon deployment evidence | CHANYOUNGKANG | 11/27 17:28 |
+| [`6d1161f`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/commit/6d1161ffe39e12d7d8d95813842c586368c2b550) server: 인계 이슈 #29 링크 | claude | 11/27 21:40 |
 
-**열린 이슈·PR**　[#11 [인계] 온프레미스 DB 주소 대역 확정 및 AWS 공지 앱 배포 조건 ](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11)　·　[#1 팀 구축 진행률 · 구현 근거와 시연 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)
+**열린 이슈·PR**　[#29 [인계] 운영 알림 SNS → SQS 수신 경로 (배포·롤백·CloudW](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/29)　·　[#11 [인계] 온프레미스 DB 주소 대역 확정 및 AWS 공지 앱 배포 조건 ](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11)　·　[#1 팀 구축 진행률 · 구현 근거와 시연 기록](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/1)
 
-**작업 브랜치 27개**　[`aws/eks-day1-handoff-record`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/aws/eks-day1-handoff-record)　[`aws/woobin-day1-jenkins-ec2`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/aws/woobin-day1-jenkins-ec2)　[`chore/security-automation`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/chore/security-automation)　[`cicd/alb-release-integration`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/alb-release-integration)　[`cicd/chanyoung-day1-first-build`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/chanyoung-day1-first-build)　[`cicd/day2-evidence`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/day2-evidence)　[`cicd/day2-final-records`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/day2-final-records)　[`cicd/deployment-mail-notification`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/deployment-mail-notification)　[`cicd/notice-cd-integration`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/notice-cd-integration)　[`cicd/notice-ci-integration`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/notice-ci-integration)　[`cicd/notice-prod-candidate`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/notice-prod-candidate)　[`cicd/notice-prod-integration`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/notice-prod-integration)
+**작업 브랜치 28개**　[`aws/eks-day1-handoff-record`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/aws/eks-day1-handoff-record)　[`aws/woobin-day1-jenkins-ec2`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/aws/woobin-day1-jenkins-ec2)　[`chore/security-automation`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/chore/security-automation)　[`cicd/alb-release-integration`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/alb-release-integration)　[`cicd/chanyoung-day1-first-build`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/chanyoung-day1-first-build)　[`cicd/day2-evidence`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/day2-evidence)　[`cicd/day2-final-records`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/day2-final-records)　[`cicd/deployment-mail-notification`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/deployment-mail-notification)　[`cicd/notice-cd-integration`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/notice-cd-integration)　[`cicd/notice-ci-integration`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/notice-ci-integration)　[`cicd/notice-prod-candidate`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/notice-prod-candidate)　[`cicd/notice-prod-integration`](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/tree/cicd/notice-prod-integration)
 
-<sub>11/28 19:47 KST 기준 · main push와 매일 00:05에 갱신</sub>
+<sub>11/28 20:05 KST 기준 · main push와 매일 00:05에 갱신</sub>
 <!-- smoke-activity:end -->
 
 <details>
 <summary><b>점수표 텍스트로 보기</b> · 산정 기준과 근거 파일</summary>
 
 <!-- smoke-progress:start -->
-**전체 구축 진행률 31.2%**　·　10/32점
+**전체 구축 진행률 43.8%**　·　14/32점
 
 | 파트 | 점수 | 진행률 |
 | --- | ---: | ---: |
 | 강민서 · 네트워크 | 1/8 | 12.5% |
-| 이준호 · 서버 | 3/8 | 37.5% |
+| 이준호 · 서버 | 7/8 | 87.5% |
 | 이우빈 · AWS | 0/8 | 0.0% |
 | 강찬영 · CI/CD | 6/8 | 75.0% |
 <!-- smoke-progress:end -->
