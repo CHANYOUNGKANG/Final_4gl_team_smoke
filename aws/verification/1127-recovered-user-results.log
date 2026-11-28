@@ -1,0 +1,295 @@
+# 2026-11-27 AWS DAY 2 — 사용자 실행내용 선별 회수 및 인계 원본 대조
+# 실행 스크립트가 아닌 검증 기록.
+#
+# 프로젝트/담당: 파이널 프로젝트 / 이우빈 · AWS
+# 대화: "261127 2일차" (검색 요청에서는 "20261127 2일차"도 사용).
+# 원제목은 USER 17:22:05 검색에서 명시적으로 반환됨.
+# 다른 메시지는 같은 프로젝트의 USER 메시지 날짜/시각으로 추적.
+# 작업 날짜: 2026-11-27, Asia/Seoul. 회수·대조: 2026-11-28 20시대 KST.
+# 종류: Personal Context가 선별 반환한 USER 명령/출력 발췌 + 실제 첨부 원본 대조.
+# 전체 대화/전체 터미널 로그/원래 설정 파일 전문을 확보한 것은 아님.
+# 이 정리 과정에서 AWS 명령을 새로 실행하거나 인프라를 변경하지 않음.
+#
+# 표기/보안
+# [명령 발췌]와 [출력 발췌]는 반환된 USER 내용. [회수된 관찰값]은 검색 요약.
+# 원문 CLI 표, 생략된 행, 원문 파일을 추정해 재구성하지 않음.
+# ...는 검색이 생략한 부분이며 실행 가능한 완전 명령으로 복원하지 않음.
+# 실제 계정/관리주소/DB 사용자/클러스터·Pod·IAM 식별자/첨부 파일명은
+# <...>로 치환하거나 원문 환경변수를 유지. 같은 표시는 같은 원본을 뜻함.
+# 공개 구성값 namespace notice, DB boarddb, 리전/AZ, 표준 구성요소 이름,
+# 표준 ec2-user, 서비스 포트와 명령 옵션·순서는 유지.
+# 원본에 없는 명령 옵션을 추가하지 않음. 어시스턴트 제안/설계 예시는 실행 증거에서 제외.
+# 실제 비밀번호/토큰/계정 ID/관리주소/DB dump/첨부 바이트는 공개하지 않음.
+
+
+[01] 09:17:41 KST — EKS 두 AZ 및 당시 접근 그룹 불일치
+출처: USER 2026-11-27T00:17:41Z.
+실행 위치/주체: Terraform EC2 / ec2-user. 셸 관리주소는 비공개.
+
+[명령 발췌]
+kubectl get nodes -L topology.kubernetes.io/zone
+
+[회수된 관찰값 — 원문 표 전체 미회수]
+노드 2개 모두 Ready.
+AZ: ap-northeast-2a, ap-northeast-2c.
+
+[명령 발췌]
+kubectl get pods -A
+
+[회수된 관찰값]
+당시 Pod 6개 모두 Running, 재시작 0.
+Access Entry: kubernetesGroups=<ACCESS_ENTRY_GROUP_BEFORE>, type=STANDARD.
+associatedAccessPolicies: []
+RoleBinding Subject: Group <DEPLOY_RBAC_GROUP>.
+Access Entry 그룹과 RoleBinding 그룹이 서로 달랐음.
+AccessEntry/RoleBinding 조회 명령 전문과 Role 전체 규칙은 이 회수분에 없음.
+
+
+[02] 09:18:59 KST — 접근 그룹 정정 확인
+출처: USER 2026-11-27T00:18:59Z.
+
+[출력 발췌 — 식별자 치환]
+Group:
+- <DEPLOY_RBAC_GROUP>
+Type: STANDARD
+
+[해석/범위]
+Access Entry의 확인 그룹이 RoleBinding 그룹과 같아짐.
+update-access-entry 명령은 이전 어시스턴트 제안으로만 반환되어
+실제 실행 명령으로 복사하지 않음.
+이것만으로 ListClusters, 다른 namespace 및 Kubernetes 전체 권한을 확정하지 않음.
+
+
+[03] 10:26:07 → 11:05:34 KST — AWS Load Balancer Controller 설치
+출처: USER 2026-11-27T01:26:07Z 및 2026-11-27T02:05:34Z.
+
+[이전 상태]
+10:26:07: Controller Deployment NotFound, Helm 미설치.
+
+[회수된 관찰값 — 11:05:34]
+Helm Version: v4.3.2
+Helm 실행 경로: /usr/local/bin/helm
+Helm KubeClientVersion: v1.37
+
+[명령 발췌 — 클러스터 이름만 치환]
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller --namespace kube-system --version 3.6.2 --set clusterName=<EKS_CLUSTER_NAME> --set region=ap-northeast-2 --set vpcId="$VPC_ID" --set serviceAccount.create=true --set serviceAccount.name=aws-load-balancer-controller --set replicaCount=2 --wait --timeout 10m
+
+[출력 발췌]
+STATUS: deployed
+REVISION: 1
+
+[후속 회수 범위 — USER 11:06:51 KST]
+Controller Deployment 2/2가 반환됨.
+Pod 출력은 "두 Pod 1..." 뒤가 잘려 각 Pod의 전체 상태표는 재구성하지 않음.
+별도 helm list 회수 결과는 헤더만 있어 CHART/APP VERSION 행을 확보하지 못함.
+
+[버전 해석]
+--version 3.6.2는 Helm chart 선택값.
+Controller 이미지 태그/APP VERSION은 별도 미확보.
+chart 3.6.2를 Controller 애플리케이션 버전으로 바꾸어 기록하지 않음.
+
+
+[04] 15:16:14 KST — EFS 공유 경로 두 AZ 시험
+출처: USER 2026-11-27T06:16:14Z.
+
+[회수된 관찰값 — 전체 YAML/시험 명령 전문 미회수]
+PV <EFS_PV>: 5Gi, RWX, Retain.
+PVC <EFS_PVC>: Bound.
+ap-northeast-2a / ap-northeast-2c Pod 공유 쓰기 확인.
+공유 시험 SHA-256:
+68b45b66a9c938759983c83685bb46bca842644a835836fadd70094028dc27a5
+
+[범위]
+위 SHA는 공유 시험 값이며 아래 16:25 실제 첨부 파일 SHA와 다름.
+어시스턴트 제안 PV/PVC/테스트 Pod YAML을 실행된 원본으로 복원하지 않음.
+
+
+[05] 16:19:48 KST — RDS 복원과 데이터 대조
+출처: USER 2026-11-27T07:19:48Z.
+실행 위치/주체: Terraform EC2 / ec2-user.
+작업 디렉터리: ~/smoke-db/handoff-20261127-1404
+원문 RDS_ENDPOINT가 실제 RDS 주소였음을 확인. 주소는 비공개.
+
+[명령 발췌 — dump 변환]
+gzip -dc 02_boarddb_full.sql.gz | sed -E -e '/^\/\*M!999999.*enable the sandbox mode/d' -e 's/DEFINER=\`root\`@\`localhost\`[[:space:]]+//g' > boarddb-rds-restore.sql
+
+[명령 발췌 — 복원, 이어서 스키마 적용]
+mysql -h "$RDS_ENDPOINT" -P 3306 -u <DB_ADMIN_USER> --ssl-ca="$HOME/rds-certs/global-bundle.pem" --ssl-verify-server-cert --default-character-set=utf8mb4 -p boarddb < boarddb-rds-restore.sql
+mysql -h "$RDS_ENDPOINT" -P 3306 -u <DB_ADMIN_USER> --ssl-ca="$HOME/rds-certs/global-bundle.pem" --ssl-verify-server-cert --default-character-set=utf8mb4 -p boarddb < ~/smoke-db/schema.sql
+
+[출력/확인 발췌]
+각 mysql 실행 후 echo $? 결과: 0, 0.
+Server version: 10.11.19-MariaDB-log managed by https://aws.amazon.com/rds/
+
+[명령 발췌]
+SELECT * FROM v_migration_check\G
+
+[출력 발췌]
+notice_count: 14
+file_count: 1
+inquiry_count: 6
+content_digest: 1a9ce447409e695b3306bb3daa1b2af5f4d5931fa8df4cfc12aa7d364be80544
+file_digest: cc910c6c5d02be3e11867f710030f628d0a49e650f2dd17553611a5d7be2f878
+
+[실제 원본 대조 — 2026-11-28 수행]
+실제 첨부 handoff-20261127-1404.tar.gz의 04_v_migration_check.txt와 비교.
+notice/file/inquiry 건수 및 content/file digest: 다섯 값 모두 정확히 일치.
+인계 원본 내부 수집: 11/27 14:04:54 KST. 첨부 업로드: 11/27 15:46:56 KST.
+온프레미스 기준값과 회수된 RDS 실행 출력은 별개의 근거로 대조함.
+실제 DB dump, DB 데이터, 복원 SQL 전문은 공개하지 않음.
+이 대조를 RDS에 새로 접속해 실행한 검증으로 표현하지 않음.
+
+
+[06] 16:25:58 KST — 실제 첨부 파일 EFS 이관
+출처: USER 2026-11-27T07:25:58Z.
+같은 Terraform EC2 / ec2-user에서 kubectl exec.
+Pod A/C는 각각 ap-northeast-2a / ap-northeast-2c.
+
+[명령 발췌 — 파이프·옵션·순서 보존, Pod/파일명만 치환]
+tar -xOzf attach.tar.gz ./202611/<ATTACHMENT_FILE>.jpg | kubectl exec -i -n notice <EFS_TEST_POD_A> -- sh -c 'set -eu; umask 027; mkdir -p /var/smoke/attach/202611; set -C; cat > /var/smoke/attach/202611/<ATTACHMENT_FILE>.jpg'
+kubectl exec -n notice <EFS_TEST_POD_A> -- sha256sum /var/smoke/attach/202611/<ATTACHMENT_FILE>.jpg
+kubectl exec -n notice <EFS_TEST_POD_C> -- sha256sum /var/smoke/attach/202611/<ATTACHMENT_FILE>.jpg
+
+[회수된 관찰값 — ls 전체 행/시간/식별자는 재구성하지 않음]
+첨부 이관 명령 종료 코드: 0.
+2a 파일: 189525 bytes, UID 1500, GID 1500, -rw-r-----.
+2a SHA-256:
+069a3999ebd30bab566730c80d0e4a8f227250d13634235dcfa0ce3e876a3120
+2c: 동일 크기/소유권/권한 및 동일 SHA-256.
+
+[범위]
+15:16 공유 시험 SHA 68b45b...dc27a5와 실제 첨부 SHA 069a3999...a3120은 별개.
+파일 이관 검증이 업무 앱의 PVC 마운트/업로드/다운로드 전체 연동 검증을 뜻하지 않음.
+
+
+[07] 16:35:22 KST — S3 객체 메타데이터와 재다운로드 SHA
+출처: USER 2026-11-27T07:35:22Z.
+실행 위치/주체: Terraform EC2 / ec2-user.
+작업 디렉터리: ~/smoke-db/handoff-20261127-1404
+원문 BUCKET/OBJECT_KEY 변수는 유지하고 실제 값은 비공개.
+
+[불완전한 명령 발췌 — 검색의 ...를 그대로 유지]
+aws s3api head-object ... --query '{Size:ContentLength,Type:ContentType,Encryption:ServerSideEncryption}' --output table
+aws s3 cp "s3://${BUCKET}/${OBJECT_KEY}" - ... | sha256sum
+
+[출력 발췌]
+AES256 | 189525 | image/jpeg
+069a3999ebd30bab566730c80d0e4a8f227250d13634235dcfa0ce3e876a3120  -
+
+[범위]
+head-object 값: Encryption / Size / Type.
+완전한 S3 명령은 다른 검색에서 PRIOR_ASSISTANT_OUTPUT으로만 반환되어
+그 옵션을 위 실제 USER 명령의 ... 부분에 채워 넣지 않음.
+S3 업로드 명령 전문은 이 회수분에 없음.
+실제 객체 캡처의 마지막 수정은 11/27 16:33:23 KST, 객체 1개/185.1KB.
+이미지 단독으로 SHA 일치를 주장하지 않음.
+
+
+[08] 17:08:11 KST — S3 접근 제한 및 버전 관리
+출처: USER 2026-11-27T08:08:11Z.
+실행 위치 세부 재조회가 16:35 메시지에 연결되어 반환되었으므로
+17:08 항목의 별도 셸 프롬프트/사용자를 추가 확정하지 않음.
+
+[명령 발췌 — 실제 값 대신 원문 변수 유지]
+aws s3api get-public-access-block --bucket "$BUCKET" --output yaml
+
+[회수된 출력값]
+BlockPublicAcls: true
+BlockPublicPolicy: true
+IgnorePublicAcls: true
+RestrictPublicBuckets: true
+
+[명령 발췌]
+aws s3api get-bucket-versioning --bucket "$BUCKET"
+
+[출력 발췌]
+{"Status":"Enabled"}
+
+[명령 발췌]
+curl -sS -o /dev/null -w 'HTTP Status: %{http_code}\n' "https://${BUCKET}.s3.ap-northeast-2.amazonaws.com/${OBJECT_KEY}"
+
+[출력 발췌]
+HTTP Status: 403
+
+[범위]
+익명 요청으로 S3 객체를 직접 받을 수 없음을 확인한 결과.
+HTTPS 주소는 S3 객체 주소이며 ALB HTTPS 리스너/인증서 성공과 무관.
+
+
+[09] 17:22:05 KST — 수동 S3 동기화 Job
+출처: 파이널 프로젝트 "261127 2일차", USER 2026-11-27T08:22:05Z.
+ServiceAccount/CronJob/IAM 정책 전문과 생성·설정 명령 전문은 미회수.
+
+[추가 조회 명령 발췌 — 제공된 프로젝트 대화 컨텍스트의 USER 원문]
+대화 표시 제목: "20261127 2일차". 아래 원문 조각에는 개별 메시지 시각 미표시.
+관리주소와 리소스 이름은 치환. 조회 결과가 위 17:22 회수값과 일치함.
+kubectl get cronjob <S3_SYNC_CRONJOB> -n notice
+kubectl get job <S3_SYNC_MANUAL_JOB> -n notice
+kubectl get pods -n notice -o wide
+파드 목록은 첫 행 도중 잘렸으므로 전체 출력으로 재구성하지 않음.
+
+[회수된 관찰값 — 원문 표 전체를 재구성하지 않음]
+CronJob: <S3_SYNC_CRONJOB>
+SCHEDULE: * * * * *
+TIMEZONE: Asia/Seoul
+SUSPEND: True
+ACTIVE: 0
+LAST SCHEDULE: <none>
+수동 Job <S3_SYNC_MANUAL_JOB>: Complete, 1/1, 24s.
+로그 문구: assumed-role/<S3_SYNC_ROLE>/...
+로그 문구: S3 Sync Start/Complete
+
+[범위]
+수동 실행 완료이며 정기 실행 성공이 아님.
+suspend=True이고 LAST SCHEDULE 없음.
+실제 ServiceAccount/CronJob/IAM 파일 전문을 확보할 때까지 재구성하지 않음.
+
+
+[10] 17:23:21 / 17:27:40 KST — 당일 마지막 후속
+출처: 프로젝트 USER 2026-11-27T08:23:21Z 및 2026-11-27T08:27:40Z.
+후속 USER 내용의 선별 회수 요약이며 전체 CLI 원문은 미확보.
+
+[사용자 결정 — 17:23:21]
+"지금 올려준건 월요일에 하자"
+
+[최신 회수된 관찰값 — 17:27:40]
+CronJob suspend=True.
+수동 Job Complete 1/1.
+Blue/Green 각각 2개 Pod Running.
+PVC Bound / RWX.
+
+[범위]
+당일 작업은 수동 실행 검증까지. 신규 파일 정기 동기화 검증은 후속 작업.
+Running만으로 readiness/rollout/Target Group Healthy를 추가 확정하지 않음.
+실제 JSP 업무 앱 RDS/EFS 연동/전체 업무 복구 완료를 추가 확정하지 않음.
+별도의 17:24 팀 기록을 이 후속 요약으로 삭제하거나 덮어쓰지 않음.
+다른 학원 실습/기출 문제/이전 프로젝트 조각은 제외.
+
+
+[11] 실제 인계 원본 바이트와 첨부 무결성 대조
+대조 수행일: 2026-11-28.
+실제 첨부 handoff-20261127-1404.tar.gz 안의 사용 근거:
+03_counts.txt, 04_v_migration_check.txt,
+05_attach-sha256.txt, 06_db-sha256.txt,
+attach.tar.gz 안의 JPG 1개 (바이트만 읽어 SHA 계산, 공개 업로드 없음).
+
+[실제 원본 측 관찰]
+JPG 1개, 189525 bytes.
+원본 JPG 바이트에서 이번에 새로 계산한 SHA-256:
+069a3999ebd30bab566730c80d0e4a8f227250d13634235dcfa0ce3e876a3120
+05_attach-sha256.txt와 06_db-sha256.txt도 같은 값.
+
+[회수된 대상 측 결과와 대조]
+EFS 16:25:58 두 AZ 사용자 출력 SHA: 같은 값.
+S3 16:35:22 사용자 재다운로드 SHA: 같은 값.
+실제 원본 바이트/첨부 메타데이터/DB 메타데이터/회수 S3 출력의 네 SHA 모두 일치.
+원본 크기와 회수 S3 ContentLength도 일치.
+RDS의 14/1/6 및 content/file digest 두 값은 인계 원본과 모두 일치.
+
+[검증 경계]
+원본 파일을 읽고 해시/숫자를 비교한 작업은 이번에 실제 수행.
+대상 AWS의 결과는 11/27에 사용자가 공유한 실행내용을 회수한 것.
+새 RDS 질의, 새 EFS/S3 다운로드, 배포, 장애 주입, 인프라 변경은 하지 않음.
+실제 데이터/첨부 원본/민감한 인계 tar는 공개 저장소에 올리지 않음.
+이 검증으로 앱 전체 통합, 자동 CronJob 운용, ALB HTTPS,
+워커 장애 자동복구, CloudWatch 경보까지 완료되었다고 판단하지 않음.
