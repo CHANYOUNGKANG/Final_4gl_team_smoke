@@ -15,6 +15,7 @@ jobs:
       - name: Offline Python tests
         run: |
           python3 cicd/ansible/test-notice-dynamic-plan.py
+          python3 cicd/ansible/test-notice-prod-candidate.py
           python3 cicd/kubernetes/test-render-notice-prod.py
           python3 cicd/ansible/test-notice-app-check.py
           python3 -m py_compile cicd/ansible/alb-release-verify.py
