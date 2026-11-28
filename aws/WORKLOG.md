@@ -8,7 +8,103 @@
 
 ---
 
-## 2026-11-27 — DAY 2 AWS (부분 수집)
+## 2026-11-28 — 게시 누락·진행률 재점검 (문서 정비)
+
+11/27 PR #27은 담당 브랜치에 커밋돼 있었으나 main 미병합 상태였다. 기존 PR 검사·Secret scan·Team progress가 성공했음을 재조회했고, main에 보이는 AWS 점수와 브랜치의 자료를 분리해 확인했다. 상세 원인과 근거 범위는 [진행률 재점검](operations/1128-progress-review.md)에 기록했다.
+
+오늘 수행한 것은 기존 자료 수집·마스킹·문서 정비다. AWS·EC2·Kubernetes에 접속해 새 구축이나 시험을 실행하지 않았다. 11/27 자료를 오늘의 새 AWS 실적으로 반복하지 않는다. 프로젝트 첨부 이미지 25장과 텍스트 2개, 별도 인계 압축파일의 메타자료를 확인하고 실제 구성·응답 화면 9장을 공개용 사본으로 골랐다.
+
+이전 대화 검색은 현재 대화에서 사용할 수 없다는 오류를 반환했다. 따라서 검색되지 않은 후속 작업을 실패·미수행으로 판정하지 않고, 기존 회수 요약은 그대로 보존했다. 모든 대화를 완전히 열람했다고 보장하지 않는다. 실제 캡처·인계 원본·GitHub 팀 로그로 확인한 범위를 아래 원래 작업 날짜에 보완했다.
+
+공식 이정표를 충족하지 않는 부분 자료로 점수를 올리지 않았다. 기존 `evidence.json`과 팀 계산 코드를 유지하고, 구현·실행 근거가 부족한 정확한 지점을 [이정표별 표](operations/1128-progress-review.md#이번에-확보한-실제-진척과-공식-이정표)에 남겼다.
+
+---
+
+## 2026-11-27 — DAY 2 AWS (11/28 실제 첨부 보완)
+
+### 목적·환경·수행 주체
+
+EKS의 CI/CD 연동 기반을 넘기고, ALB의 두 대상 그룹과 RDS·EFS·S3 데이터 저장 환경을 준비한 날의 자료다. 서울 리전 `ap-northeast-2`에서 관찰한 실제 화면과 팀원 실행 기록을 대조했다. Terraform·IAM/RBAC·PV/PVC 코드 원문 전체는 이번에도 확보하지 못했으며 원래 실행 순서·사용자 권한을 추정해 만들지 않았다.
+
+ECR 조회 원문은 [11/27 CLI 발췌](verification/1127-ecr-images-masked.log)에 보존했다. 팀 CI Build #3의 이미지 태그·digest와 연결되며 CI 구현 자체는 팀원 성과다. Ansible의 private EKS API·notice 권한, 도구 버전은 [팀 오전 검증](../cicd/verification/1127-day2-midpoint.md)을 참조한다.
+
+ALB는 운영 트래픽과 후보 트래픽을 나누고 전환·복귀 경로를 제공한다. RDS는 DB 이관 대상, EFS는 공유 첨부 저장소, S3는 객체 저장·배포 경로의 기반이다. 이는 기술의 용도이며 성능 개선·고가용성·무중단 검수가 모두 끝났다는 뜻은 아니다.
+
+### 실제 콘솔 원본 9장과 증명 범위
+
+아래 원본은 모두 11/27 프로젝트 첨부에서 확보했다. 시각은 **업로드 시각(KST)**이며 원래 메시지 시각·캡처 시각으로 대신 쓰지 않는다. 원본과 공개본에서 마스크 밖 픽셀을 대조하고, 계정·관리 주소·리소스 식별자를 불투명하게 제거했다.
+
+#### 1. Blue 대상 그룹 — 11:36:27 업로드
+
+![1. Blue 대상 그룹의 Healthy 2개](evidence/1127-alb-blue-targets-masked.png)
+
+목적은 Blue 대상 등록과 상태 확인이다. IP 타입·HTTP 8080·대상 2개 Healthy가 보인다. 이 한 장으로 HTTPS나 전체 서비스의 무중단을 증명하지 않는다. 원본: `image(20261127-023628).png`.
+
+#### 2. Green 대상 그룹 — 11:36:41 업로드
+
+![2. Green 대상 그룹의 Healthy 2개](evidence/1127-alb-green-targets-masked.png)
+
+목적은 후보 대상 그룹의 상태 확인이다. IP 타입·HTTP 8080·대상 2개 Healthy가 보인다. 실제 업무 앱의 DB·첨부 연동과는 별도다. 원본: `image(20261127-023642).png`.
+
+#### 3. ALB HTTP 시험 응답 — 11:38:47 업로드
+
+![3. ALB를 통한 정적 test-v2 브라우저 응답](evidence/1127-alb-http-response-masked.png)
+
+목적은 ALB 주소로 정적 시험 페이지가 응답하는지 확인하는 것이다. 화면은 test-v2 응답을 보여 준다. HTTP 상태 코드나 TLS 성공을 이 캡처에서 별도로 읽어낸 것으로 표현하지 않는다. 원본: `image(20261127-023848).png`.
+
+#### 4. 실제 리스너 설정 — 11:45:07 업로드
+
+![4. HTTP80 리스너 Blue100 Green0](evidence/1127-alb-http-listener-masked.png)
+
+저장된 HTTP:80 리스너의 Blue 100 / Green 0 전달 설정을 확인한다. 전환·복귀 전 과정은 팀 로그를 함께 봐야 하며 HTTPS 리스너 화면이 아니다. 원본: `image(20261127-024508).png`.
+
+#### 5. RDS DB subnet group — 12:29:46 업로드
+
+![5. RDS DB subnet group의 두 AZ](evidence/1127-rds-subnet-group-masked.png)
+
+DB subnet group의 ap-northeast-2a/c를 확인한다. EKS 워커의 두 AZ 배치를 대신 입증하지 않는다. 원본: `image(20261127-032947).png`.
+
+#### 6. EFS Access Point — 14:59:25 업로드
+
+![6. EFS Access Point 사용 가능과 UID GID1500](evidence/1127-efs-access-point-masked.png)
+
+Access Point 1개 사용 가능 및 POSIX UID/GID 1500:1500을 확인한다. 표시된 경로가 잘려 전체 경로를 추정하지 않았고, 두 AZ mount target·실제 mount·파일 해시는 별도 근거가 필요하다. 원본: `image(20261127-055926).png`.
+
+#### 7. RDS 인스턴스 — 15:19:00 업로드
+
+![7. RDS MariaDB 사용 가능 및 프라이빗 연결](evidence/1127-rds-instance-masked.png)
+
+MariaDB, db.t3.micro, AZ ap-northeast-2c, 사용 가능, 3306, 퍼블릭 액세스 아니요, 서브넷 2개를 확인한다. 엔진의 세부 버전과 DB 복원 이후 건수·해시를 보여 주는 화면은 아니다. 원본: `image(20261127-061901).png`.
+
+#### 8. S3 버킷 — 16:34:52 업로드
+
+![8. 서울 리전 S3 버킷 목록](evidence/1127-s3-bucket-masked.png)
+
+서울 리전 버킷 1개와 화면의 생성 시각 16:29:43 KST를 확인한다. 생성 전 양식의 보안 설정 선택을 생성 후 적용 검증으로 바꾸지 않는다. 원본: `image(20261127-073453).png`.
+
+#### 9. S3 객체 — 16:35:10 업로드
+
+![9. S3 객체1개와 크기·수정 시각](evidence/1127-s3-object-masked.png)
+
+202611/ 아래 JPG 1개, 185.1 KB, 수정 시각 16:33:23 KST를 확인한다. 실제 원본 인계 목록과 같은 저장 이름임을 비공개 원본끼리 대조했으며 공개본의 식별자는 가렸다. S3에서 다시 받은 파일의 SHA-256까지 검증한 것은 아니다. 원본: `image(20261127-073511).png`.
+
+### 이관 원본과 대상 결과 구분
+
+[온프레미스 인계 메타자료 발췌](verification/1127-handoff-source-baseline-masked.log)에서 원본 수집 시각 14:04:54 KST, MariaDB 10.11.19-MariaDB, board 14 / board_file 1 / inquiry 6, 첨부 1개 189,525 bytes, 원본 DB 기록 해시와 원본 파일 해시 일치를 확인했다. 원본 압축파일 업로드는 15:46:56 KST이며 실제 DB 덤프·첨부 파일은 공개하지 않았다.
+
+이는 **RDS에 복원한 뒤 나온 출력이 아닌 이관 전 기준값**이다. 기존 RDS/EFS/S3 성공 요약은 아래에 출처 종류를 유지해 보존하되, 새로 확보한 인계 원본만으로 대상 성공을 재검증했다고 표시하지 않는다. 자세한 대조와 필요한 특정 출력은 [이관 기록](migration/1127-source-and-target-evidence.md)에 있다.
+
+### 팀원 실행 기록과 최신 후속 결과
+
+- [Release #5](../cicd/verification/1127-notice-release-build-5-rollback.log): 각 슬롯 Healthy 2개, 전환 확인 20.23초, 의도적 검사 실패 후 복귀 확인 21.56초, 최종 Blue 100 / Green 0.
+- [연속 조회 집계](../cicd/verification/1127-alb-continuity-summary.md): 총 341, PASS 341, 실패 0, Blue 301 / Green 40. 정적 시험·합성 실패 결과이며 원본 CSV는 미확보.
+- [오후 후속 기록](../cicd/verification/1127-day2-afternoon.log): CI #8 이미지 검증, PVC BOUND RWX, Green 서버 dry-run 성공, 17:24 Green 후보 패치 적용. 기존 PVC Forbidden 뒤의 성공 경과를 반영한다. 후보 격리·ALB 변경 없음, 최종 rollout/target health 미관찰.
+
+기존 [1500 이미지 검증](../cicd/verification/1127-production-image-1500.log)의 로컬 H2·볼륨 시험과 실제 RDS/EFS 연결을 혼동하지 않는다. Secret 조회 권한을 새로 부여하거나 그 값을 공개한 작업도 아니다.
+
+### 11/27 17:25 당시 회수 기록 (이력 보존)
+
+아래는 기존 PR #27의 기록이다. 당시 대화 회수 요약과 이번 직접 확보한 원본을 구분하기 위해 남긴다. “신규 캡처 0장”은 당시 상태이며, 위 9장은 11/28에 뒤늦게 회수한 11/27 원본이다.
 
 수집 기준 17:25 KST. 프로젝트 「261127 2일차」 검색 결과와 실제 첨부 ECR CLI 및 팀원 저장소 기록을 대조했다. 대화 전체 및 신규 이미지 원본은 미확보. 이번 작업은 문서화이며 AWS 환경을 변경하지 않았다.
 
@@ -19,6 +115,11 @@
 - 14:46 사용자 인계 요구: MariaDB 10.11 boarddb, RWX PVC, /var/smoke/attach, UID/GID 1500, UPLOAD_DIR, FILE_BASE_URL. 16:19~16:35 검색 회수 요약: RDS 10.11.19 복원 후 공지 14/첨부 1/문의 6 및 비교 digest 일치, 두 AZ EFS 테스트 Pod에서 189525 bytes 파일 해시 일치, S3 AES256 및 다운로드 해시 일치. 17:08 검색 회수 요약: Public Access Block 네 설정 true, Versioning Enabled, 비인증 직접 접근 403. 원문 전체 미확보이므로 요약으로만 기록.
 - [팀 이미지 검증](../cicd/verification/1127-production-image-1500.log): 로컬 볼륨/H2 검사 성공, 실제 RDS/EFS 사용 아님. 특정 PVC get Forbidden, Secret get no. 필요한 PVC 조회만 협의하고 Secret 값은 공개하지 않는다.
 - 다음: 실제 업무 앱 RDS/EFS 연결, CloudFront/OAC 및 FILE_BASE_URL, HTTPS, 워커 장애/비용 검증. Terraform, IAM/RBAC, PV/PVC, ALB 설정 및 원문 CLI/CSV 확보. 기존 [Issue #11](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11) 참조. 신규 캡처 0장, 기존 7장 보존. 전체 이정표 근거 부족으로 점수 등록 변경 없음.
+
+
+### 남은 작업
+
+이우빈은 실제 EKS 구성·노드 AZ, HTTPS, 이관 명령 및 대상 결과, 워커 장애·복구·비용 근거를 보완한다. 강찬영과는 최종 Green rollout·대상 상태·업무 앱 연동을, 이준호와는 원본과 RDS·첨부 대상 대조를 확인한다. 공통 설계와 실제 상태가 다르면 [Issue #11](https://github.com/CHANYOUNGKANG/Final_4gl_team_smoke/issues/11)에 차이를 기록한 뒤 합의하며 임의 인프라 변경은 하지 않는다.
 
 ---
 

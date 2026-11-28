@@ -13,6 +13,17 @@
 
 ---
 
+## 2026-11-27 · DAY 2 오후 인계 및 실제 Green 후보 (17:24 기준)
+
+- [DAY2 회의·상세 작업 기록](../docs/daily/1127-meeting.md) · [오후 실측 정제 로그](verification/1127-day2-afternoon.log)
+- #22 운영 UID/GID 1500 병합, main 수동 CI #8 30초, JUnit 8/8, Maven 6.084초, ECR digest 대조 성공. 17:15 Plan 19초, 20 tests, Blue 활성/Green 비활성 확인.
+- RDS/EFS/S3 이관 완료 및 해시 일치, Secret 3개 및 PVC get 허용은 AWS 담당자 인계 보고. Secret 값 미기록. FILE_BASE_URL 미설정 유지.
+- #23 SNS 알림 초안: 제목 및 본문 첫 줄 동일 [배포], 실제 SNS·SQS·메일 검증 대기.
+- #25 5 tests 및 server dry-run 성공, 실제 Green patch 적용 화면 확인. 최종 rollout/TG 결과는 미확인. ALB 변경 요청 없음. 실제 업무 앱 검증 및 전환은 후속 작업.
+- Poll SCM main 최신 자동 빌드 미확인; #8은 수동. 공식 실행 근거는 현재 검증 범위만 유지. 원본 PNG/CSV 바이너리 업로드는 미완료.
+
+---
+
 ## 2026-11-27 · DAY 2 오후 최종 앱 및 EFS 인계 / 저장소 정리
 
 **확인한 결과**

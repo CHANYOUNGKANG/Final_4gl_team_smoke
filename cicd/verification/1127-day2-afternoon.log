@@ -1,0 +1,31 @@
+# 2026-11-27 오후 CI/CD 실행 기록 (정제 발췌/화면 관찰)
+# User console #8 and Plan log, terminal screenshots. Not fabricated raw log. No real addresses/account/credentials.
+17:13:12 CI #8 started by user
+17:13:13 checkout 66d65449cdf1b0aa585e635b896ec290727a8785
+NOTICE CI MODE: scm=false autoPublish=false docker=true ecr=true
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0
+Maven BUILD SUCCESS; total 6.084 s
+WAR SHA-256 36bd22deafa6e28d187355efed8d6358d84a535f98c01f419263472372827b55
+17:13:29 platform=linux/amd64 user=1500:1500
+17:13:37 NOTICE DOCKER H2 HEALTH VERIFIED
+17:13:42 tag=notice-66d65449cdf1b0aa585e635b896ec290727a8785-8
+digest=sha256:93ea2f76359ffc2aa43932124814a05c1551cdbc7b9d378fa957d0d5676a5dff
+NOTICE ECR PUSH VERIFIED
+Finished: SUCCESS
+17:15:00 Plan started by user; checkout d098cb8
+8+6+6 offline tests OK
+17:15:05 NOTICE CI IMAGE TAG/DIGEST VERIFIED
+17:15:15 SLOT blue READY=2 HEALTHY=2 TARGETS_MATCH=2
+17:15:17 SLOT green READY=2 HEALTHY=2 TARGETS_MATCH=2
+17:15:18 ACTIVE_SLOT=blue CANDIDATE_SLOT=green
+NEXT_ACTION=PLAN_UPDATE_INACTIVE
+17:15:19 NOTICE PLAN SUCCESS: no deployment or traffic change
+Finished: SUCCESS
+# Candidate script e1bd8ee screenshot: first invalid hostname stopped before change; retry:
+Ran 5 tests; OK
+PVC BOUND RWX VERIFIED
+GREEN SERVER DRY RUN OK: no changes
+# Latest screenshot 17:24 KST:
+GREEN PATCH REQUEST: ALB untouched
+GREEN PATCH APPLIED: candidate remains isolated; no automatic traffic switch
+# Final rollout/target health not yet observed. Do not mark candidate ready.
