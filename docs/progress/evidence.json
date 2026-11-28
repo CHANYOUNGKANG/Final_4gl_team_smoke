@@ -1,4 +1,16 @@
 {
+  "SRV1": {
+    "verification": {
+      "file": "server/verification/1127-ops-check.md",
+      "observed": "2026-11-27 온프레미스 mgmt·web·data 에 Ansible 로 sshd 정책 배포 후 sshd -T 3대 모두 permitrootlogin no·allowusers rocky·maxauthtries 3. mgmt→web root 접속 Permission denied, 실패 기록이 rsyslog TCP 514 중앙 수집으로 mgmt /var/log/remote/web/ 에 남음. web·data 시험 로그 각 1줄 수신 (캡처 1127-05~07)."
+    }
+  },
+  "SRV2": {
+    "verification": {
+      "file": "server/verification/1127-ops-check.md",
+      "observed": "2026-11-27 data 에서 mysqldump·v_migration_check·첨부 sha256sum 목록·첨부 압축·SHA256SUMS 생성, mgmt 03:00 rsync 사본, 덤프를 임시 DB 에 복원해 게시글·첨부·문의 건수와 본문 해시 앞 16자리 일치·첨부 해시 OK. 백업 결과 메일 래퍼 rc=0 (캡처 1127-14~20)."
+    }
+  },
   "SRV3": {
     "verification": {
       "file": "server/verification/1126-onprem-service-check.md",

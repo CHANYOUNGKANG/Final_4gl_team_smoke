@@ -1,0 +1,11 @@
+# mgmt: /etc/prometheus/prometheus.yml (Ansible monitoring.yml)
+# [재구성본] 11/27 Targets 화면(3/3 UP)과 설정값(15초 수집)을 바탕으로 정리. 실제 주소는 서버에만.
+# 보관 기간은 서비스 실행 옵션: --storage.tsdb.retention.time=15d
+global:
+  scrape_interval: 15s
+scrape_configs:
+  - job_name: node
+    static_configs:
+      - targets: ["MGMT_HOST:9100", "WEB_HOST:9100", "DATA_HOST:9100"]
+# Grafana(:3000) 데이터 소스 = http://localhost:9090, 대시보드 ID 1860 (Node Exporter Full)
+# node_exporter 9100 은 각 서버 firewalld rich rule 로 관리 대역에서만 허용

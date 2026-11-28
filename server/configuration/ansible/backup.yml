@@ -1,0 +1,51 @@
+# 백업 자동화 (mgmt ~/ansible/backup.yml 와 같은 내용)
+# - data : 매일 02:00 DB 덤프 + 이관 기준값 + 첨부 해시 목록 + 첨부 압축, 7일 보관
+#          결과는 래퍼(smoke-backup-notify.sh)가 운영 메일함으로 통보
+# - mgmt : 매일 03:00 data 백업을 복제해 따로 보관
+# 실제 주소·받는 주소는 host_vars/data.yml (예시: host_vars/data.yml.example)
+- name: 백업 스크립트 (data)
+  hosts: data
+  become: true
+  tasks:
+    - dnf: { name: [rsync, s-nail], state: present }
+    - name: 백업 스크립트
+      copy:
+        dest: /usr/local/bin/smoke-backup.sh
+        mode: "0750"
+        content: |
+          #!/bin/bash
+          # boarddb 덤프 + 이관 기준값 + 첨부 해시 목록 + 첨부 압축, 7일 보관
+          set -euo pipefail
+          DB=boarddb; ATTACH=/share/attach; ROOT=/backup; KEEP_DAYS=7
+          DEST=$ROOT/$(date +%Y%m%d-%H%M)
+          mkdir -p "$DEST"; chmod 700 "$ROOT"
+          mysqldump --single-transaction --routines --triggers "$DB" | gzip > "$DEST/$DB.sql.gz"
+          mysql "$DB" -e "SELECT * FROM v_migration_check\G" > "$DEST/migration_check.txt"
+          (cd "$ATTACH" && find . -type f -print0 | sort -z | xargs -0 -r sha256sum) > "$DEST/attach-sha256.txt"
+          tar -C "$ATTACH" -czf "$DEST/attach.tar.gz" .
+          (cd "$DEST" && sha256sum *.gz *.txt > SHA256SUMS)
+          find "$ROOT" -mindepth 1 -maxdepth 1 -type d -mtime +$KEEP_DAYS -exec rm -rf {} +
+          logger -t smoke-backup "backup ok $DEST size=$(du -sh "$DEST" | cut -f1)"
+    - name: 백업 + 메일 알림 래퍼
+      template:
+        src: templates/smoke-backup-notify.sh.j2
+        dest: /usr/local/bin/smoke-backup-notify.sh
+        mode: "0750"
+    - name: 매일 02:00 실행
+      cron: { name: smoke-backup, minute: "0", hour: "2", job: "/usr/local/bin/smoke-backup-notify.sh" }
+
+- name: 백업 사본 가져오기 (mgmt)
+  hosts: mgmt
+  become: true
+  vars:
+    data_ip: "{{ hostvars['data'].ansible_host | default('data') }}"
+  tasks:
+    - dnf: { name: rsync, state: present }
+    - file: { path: /backup/data, state: directory, mode: "0700" }
+    - name: 매일 03:00 data 백업 복제
+      cron:
+        name: pull-data-backup
+        minute: "0"
+        hour: "3"
+        user: rocky
+        job: "sudo rsync -a -e 'ssh -i /home/rocky/.ssh/id_ed25519 -o UserKnownHostsFile=/home/rocky/.ssh/known_hosts -o BatchMode=yes' --rsync-path='sudo rsync' rocky@{{ data_ip }}:/backup/ /backup/data/ && logger -t smoke-backup 'pull ok from data'"

@@ -2,14 +2,43 @@
 
 최신 항목이 맨 위. 항목마다 **확인한 결과(직접 실행·관찰한 것만) · 막힌 부분 · 다음 작업 · 증빙**을 남긴다. 캡처는 민감값(관리 주소·MAC·키)을 가린 사본만 [evidence/](evidence/)에 둔다. 🎤 표시는 발표 후보.
 
-## 이정표 현황 (11/26 기준)
+## 이정표 현황 (11/27 기준)
 
 | 이정표 | 내용 | 구현 | 실행 확인 | 근거 |
 | --- | --- | :---: | :---: | --- |
-| SRV1 | SSH·로그 관리 | — | — | 키 배포·Ansible 접속만 확인. sshd 정책·rsyslog 중앙 수집 미적용 |
-| SRV2 | DB·파일 백업과 원본 목록 | — | — | 스키마·대조 뷰만 준비. 덤프·해시 목록 미실행 |
-| SRV3 | 공지 앱 빌드·실행 정보 | ✅ app/ (팀 레퍼런스 앱) | ✅ 온프레미스 Tomcat 에서 JSP 공지 앱 실행 | [검증 기록 §6](verification/1126-onprem-service-check.md#6-공지-앱-tomcat--mariadb-동작) |
-| SRV4 | 운영 알림 메일 | — | — | 미착수 |
+| SRV1 | SSH·로그 관리 | ✅ sshd 정책 · rsyslog 중앙 수집 ([ssh/](configuration/ssh/) · [rsyslog/](configuration/rsyslog/)) | ✅ 3대 `sshd -T`, root 접속 차단, mgmt 중앙 로그 | [확인 기록 §2·§3](verification/1127-ops-check.md#2-ssh-정책-srv1) |
+| SRV2 | DB·파일 백업과 원본 목록 | ✅ [backup.yml](configuration/ansible/backup.yml) | ✅ 덤프·해시 목록·mgmt 사본·복구 시험 | [확인 기록 §6](verification/1127-ops-check.md#6-백업복구-srv2) |
+| SRV3 | 공지 앱 빌드·실행 정보 | ✅ app/ (팀 표준 앱, PR #21) | ✅ 11/26 온프레미스 Tomcat 실행 (팀 표준 앱 `/health` 재확인 필요) | [검증 기록 §6](verification/1126-onprem-service-check.md#6-공지-앱-tomcat--mariadb-동작) |
+| SRV4 | 운영 알림 메일 | ✅ Postfix·Dovecot·Roundcube ([mail/](configuration/mail/)) | 🟡 문의·백업 알림 수신. 장애·배포·AWS 알림은 미확인이라 실행 근거 미등록 | [확인 기록 §7·§8](verification/1127-ops-check.md#7-사내-메일-srv4) |
+
+---
+
+## 2026-11-27 (금) · SSH·중앙 로그·저장소·백업·메일·모니터링 구축과 운영 알림
+
+**작업 목적** — 비정상 접근 대응(SSH·로그), 데이터 보존(백업·복구·해시), 운영 알림(메일), 사전 감지(모니터링)를 온프레미스 3대에 갖춘다. 재구축 순서·명령은 [재구축 가이드](docs/1127-rebuild-guide.md), 발표용 요약은 [결과 요약](docs/1127-results-summary.md).
+
+**실제로 확인한 결과** (온프레미스 운영 환경, VMware NAT 임시 경로 · 상세 [확인 기록](verification/1127-ops-check.md) · 출력 사본 [logs](logs/1127-terminal-transcript.md) · 캡처 30장 [evidence/2026-11-27](evidence/2026-11-27/))
+- SSH: 3대 `permitrootlogin no`·`allowusers rocky`·`maxauthtries 3` (`sshd -T`). mgmt → web root 접속 `Permission denied`, 실패 기록이 mgmt 중앙 로그에 남음
+- 중앙 로그: web·data → mgmt TCP 514, `/var/log/remote/<호스트>/` 에 시험 로그 각 1줄
+- 저장소: 첨부 5G·DB 4G LVM, NFS 를 web 에 5.0G 마운트, fstab `nofail` 추가
+- 앱·데이터: 첨부 업로드 해시 = 실제 파일 해시, 기준값 게시글 14 · 첨부 1 · 문의 6 (14:04 인계 수집)
+- 백업: 덤프·기준값·첨부 해시·첨부 압축·SHA256SUMS 생성, mgmt 03:00 사본, 임시 DB 복구 대조 일치
+- 백업 결과 메일: 래퍼 Ansible 배포 `changed=2 failed=0`, 직접 실행 `rc=0`, smoke@ 에 `[백업] data 성공` 수신 (16:20)
+- 메일: Postfix `status=sent`, Dovecot 2.3.21, Roundcube 1.7.0 로그인·user1→user2, 홈페이지 문의 #7 → smoke@
+- 모니터링: node_exporter 3대 → Prometheus `3 / 3 up` → Grafana (web, data 디스크별)
+
+**구분** — 위 결과는 모두 온프레미스 실제 서버에서 실행했다. 다음은 코드·설정만 있고 실행 확인이 없다: 백업 실패 메일, 02:00 자동 실행분, SQS 알림 수신, Grafana 장애 알림. `[재구성본]` 설정 파일(ssh·rsyslog·monitoring·nginx 웹메일 블록)은 서버 원본 사본이 아니라 확인한 적용값으로 정리한 것이다.
+
+**막힌 부분과 해결** — [재구축 가이드 §7](docs/1127-rebuild-guide.md#7-오류와-해결)에 14건 정리. 대표: `01-permitrootlogin.conf` 우선 적용(→ 삭제), sudo rsync known_hosts(→ `UserKnownHostsFile`), Roundcube 로그인(→ `%Ln`), NFS 대기로 부팅 정지(→ `nofail`·켜는 순서), 템플릿 누락(→ 생성 후 재실행)
+
+**결정** — 운영 알림 메일함은 `smoke@smoke.local` 하나로 통일. AWS 알림은 VPN 전까지 SNS → SQS → mgmt 수신 (강찬영 PR #23 은 SNS 발행으로 수정, `RawMessageDelivery=false`)
+
+**다음 작업**
+- 이준호: 팀 표준 앱 `/health` 재확인 → Grafana 장애 알림·`/health` 감시 → 백업 실패 메일 시험 → 플레이북 원본 사본 교체
+- 이우빈: SNS 토픽·SQS·온프레미스 수신 전용 최소 권한 (이슈 #29) · RDS·S3 복원 후 이준호와 기준값 대조
+- 강찬영: PR #23 SNS 발행 시험 메시지 → smoke@ 수신 확인
+
+**증빙** — [evidence/2026-11-27](evidence/2026-11-27/) · [확인 기록](verification/1127-ops-check.md) · [출력 사본](logs/1127-terminal-transcript.md) · PR #21 · CI/CD PR #23 · 이슈 #11
 
 ---
 
